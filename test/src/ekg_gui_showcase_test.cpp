@@ -1090,9 +1090,7 @@ int32_t laboratory_testing() {
   float prev_pos {10.2f};
   float scale {2.0f};
 
-  ekg::frame("campo", {20, 20}, {500, 400})
-    ->set_drag(ekg::dock::full)
-    ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
+  /*
 
   // ekg::label("oi:", ekg::dock::next);
   // ekg::button("tudo", ekg::dock::fill);
@@ -1170,15 +1168,15 @@ int32_t laboratory_testing() {
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
-    /*content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
-    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());*/
+    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
+    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
   }
 
-  /*auto list = ekg::listbox(
+  auto list = ekg::listbox(
     "hello",
     content,
     ekg::dock::fill | ekg::dock::next
@@ -1186,10 +1184,9 @@ int32_t laboratory_testing() {
   ->set_column_header_align(ekg::dock::fill)
   ->set_scaled_height(16)
   ->set_mode(ekg::mode::multicolumn)
-  ->transfer_ownership(&content);*/
+  ->transfer_ownership(&content);
 
   // ekg::label("Background Color:", ekg::dock::next);
-  ekg::vec3 clear_color {};
 
   auto p = ekg::slider<float>(
     "clear_color",
@@ -1201,7 +1198,7 @@ int32_t laboratory_testing() {
   ->range<double>(0, 0.3f, 0.0f, 1.0f)
   ->range<double>(0).f32.transfer_ownership(&clear_color.x)
   ->range<double>(1, 0.3f, 0.0f, 1.0f)
-  ->range<double>(1).f32.transfer_ownership(&clear_color.y)
+  ->range<double>(1).f32.transfer_ownership(&clear_color.y)`
   ->range<double>(2, 0.3f, 0.0f, 1.0f)
   ->range<double>(2).f32.transfer_ownership(&clear_color.z);
 
@@ -1211,6 +1208,33 @@ int32_t laboratory_testing() {
 
   ekg::scrollbar("oiiii mumu");
   ekg::pop_group();
+
+  */
+
+  ekg::ui::auto_scale = false;
+  ekg::ui::scale = {800.0f, 720.0f};
+
+  ekg::frame("A", {20, 20}, {500, 400})
+    ->set_drag(ekg::dock::full)
+    ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
+
+  ekg::button("1", ekg::dock::fill);
+  ekg::button("2", ekg::dock::fill);
+  ekg::button("3", ekg::dock::fill);
+  ekg::button("4", ekg::dock::next | ekg::dock::fill);
+  ekg::button("5", ekg::dock::fill | ekg::dock::right);
+
+  ekg::frame("B", {600, 20}, {500, 400})
+    ->set_drag(ekg::dock::full)
+    ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
+
+  ekg::button("1", ekg::dock::fill);
+  ekg::button("2", ekg::dock::fill);
+  ekg::button("3", ekg::dock::fill);
+  ekg::button("4", ekg::dock::next | ekg::dock::fill);
+
+  ekg::pop_group();
+  ekg::vec3 clear_color {};
 
   while (running) {
     ekg::ui::dt = 1.0f / last_frame;
@@ -1246,5 +1270,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return showcase_useless_window();
+  return laboratory_testing();
 }

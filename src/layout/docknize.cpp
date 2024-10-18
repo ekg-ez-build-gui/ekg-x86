@@ -28,11 +28,14 @@ void ekg::layout::extentnize(
       int64_t it {begin_and_count};
 
       if (
-          begin_and_count > static_cast<int64_t>(ekg::layout::h_extent.begin_index) &&
+          begin_and_count > static_cast<int64_t>(ekg::layout::h_extent.begin_index)
+          &&
           begin_and_count < static_cast<int64_t>(ekg::layout::h_extent.end_index)
         ) {
+
         begin_and_count = static_cast<int64_t>(ekg::layout::h_extent.count);
         extent = ekg::layout::h_extent.extent;
+
         return;
       }
 
@@ -46,6 +49,7 @@ void ekg::layout::extentnize(
       bool is_scrollbar {};
       bool is_last_index {};
       bool is_ok_flag {};
+      bool is_last_index_but {};
 
       /**
        * The last index does not check if contains a next flag,
@@ -70,9 +74,29 @@ void ekg::layout::extentnize(
         if (
             (ekg_bitwise_contains(flags, flag_stop) && it != begin_and_count) || is_last_index || is_scrollbar
           ) {
-          extent -= ekg::layout::offset;
+
+          extent -= (ekg::layout::offset) * (extent > 0.0f);
+
+          is_last_index_but = (
+            ekg_bitwise_contains(flags, flag_ok) && is_last_index
+          );
+
           flag_ok_count += (
-            (is_ok_flag = (!ekg_bitwise_contains(flags, flag_stop) && ekg_bitwise_contains(flags, flag_ok) && is_last_index))
+            (is_ok_flag = (
+              (!ekg_bitwise_contains(flags, flag_stop))
+              &&
+              is_last_index_but
+            )
+          );
+
+          is_last_index_but = (
+            is_last_index
+            &&
+            (extent > 0.0f)
+            &&
+            !ekg_bitwise_contains(flags, flag_stop)
+            &&
+            !is_scrollbar
           );
 
           /**
@@ -83,10 +107,35 @@ void ekg::layout::extentnize(
            * :blush:
            **/
           extent += (
-            (p_widgets->dimension.w + ekg::layout::offset) * (is_last_index && !ekg_bitwise_contains(flags, flag_ok) && !is_scrollbar)
+            (p_widgets->dimension.w + ekg::layout::offset)
+            *
+            is_last_index_but
           );
 
-          ekg::layout::h_extent.end_index = it + is_last_index;
+          /**
+           * There are two glitches fixed here.
+           * 
+           * The first one happens when the widget contains `next | fill` flag but the previous row
+           * count as one extra index, so the last widget does not fill with 1 but with the previous
+           * amount of fill count.
+           * 
+           * The second one happens when the widget contains `next | fill` and `fill`, making the
+           * previous row do not count as 1, so the widget is complete filled.
+           * 
+           * To fix this, we consider the two options:
+           * NOT STOP or OK but NOT STOP.
+           * 
+           * Both case must fix this, if soon happens, we can already now the context of issue.
+           **/
+          is_last_index_but = (
+            is_last_index
+            &&
+            (!ekg_bitwise_contains(flags, flag_stop) || (ekg_bitwise_contains(flags, flag_ok) && !ekg_bitwise_contains(flags, flag_stop)))
+            &&
+            !is_scrollbar
+          );
+
+          ekg::layout::h_extent.end_index = it + (is_last_index * is_last_index_but);
           ekg::layout::h_extent.extent = extent;
           ekg::layout::h_extent.count = flag_ok_count + (flag_ok_count == 0);
 
@@ -182,18 +231,32 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   int64_t count {};
 
   ekg::rect widget_rect {};
-  ekg::rect bottom_rect {};
-  ekg::rect top_rect {ekg::layout::offset + initial_offset, ekg::layout::offset + initial_offset, 0.0f, 0.0f};
+  ekg::rect parent_offset {ekg::layout::offset + initial_offset, ekg::layout::offset + initial_offset, 0.0f, 0.0f};
   ekg::rect prev_widget_layout {};
 
   ekg::flags prev_flags {};
   bool should_reload_widget {};
   bool skip_widget {};
+  bool should_estimated_extentinize {};
   float max_previous_height {};
 
   ekg::layout::h_extent = {};
   ekg::layout::extent_t h_extent_backup {};
   ekg::layout::extent_t v_extent_backup {};
+
+  bool is_none {};
+  bool is_free {};
+  bool is_left {};
+  bool is_right {};
+  bool is_top {};
+  bool is_bottom {};
+  bool is_fill {};
+  bool is_next {};
+
+  ekg::rect corner_top_left {parent_offset};
+  ekg::rect corner_top_right {parent_offset};
+  ekg::rect corner_bottom_left {parent_offset};
+  ekg::rect corner_bottom_right {parent_offset};
 
   for (int32_t &ids: p_widget_parent->p_data->get_child_id_list()) {
     if (ids == 0 || (p_widgets = ekg::core->get_fast_widget_by_id(ids)) == nullptr) {
@@ -212,17 +275,20 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       continue;
     }
 
-    if (ekg_bitwise_contains(flags, ekg::dock::fill)) {
-      if (ekg_bitwise_contains(flags, ekg::dock::next)) {
-        top_rect.h += max_previous_height + ekg::layout::offset;
-        top_rect.w = 0.0f;
-        max_previous_height = 0.0f;
-      }
+    should_estimated_extentinize = true;
 
-      layout.x = top_rect.x + top_rect.w;
-      layout.y = top_rect.y + top_rect.h;
+    is_none   = ekg_bitwise_contains(flags, ekg::dock::none);
+    is_free   = ekg_bitwise_contains(flags, ekg::dock::free);
+    is_right  = ekg_bitwise_contains(flags, ekg::dock::right);
+    is_left   = (!is_right && ekg_bitwise_contains(flags, ekg::dock::left)) || !is_right;
+    is_bottom = ekg_bitwise_contains(flags, ekg::dock::bottom);
+    is_top    = (!is_bottom && ekg_bitwise_contains(flags, ekg::dock::top)) || !is_bottom;
+    is_fill   = ekg_bitwise_contains(flags, ekg::dock::fill);
+    is_next   = ekg_bitwise_contains(flags, ekg::dock::next);
 
+    if (is_fill) {
       count = it;
+
       ekg::layout::extentnize(
         dimensional_extent,
         p_widget_parent,
@@ -242,46 +308,46 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         p_widgets->min_size.x
       );
 
-      top_rect.w += dimensional_extent + ekg::layout::offset;
       layout.w = dimensional_extent;
       should_reload_widget = true;
-    } else if (ekg_bitwise_contains(flags, ekg::dock::next)) {
-      top_rect.h += max_previous_height + ekg::layout::offset;
-      top_rect.w = 0.0f;
-
-      layout.x = top_rect.x;
-      layout.y = top_rect.y + top_rect.h;
-      top_rect.w += layout.w + ekg::layout::offset;
-
-      count = it;
-      ekg::layout::extentnize(
-        dimensional_extent,
-        p_widget_parent,
-        ekg::dock::fill,
-        ekg::dock::next,
-        count,
-        ekg::axis::horizontal
-      );
-
-      max_previous_height = 0.0f;
-    } else if (flags == ekg::dock::none) {
-      layout.x = top_rect.x + top_rect.w;
-      layout.y = top_rect.y + top_rect.h;
-      top_rect.w += layout.w + ekg::layout::offset;
-
-      count = it;
-      ekg::layout::extentnize(
-        dimensional_extent,
-        p_widget_parent,
-        ekg::dock::fill,
-        ekg::dock::next,
-        count,
-        ekg::axis::horizontal
-      );
+      should_estimated_extentinize = false;
     }
 
-    if (ekg_bitwise_contains(flags, ekg::dock::resize)) {
-      should_reload_widget = true;
+    if (is_next && is_top && is_left) {
+      corner_top_left.x = parent_offset.x;
+      corner_top_left.y += layout.h + ekg::layout::offset;
+      corner_top_right.y = corner_top_left.y;
+    }
+
+    if (is_top && is_left) {
+      layout.x = corner_top_left.x;
+      layout.y = corner_top_left.y;
+
+      corner_top_left.x += layout.w + ekg::layout::offset;
+    }
+
+    if (is_next && is_top && is_right) {
+      corner_top_right.x = parent_offset.x;
+      corner_top_right.y += layout.h + ekg::layout::offset;
+      corner_top_left.y = corner_top_right.y;
+    }
+
+    if (is_top && is_right) {
+      corner_top_right.x += layout.w;
+      layout.x = group_rect.w - layout.w;
+      layout.y = corner_top_right.y;
+    }
+
+    if (should_estimated_extentinize) {
+      count = it;
+      ekg::layout::extentnize(
+        dimensional_extent,
+        p_widget_parent,
+        ekg::dock::fill,
+        ekg::dock::next,
+        count,
+        ekg::axis::horizontal
+      );
     }
 
     max_previous_height = layout.h > max_previous_height ? layout.h : max_previous_height;
@@ -326,7 +392,8 @@ void ekg::layout::mask::extentnize(
       int64_t it {begin_and_count};
 
       if (
-          begin_and_count > this->h_extent.begin_index &&
+          begin_and_count > this->h_extent.begin_index
+          &&
           begin_and_count < this->h_extent.end_index
         ) {
         begin_and_count = this->h_extent.count;
@@ -545,28 +612,48 @@ void ekg::layout::mask::docknize() {
         dock_rect.p_rect->x = (is_bind_dimension_not_zero * this->offset.x) + left_corner.w;
         dock_rect.p_rect->w = rect_width;
 
-        dimension_bind += ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero)) * is_not_bind;
+        dimension_bind += (
+          ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
+          *
+          is_not_bind
+        );
+
         left_corner.w += dimension_bind;
         this->mask.w += dimension_bind;
       } else if (is_right) {
         dock_rect.p_rect->w = rect_width;
         dock_rect.p_rect->x = (is_bind_dimension_not_zero * this->offset.x) + dimension_width - right_corner.w - dock_rect.p_rect->w;
 
-        dimension_bind += ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero)) * is_not_bind;
+        dimension_bind += (
+          ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
+          *
+          is_not_bind
+        );
+
         right_corner.w += dimension_bind;
         this->mask.w += dimension_bind;
       } else if (is_left) {
         dock_rect.p_rect->w = rect_width;
         dock_rect.p_rect->x = (is_bind_dimension_not_zero * this->offset.x) + center_left_corner.x - center_left_corner.w - dock_rect.p_rect->w;
 
-        dimension_bind += ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero)) * is_not_bind;
+        dimension_bind += (
+          ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
+          *
+          is_not_bind
+        );
+
         center_left_corner.w += dimension_bind;
         this->mask.w += dimension_bind;
       } else if (is_right) {
         dock_rect.p_rect->x = (is_bind_dimension_not_zero * this->offset.x) + center_right_corner.x + center_right_corner.w;
         dock_rect.p_rect->w = rect_width;
 
-        dimension_bind += ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero)) * is_not_bind;
+        dimension_bind += (
+          ((this->offset.x * is_bind_dimension_not_zero) + ((dock_rect.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
+          *
+          is_not_bind
+        );
+
         center_right_corner.w += dimension_bind;
         this->mask.w += dimension_bind;
       } else if (dock_rect.flags == ekg::dock::center) {
