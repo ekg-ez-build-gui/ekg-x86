@@ -220,16 +220,18 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   }
 
   /**
-   * Container width (scaled container size), works right for left docknization
+   * Container size (scaled container size), works right for left docknization
    * but right dockinization no, due the precision and difference between
    * sides where is calculated the positions of widget.
-   * So there is a special width number to use as container rect.
+   * So there is a special size number to use as container rect.
    **/
-  float right_container_width {container_rect.w - initial_offset - ekg::layout::offset - ekg::layout::offset};
-  float total_offset {(initial_offset + ekg::layout::offset) * 2.0f};
+  ekg::vec2 side_container_fixed {
+    container_rect.w - initial_offset - ekg::layout::offset,
+    container_rect.h - initial_offset - ekg::layout::offset
+  };
 
-  container_rect.w -= total_offset;
-  container_rect.h -= total_offset;
+  container_rect.w -= initial_offset + ekg::layout::offset + ekg::layout::offset;
+  container_rect.h -= (initial_offset + ekg::layout::offset) * 2.0f;
 
   ekg::ui::abstract_widget *p_widgets {};
   ekg::flags flags {};
@@ -261,9 +263,9 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   bool is_next {};
 
   ekg::rect corner_top_left {parent_offset};
-  ekg::rect corner_top_right {0.0f, parent_offset.y, 0.0f, 0.0f};
-  ekg::rect corner_bottom_left {parent_offset};
-  ekg::rect corner_bottom_right {parent_offset};
+  ekg::rect corner_top_right {0.0f, container_rect.y, 0.0f, 0.0f};
+  ekg::rect corner_bottom_left {parent_offset.x, 0.0f, 0.0f, 0.0f};
+  ekg::rect corner_bottom_right {};
 
   for (int32_t &ids: p_widget_parent->p_data->get_child_id_list()) {
     if (ids == 0 || (p_widgets = ekg::core->get_fast_widget_by_id(ids)) == nullptr) {
@@ -319,34 +321,68 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       should_estimated_extentinize = false;
     }
 
-    if (is_next && is_top && is_left) {
-      corner_top_left.x = parent_offset.x;
-      corner_top_right.x = 0.0f;
+    switch (flags & ekg::dock::bottom) {
+    case ekg::dock::bottom:
+      if (is_next && is_left) {
+        corner_bottom_left.x = parent_offset.x;
+        corner_bottom_right.x = 0.0f;
 
-      corner_top_left.y += layout.h + ekg::layout::offset;
-      corner_top_right.y = corner_top_left.y;
-    }
+        corner_bottom_left.y += layout.h + ekg::layout::offset;
+        corner_bottom_right.y = corner_bottom_left.y;
+      }
 
-    if (is_top && is_left) {
-      layout.x = corner_top_left.x;
-      layout.y = corner_top_left.y;
+      if (is_left) {
+        layout.x = corner_bottom_left.x;
+        layout.y = side_container_fixed.y - layout.h - corner_bottom_left.y;
 
-      corner_top_left.x += layout.w + ekg::layout::offset;
-    }
+        corner_bottom_left.x += layout.w + ekg::layout::offset;
+      }
 
-    if (is_next && is_top && is_right) {
-      corner_top_left.x = parent_offset.x;
-      corner_top_right.x = 0.0f;
+      if (is_next && is_right) {
+        corner_bottom_left.x = parent_offset.x;
+        corner_bottom_right.x = 0.0f;
 
-      corner_top_right.y += layout.h + ekg::layout::offset;
-      corner_top_left.y = corner_top_right.y;
-    }
+        corner_bottom_right.y += layout.h + ekg::layout::offset;
+        corner_bottom_left.y = corner_bottom_right.y;
+      }
 
-    if (is_top && is_right) {
-      corner_top_right.x += layout.w;
-      layout.x = right_container_width - corner_top_right.x;
-      corner_top_right.x += ekg::layout::offset;
-      layout.y = corner_top_right.y;
+      if (is_right) {
+        corner_bottom_right.x += layout.w;
+        layout.x = side_container_fixed.x - corner_bottom_right.x;
+        corner_bottom_right.x += ekg::layout::offset;
+        layout.y = side_container_fixed.y - layout.h - corner_bottom_right.y;
+      }
+
+      break;
+    default:
+      if (is_next && is_left) {
+        corner_top_left.x = parent_offset.x;
+        corner_top_right.x = 0.0f;
+        corner_top_left.y += layout.h + ekg::layout::offset;
+        corner_top_right.y = corner_top_left.y;
+      }
+  
+      if (is_left) {
+        layout.x = corner_top_left.x;
+        layout.y = corner_top_left.y;
+  
+        corner_top_left.x += layout.w + ekg::layout::offset;
+      }
+  
+      if (is_next && is_right) {
+        corner_top_left.x = parent_offset.x;
+        corner_top_right.x = 0.0f;
+        corner_top_right.y += layout.h + ekg::layout::offset;
+        corner_top_left.y = corner_top_right.y;
+      }
+  
+      if (is_right) {
+        corner_top_right.x += layout.w;
+        layout.x = side_container_fixed.x - corner_top_right.x;
+        corner_top_right.x += ekg::layout::offset;
+        layout.y = corner_top_right.y;
+      }
+      break;
     }
 
     if (should_estimated_extentinize) {

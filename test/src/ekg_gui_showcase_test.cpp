@@ -528,8 +528,7 @@ int32_t showcase_useless_window() {
   ekg::button("🐈 oi me pressiona 🤭 mwm 🐮", ekg::dock::fill | ekg::dock::next)
     ->set_text_align(ekg::dock::center)
     ->set_font_size(ekg::font::big)
-    ->set_task(
-      new ekg::task {
+    ->set_task(      new ekg::task {
         .info = {
           .tag = "oi bu"
         },
@@ -1218,9 +1217,29 @@ int32_t laboratory_testing() {
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
 
-  ekg::button("1", ekg::dock::right)->set_width(60.0f);
+  ekg::button("1", ekg::dock::fill);
   ekg::button("4", ekg::dock::next);
-  ekg::button("5", ekg::dock::right | ekg::dock::fill);
+  ekg::button("3", ekg::dock::right | ekg::dock::fill);
+  ekg::button("Exit", ekg::dock::bottom | ekg::dock::right)
+    ->set_width(60.0f)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "oi eu quero virar uma panqueca de chocolate"
+        },
+        .function = [](ekg::info &task_info) {
+          SDL_Event sdl_event_quit {};
+          sdl_event_quit.type = SDL_QUIT;
+          SDL_PushEvent(&sdl_event_quit);
+
+          ekg::log() << "task executed: " << task_info.tag;
+        }
+      },
+      ekg::action::activity
+    );
+
+  ekg::button("666", ekg::dock::right | ekg::dock::bottom | ekg::dock::fill);
+
 
   ekg::pop_group();
   ekg::vec3 clear_color {};
