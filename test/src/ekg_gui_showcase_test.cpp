@@ -1218,20 +1218,9 @@ int32_t laboratory_testing() {
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
 
-  ekg::button("1", ekg::dock::fill);
-  ekg::button("2", ekg::dock::fill);
-  ekg::button("3", ekg::dock::fill);
-  ekg::button("4", ekg::dock::next | ekg::dock::fill);
-  ekg::button("5", ekg::dock::fill | ekg::dock::right);
-
-  ekg::frame("B", {600, 20}, {500, 400})
-    ->set_drag(ekg::dock::full)
-    ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
-
-  ekg::button("1", ekg::dock::fill);
-  ekg::button("2", ekg::dock::fill);
-  ekg::button("3", ekg::dock::fill);
-  ekg::button("4", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::right)->set_width(60.0f);
+  ekg::button("4", ekg::dock::next);
+  ekg::button("5", ekg::dock::right | ekg::dock::fill);
 
   ekg::pop_group();
   ekg::vec3 clear_color {};

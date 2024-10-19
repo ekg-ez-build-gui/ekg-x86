@@ -92,7 +92,7 @@ void ekg::layout::extentnize(
           is_last_index_but = (
             is_last_index
             &&
-            (extent > 0.0f)
+            !ekg_bitwise_contains(flags, flag_ok)
             &&
             !ekg_bitwise_contains(flags, flag_stop)
             &&
@@ -107,7 +107,7 @@ void ekg::layout::extentnize(
            * :blush:
            **/
           extent += (
-            (p_widgets->dimension.w + ekg::layout::offset)
+            p_widgets->dimension.w
             *
             is_last_index_but
           );
@@ -223,7 +223,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
    * Container width (scaled container size), works right for left docknization
    * but right dockinization no, due the precision and difference between
    * sides where is calculated the positions of widget.
-   * So there is a special width number to use as container rect. 
+   * So there is a special width number to use as container rect.
    **/
   float right_container_width {container_rect.w - initial_offset - ekg::layout::offset - ekg::layout::offset};
   float total_offset {(initial_offset + ekg::layout::offset) * 2.0f};
@@ -261,7 +261,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   bool is_next {};
 
   ekg::rect corner_top_left {parent_offset};
-  ekg::rect corner_top_right {};
+  ekg::rect corner_top_right {0.0f, parent_offset.y, 0.0f, 0.0f};
   ekg::rect corner_bottom_left {parent_offset};
   ekg::rect corner_bottom_right {parent_offset};
 
@@ -295,7 +295,6 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
     if (is_fill) {
       count = it;
-
       ekg::layout::extentnize(
         dimensional_extent,
         p_widget_parent,
@@ -322,6 +321,8 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
     if (is_next && is_top && is_left) {
       corner_top_left.x = parent_offset.x;
+      corner_top_right.x = 0.0f;
+
       corner_top_left.y += layout.h + ekg::layout::offset;
       corner_top_right.y = corner_top_left.y;
     }
@@ -334,7 +335,9 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
     }
 
     if (is_next && is_top && is_right) {
-      corner_top_right.x = parent_offset.x;
+      corner_top_left.x = parent_offset.x;
+      corner_top_right.x = 0.0f;
+
       corner_top_right.y += layout.h + ekg::layout::offset;
       corner_top_left.y = corner_top_right.y;
     }
