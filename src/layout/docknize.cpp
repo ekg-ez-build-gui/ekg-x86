@@ -83,10 +83,10 @@ void ekg::layout::extentnize(
 
           flag_ok_count += (
             (is_ok_flag = (
-              (!ekg_bitwise_contains(flags, flag_stop))
+              !ekg_bitwise_contains(flags, flag_stop)
               &&
               is_last_index_but
-            )
+            ))
           );
 
           is_last_index_but = (
@@ -191,7 +191,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   bool has_scroll_embedded {};
   bool is_vertical_enabled {};
 
-  ekg::rect group_rect {p_widget_parent->dimension};
+  ekg::rect container_rect {p_widget_parent->dimension};
 
   switch (type) {
     case ekg::type::frame: {
@@ -206,8 +206,8 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         is_vertical_enabled = p_frame->p_scroll_embedded->is_vertical_enabled;
         initial_offset *= static_cast<float>(!theme_scheme.symmetric_layout);
 
-        group_rect.w -= initial_offset * static_cast<float>(is_vertical_enabled);
-        group_rect.h -= initial_offset * static_cast<float>(p_frame->p_scroll_embedded->is_horizontal_enabled);
+        container_rect.w -= initial_offset * static_cast<float>(is_vertical_enabled);
+        container_rect.h -= initial_offset * static_cast<float>(p_frame->p_scroll_embedded->is_horizontal_enabled);
       }
 
       initial_offset = static_cast<float>(theme_scheme.scrollbar_pixel_thickness) * static_cast<float>(theme_scheme.symmetric_layout);
@@ -219,10 +219,17 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
     }
   }
 
+  /**
+   * Container width (scaled container size), works right for left docknization
+   * but right dockinization no, due the precision and difference between
+   * sides where is calculated the positions of widget.
+   * So there is a special width number to use as container rect. 
+   **/
+  float right_container_width {container_rect.w - initial_offset - ekg::layout::offset - ekg::layout::offset};
   float total_offset {(initial_offset + ekg::layout::offset) * 2.0f};
 
-  group_rect.w -= total_offset;
-  group_rect.h -= total_offset;
+  container_rect.w -= total_offset;
+  container_rect.h -= total_offset;
 
   ekg::ui::abstract_widget *p_widgets {};
   ekg::flags flags {};
@@ -254,7 +261,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   bool is_next {};
 
   ekg::rect corner_top_left {parent_offset};
-  ekg::rect corner_top_right {parent_offset};
+  ekg::rect corner_top_right {};
   ekg::rect corner_bottom_left {parent_offset};
   ekg::rect corner_bottom_right {parent_offset};
 
@@ -300,7 +307,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
       dimensional_extent = ekg_min(
         ekg_layout_get_dimensional_extent(
-          group_rect.w,
+          container_rect.w,
           dimensional_extent,
           ekg::layout::offset,
           count
@@ -334,7 +341,8 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
     if (is_top && is_right) {
       corner_top_right.x += layout.w;
-      layout.x = group_rect.w - layout.w;
+      layout.x = right_container_width - corner_top_right.x;
+      corner_top_right.x += ekg::layout::offset;
       layout.y = corner_top_right.y;
     }
 

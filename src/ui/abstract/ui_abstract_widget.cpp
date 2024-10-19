@@ -104,10 +104,10 @@ ekg::rect &ekg::ui::abstract_widget::get_abs_rect() {
    * - Rina.
    **/
 
-  rect.x = static_cast<int32_t>(rect.x);
-  rect.y = static_cast<int32_t>(rect.y);
-  rect.w = static_cast<int32_t>(rect.w);
-  rect.h = static_cast<int32_t>(rect.h);
+  rect.x = static_cast<float>(rect.x);
+  rect.y = static_cast<float>(rect.y);
+  rect.w = static_cast<float>(rect.w);
+  rect.h = static_cast<float>(rect.h);
 
   return rect;
 }

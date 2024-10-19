@@ -36,7 +36,7 @@
 ( \
   (static_cast<int32_t>(dimension) - static_cast<int32_t>(extent)) \
     - \
-  (static_cast<int32_t>(count * offset)) \
+  (static_cast<int32_t>(2 * offset)) \
 ) / static_cast<int32_t>(count) \
 
 namespace ekg::layout {
