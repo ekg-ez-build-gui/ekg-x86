@@ -343,6 +343,10 @@ namespace ekg {
     bool scrolling {};
   };
 
+  /**
+   * Deprecated!
+   *
+   **/
   enum class clipboard {
     copy = 1073741948, // SDLK_COPY
     cut = 1073741947, // SDLK_CUT

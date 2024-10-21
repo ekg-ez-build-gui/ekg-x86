@@ -1062,6 +1062,7 @@ int32_t laboratory_testing() {
 
   ekg::runtime_property ekg_runtime_property {
     .p_font_path = "whitneybook.otf",
+    .p_font_path_emoji = "twemoji.ttf",
     .p_gpu_api = new ekg::os::opengl(),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
@@ -1211,16 +1212,20 @@ int32_t laboratory_testing() {
   */
 
   ekg::ui::auto_scale = false;
-  ekg::ui::scale = {800.0f, 720.0f};
+  ekg::ui::scale = {800.0f, 600.0f};
+  ekg::layout::offset = 2.0f;
 
   ekg::frame("A", {20, 20}, {500, 400})
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
 
   ekg::button("1", ekg::dock::fill);
-  ekg::button("4", ekg::dock::next);
-  ekg::button("3", ekg::dock::right | ekg::dock::fill);
-  ekg::button("Exit", ekg::dock::bottom | ekg::dock::right)
+  ekg::button("2", ekg::dock::fill);
+  ekg::button("3", ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("4", ekg::dock::fill);
+  ekg::button("3", ekg::dock::fill | ekg::dock::right);
+  ekg::button("Exit", ekg::dock::fill | ekg::dock::next)
     ->set_width(60.0f)
     ->set_task(
       new ekg::task {
@@ -1238,8 +1243,7 @@ int32_t laboratory_testing() {
       ekg::action::activity
     );
 
-  ekg::button("666", ekg::dock::right | ekg::dock::bottom | ekg::dock::fill);
-
+  ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::right | ekg::dock::bottom | ekg::dock::fill);
 
   ekg::pop_group();
   ekg::vec3 clear_color {};

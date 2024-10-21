@@ -101,7 +101,7 @@ void ekg::service::theme::init() {
   dark_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
   dark_theme_scheme.scrollbar_activity = ekg::color(44, 166, 255, 200);
   dark_theme_scheme.scrollbar_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.scrollbar_pixel_thickness = 5;
+  dark_theme_scheme.scrollbar_pixel_thickness = 4;
   dark_theme_scheme.scrollbar_min_bar_size = 30.0f;
   dark_theme_scheme.listbox_header_background = ekg::color(85, 85, 85, 255);
   dark_theme_scheme.listbox_item_highlight_outline = ekg::color(141, 141, 141, 0);
@@ -169,7 +169,7 @@ void ekg::service::theme::init() {
   light_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
   light_theme_scheme.scrollbar_activity = ekg::color(44, 166, 255, 200);
   light_theme_scheme.scrollbar_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.scrollbar_pixel_thickness = 5;
+  light_theme_scheme.scrollbar_pixel_thickness = 4;
   light_theme_scheme.scrollbar_min_bar_size = 30.0f;
   light_theme_scheme.listbox_header_background = ekg::color(204, 204, 204, 255);
   light_theme_scheme.listbox_header_highlight = ekg::color(44, 166, 255, 50);
@@ -238,7 +238,7 @@ void ekg::service::theme::init() {
   light_pinky_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
   light_pinky_theme_scheme.scrollbar_activity = ekg::color(245, 169, 184, 200);
   light_pinky_theme_scheme.scrollbar_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.scrollbar_pixel_thickness = 5;
+  light_pinky_theme_scheme.scrollbar_pixel_thickness = 4;
   light_pinky_theme_scheme.scrollbar_min_bar_size = 30.0f;
   light_pinky_theme_scheme.listbox_header_background = ekg::color(204, 204, 204, 255);
   light_pinky_theme_scheme.listbox_header_highlight = ekg::color(245, 169, 184, 50);
@@ -306,7 +306,7 @@ void ekg::service::theme::init() {
   dark_pinky_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
   dark_pinky_theme_scheme.scrollbar_activity = ekg::color(245, 169, 184, 200);
   dark_pinky_theme_scheme.scrollbar_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.scrollbar_pixel_thickness = 5;
+  dark_pinky_theme_scheme.scrollbar_pixel_thickness = 4;
   dark_pinky_theme_scheme.scrollbar_min_bar_size = 30.0f;
   dark_pinky_theme_scheme.listbox_header_background = ekg::color(85, 85, 85, 255);
   dark_pinky_theme_scheme.listbox_item_highlight_outline = ekg::color(141, 141, 141, 0);

@@ -226,12 +226,13 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
    * So there is a special size number to use as container rect.
    **/
   ekg::vec2 side_container_fixed {
-    container_rect.w - initial_offset - ekg::layout::offset,
-    container_rect.h - initial_offset - ekg::layout::offset
+    0.0f,
+    container_rect.h - ((initial_offset + ekg::layout::offset))
   };
 
-  container_rect.w -= initial_offset + ekg::layout::offset + ekg::layout::offset;
-  container_rect.h -= (initial_offset + ekg::layout::offset) * 2.0f;
+  float container_size_offset {(initial_offset + ekg::layout::offset) * 2.0f};
+  container_rect.w -= container_size_offset;
+  container_rect.h -= container_size_offset;
 
   ekg::ui::abstract_widget *p_widgets {};
   ekg::flags flags {};
@@ -263,7 +264,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
   bool is_next {};
 
   ekg::rect corner_top_left {parent_offset};
-  ekg::rect corner_top_right {0.0f, container_rect.y, 0.0f, 0.0f};
+  ekg::rect corner_top_right {0.0f, parent_offset.y, 0.0f, 0.0f};
   ekg::rect corner_bottom_left {parent_offset.x, 0.0f, 0.0f, 0.0f};
   ekg::rect corner_bottom_right {};
 
@@ -301,7 +302,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         dimensional_extent,
         p_widget_parent,
         ekg::dock::fill,
-        ekg::dock::next,
+        ekg::dock::next | (is_top ? ekg::dock::bottom : ekg::dock::top),
         count,
         ekg::axis::horizontal
       );
@@ -348,7 +349,15 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
       if (is_right) {
         corner_bottom_right.x += layout.w;
-        layout.x = side_container_fixed.x - corner_bottom_right.x;
+        layout.x = (
+          ekg_layout_get_pixel_perfect_right_position(
+            corner_bottom_left.x,
+            corner_bottom_right.x,
+            container_rect.w,
+            ekg::layout::offset
+          )
+        );
+
         corner_bottom_right.x += ekg::layout::offset;
         layout.y = side_container_fixed.y - layout.h - corner_bottom_right.y;
       }
@@ -361,26 +370,35 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         corner_top_left.y += layout.h + ekg::layout::offset;
         corner_top_right.y = corner_top_left.y;
       }
-  
+
       if (is_left) {
         layout.x = corner_top_left.x;
         layout.y = corner_top_left.y;
   
         corner_top_left.x += layout.w + ekg::layout::offset;
       }
-  
+
       if (is_next && is_right) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
         corner_top_right.y += layout.h + ekg::layout::offset;
         corner_top_left.y = corner_top_right.y;
       }
-  
+
       if (is_right) {
         corner_top_right.x += layout.w;
-        layout.x = side_container_fixed.x - corner_top_right.x;
+        layout.x = (
+          ekg_layout_get_pixel_perfect_right_position(
+            corner_top_left.x,
+            corner_top_right.x,
+            container_rect.w,
+            ekg::layout::offset
+          )
+        );
+
         corner_top_right.x += ekg::layout::offset;
         layout.y = corner_top_right.y;
+
       }
       break;
     }

@@ -27,17 +27,38 @@
  * Float-only without the int32_t cast may results in pixel-imperfect
  * due the influence of dimensional size of parent rect, font height, font width etc.
  * 
- * There is no problem with float32 to int32 (I guess)
- * I do not believe in larger monitors size than 16k.
- * 
  * - Rina.
  **/
 #define ekg_layout_get_dimensional_extent(dimension, extent, offset, count) \
 ( \
-  (static_cast<int32_t>(dimension) - static_cast<int32_t>(extent)) \
-    - \
-  (static_cast<int32_t>(2 * offset)) \
+  (static_cast<int32_t>(dimension) - static_cast<int32_t>(extent) - static_cast<int32_t>(count * offset)) \
 ) / static_cast<int32_t>(count) \
+
+/**
+ * Pixel imperfection is a problem for UI widget placements, this macro provides
+ * correction position for right based on left position.
+ * 
+ * It is important to understand that is impossible to remove all the pixel
+ * imperfections, but there are ways to round it, as example, you can place widget
+ * from a side (left or right) and align with an offset. That is how EKG fix it.
+ * 
+ * This method calculates the minimum possible position based on left until the pixel
+ * escape for two or more offsets distance. Instead you use the container width directly
+ * to calculate right widgets positions, EKG must use the left consistency to get the
+ * real container width from the side of left (when using the container width directly
+ * the position is pixel imperfect).
+ * 
+ * - Rina.
+ **/
+#define ekg_layout_get_pixel_perfect_right_position(left, right, container_width, offset) \
+  ekg_min( \
+    ( \
+      (left + (container_width - left) + offset) \
+      - \
+      right \
+    ), \
+    left \
+  ) \
 
 namespace ekg::layout {
   /**
