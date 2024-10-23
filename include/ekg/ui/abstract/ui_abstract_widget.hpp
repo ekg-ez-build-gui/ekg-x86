@@ -38,8 +38,8 @@
   } \
 
 /**
- * `self->`p_data->get_layer(layer)
- * the reason for `self->` be removed, due some widgets like:
+ * `this->`p_data->get_layer(layer)
+ * the reason for `this->` be removed, due some widgets like:
  * listbox which perform recursive iterations.
  **/
 #define ekg_layer(layer) (p_data->get_layer(layer))
@@ -65,6 +65,7 @@ namespace ekg::ui {
     bool is_high_frequency {};
     bool is_targeting_absolute_parent {};
     bool is_just_created {};
+    bool is_dimension_auto_update_required {true};
   public:
     bool was_reloaded {};
     bool was_refreshed {};

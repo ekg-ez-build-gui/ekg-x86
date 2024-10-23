@@ -40,11 +40,13 @@ void ekg::ui::button_widget::on_reload() {
   float dimension_offset {static_cast<float>((int32_t) (text_height / 2.0f))};
   float offset {ekg::find_min_offset(text_width, dimension_offset)};
 
-  this->dimension.w = ekg_min(this->dimension.w, text_width);
-  this->dimension.h = (text_height + dimension_offset) * static_cast<float>(p_ui->get_scaled_height());
+  if (this->is_dimension_auto_update_required) {
+    this->dimension.w = ekg_min(this->dimension.w, text_width);
+    this->dimension.h = (text_height + dimension_offset) * static_cast<float>(p_ui->get_scaled_height());
 
-  this->min_size.x = ekg_min(this->min_size.x, text_height);
-  this->min_size.y = ekg_min(this->min_size.y, this->dimension.h);
+    this->min_size.x = ekg_min(this->min_size.x, text_height);
+    this->min_size.y = ekg_min(this->min_size.y, this->dimension.h);
+  }
 
   this->rect_text.w = text_width;
   this->rect_text.h = text_height;
@@ -54,9 +56,13 @@ void ekg::ui::button_widget::on_reload() {
   mask.insert({&this->rect_text, p_ui->get_text_align()});
   mask.docknize();
 
-  ekg::rect &layout_mask {mask.get_rect()};
-  this->dimension.w = ekg_min(this->dimension.w, layout_mask.w);
-  this->dimension.h = ekg_min(this->dimension.h, layout_mask.h);
+  if (this->is_dimension_auto_update_required) {
+    ekg::rect &layout_mask {mask.get_rect()};
+    this->dimension.w = ekg_min(this->dimension.w, layout_mask.w);
+    this->dimension.h = ekg_min(this->dimension.h, layout_mask.h);
+  }
+
+  this->is_dimension_auto_update_required = false;
 }
 
 void ekg::ui::button_widget::on_event(ekg::os::io_event_serial &io_event_serial) {
