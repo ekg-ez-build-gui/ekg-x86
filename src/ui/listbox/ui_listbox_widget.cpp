@@ -300,6 +300,12 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   ekg::ui::listbox *p_ui {static_cast<ekg::ui::listbox*>(this->p_data)};
   ekg::mode mode {p_ui->get_mode()};
 
+  ekg::ui::listbox_widget::op_mode op_mode {
+    static_cast<ekg::ui::listbox_widget::op_mode>(
+      pressed_open || is_some_header_targeted || this->latest_target_dragging != -1
+    )
+  };
+
   bool is_dragging_or_resizing {};
   bool is_multicolumn {mode == ekg::mode::multicolumn};
   bool must {};
@@ -316,13 +322,19 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   float bottom_place {this->rect_content_abs.y + this->rect_content_abs.h};
 
   is_some_header_targeted = (
-    is_some_header_targeted || ((this->targeting_header_to_resize != -1 || this->targeting_header_to_drag != -1) && pressed_select)
+    is_some_header_targeted
+    ||
+    (
+      (this->targeting_header_to_resize != -1 || this->targeting_header_to_drag != -1)
+      &&
+      pressed_select
+    )
   );
 
   this->header_relative_x = 0.0f;
 
-  switch (pressed_open || is_some_header_targeted || this->latest_target_dragging != -1) {
-  case true:
+  switch (op_mode) {
+  case ekg::ui::listbox_widget::op_mode::recursive_tree_update:
     size = p_ui->p_value->size();
     ekg::ui::redraw = true;
 
@@ -468,7 +480,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
     }
 
     break;
-  case false:
+  case ui::listbox_widget::op_mode::cached_update:
     ekg::ui::redraw = true;
 
     float between_headers_target_resize {ekg_pixel * 4};
@@ -535,14 +547,8 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
         ekg::placement &placement {item.unsafe_get_placement()};
 
         item_rect = placement.rect + scrollable_rect;
-        flags = item.get_attr();
-
-        switch (mode) {
-        case ekg::mode::multicolumn:
-          item_rect.w = rect.w;
-          item_rect.x = rect.x;
-          break;
-        }
+        item_rect.w = (item_rect.w * !is_multicolumn) + (rect.w * is_multicolumn); // is_multicolumn ? ui_rect.w : item_rect.w
+        item_rect.x = (item_rect.x * !is_multicolumn) + (rect.x * is_multicolumn);
 
         flags = item.get_attr();
         hovering = ekg::rect_collide_vec(item_rect, interact);
@@ -938,28 +944,24 @@ void ekg::ui::listbox_widget::render_item(
     }
   }
 
-  if (!is_header_targeted) {
-    switch (is_column_header_top) {
-      case true:
-        item_rect = placement_header.rect + rect;
-        item_rect.x = static_cast<int32_t>(item_rect.x + this->embedded_scroll.scroll.x) - ekg_pixel;
-        item_rect.y = static_cast<int32_t>(item_rect.y + item_rect.h);
-        item_rect.w = ekg_pixel;
-        item_rect.h = rect.h;
+  if (!is_header_targeted && is_column_header_top) {
+    item_rect = placement_header.rect + rect;
+    item_rect.x = static_cast<int32_t>(item_rect.x + this->embedded_scroll.scroll.x) - ekg_pixel;
+    item_rect.y = static_cast<int32_t>(item_rect.y + item_rect.h);
+    item_rect.w = ekg_pixel;
+    item_rect.h = rect.h;
 
-        ekg::draw::sync_scissor(
-          this->scissor,
-          item_rect,
-          &widget_absolute_rect_scissor
-        );
+    ekg::draw::sync_scissor(
+      this->scissor,
+      item_rect,
+      &widget_absolute_rect_scissor
+    );
 
-        ekg::draw::rect(
-          item_rect,
-          theme_scheme.listbox_line_separator,
-          ekg::draw_mode::filled
-        );
-      break;
-    }
+    ekg::draw::rect(
+      item_rect,
+      theme_scheme.listbox_line_separator,
+      ekg::draw_mode::filled
+    );
   }
 }
 
@@ -1120,7 +1122,7 @@ void ekg::ui::listbox_template_on_event(
   bool hovering {};
   ekg::flags flags {};
   bool contains_flag {};
-  bool multicolumn {mode == ekg::mode::multicolumn};
+  bool is_multicolumn {mode == ekg::mode::multicolumn};
   uint64_t rendering_cache_size {rendering_cache.size()};
 
   for (uint64_t it {}; it < parent.size(); it++) {
@@ -1128,13 +1130,8 @@ void ekg::ui::listbox_template_on_event(
     ekg::placement &placement {item.unsafe_get_placement()};
 
     item_rect = placement.rect + ui_rect;
-
-    switch (mode) {
-    case ekg::mode::multicolumn:
-      item_rect.w = ui_rect.w;
-      item_rect.x = ui_rect.x;
-      break;
-    }
+    item_rect.w = (item_rect.w * !is_multicolumn) + (ui_rect.w * is_multicolumn); // multicolumn ? ui_rect.w : item_rect.w
+    item_rect.x = (item_rect.x * !is_multicolumn) + (ui_rect.x * is_multicolumn);
 
     flags = item.get_attr();
     hovering = ekg::rect_collide_vec(item_rect, interact);

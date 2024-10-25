@@ -23,14 +23,19 @@
 	"build_systems":
 	[
 		{
-			"name": "Linux Build-&-Test",
+			"name": "Linux Build-&-Test GNU",
 			"shell_cmd":
-				"cd $folder && cmake -S . -B ./cmake-build-debug/ -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 -DEKG_ENABLE_DEBUG=0 && cmake --build ./cmake-build-debug/ && cd ./test && cmake -S . -B ./cmake-build-debug -G Ninja -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug && cd ./bin && ./ekg-gui-showcase-test"
+				"cd $folder && cmake -S . -B ./cmake-build-debug/ -G Ninja -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug/ && cd ./test && cmake -S . -B ./cmake-build-debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug && cd ./bin && ./ekg-gui-showcase-test"
 		},
 		{
 			"name": "Windows Build-&-Test",
 			"shell_cmd":
-				"cd $folder && cmake -S . -B ./cmake-build-debug/ -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 -DEKG_ENABLE_DEBUG=0 && cmake --build ./cmake-build-debug/ && cd ./test && cmake -S . -B ./cmake-build-debug -G Ninja -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug && cd ./bin && ./ekg-gui-showcase-test"
-		}
+				"cd $folder && cmake -S . -B ./cmake-build-debug/ -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug/ && cd ./test && cmake -S . -B ./cmake-build-debug -G Ninja -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug && cd ./bin && ./ekg-gui-showcase-test"
+		},
+		{
+			"name": "Linux Build-&-Test Clang",
+			"shell_cmd":
+				"cd $folder && cmake -S . -B ./cmake-build-debug/ -G Ninja -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug/ && cd ./test && cmake -S . -B ./cmake-build-debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DEKG_LINUX_NOT_FOUND_FREETYPE=1 && cmake --build ./cmake-build-debug && cd ./bin && ./ekg-gui-showcase-test"
+		},
 	],
 }

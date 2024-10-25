@@ -23,19 +23,22 @@
 cmake_minimum_required(VERSION 3.9)
 
 set(CMAKE_CXX_STANDARD 17)
-set(EKG_VERSION        1.1.0)
+set(EKG_VERSION        1.2.0)
 
-message("-- Building EKG user interface library version ${EKG_VERSION}")
+message(STATUS "Building EKG user interface library version ${EKG_VERSION}")
 project(ekg VERSION ${EKG_VERSION} DESCRIPTION "graphical user interface")
 
 # Enable if your base OS is Debian-based (e.g Ubuntu).
 # It is a common issue related by the Linux community.
 if (EKG_LINUX_NOT_FOUND_FREETYPE)
   include_directories(/usr/include/freetype2)
-  message("-- Using var EKG_LINUX_NOT_FOUND_FREETYPE to include `/usr/include/freetype2` directly")
+  message(
+    STATUS
+    "Using var EKG_LINUX_NOT_FOUND_FREETYPE to direct include `/usr/include/freetype2`"
+  )
 endif()
 
-if (WIN32 OR EKG_FORCE_WINDOWS)
+if(WIN32 OR EKG_FORCE_WINDOWS)
   set(LIBRARY_OUTPUT_PATH "../lib/windows/")
   set(PLATFORM            "windows")
 elseif(ANDROID OR EKG_FORCE_ANDROID)
@@ -47,35 +50,31 @@ elseif(LINUX OR EKG_FORCE_LINUX)
   set(PLATFORM            "linux")
 endif()
 
-message("-- Generating EKG ${PLATFORM} native library")
-
+message(STATUS "Generating EKG ${PLATFORM} native library")
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
-if (EKG_ENABLE_DEBUG)
-  message("-- EKG debug mode on")
-  add_compile_options(-g)
-  add_compile_options(-fsanitize=address)
-  add_compile_options(-fno-omit-frame-pointer)
-  add_compile_options(-fcompare-debug-second)
-elseif()
+if(
+  CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+  OR
+  CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+)
   add_compile_options(-O3)
-  
 endif()
 
 include_directories(./include)
 add_library(ekg STATIC ${SOURCE_FILES})
 
-message("-- EKG native library building done")
+message(STATUS "EKG native library building done")
 
 if(LINUX OR EKG_FORCE_LINUX)
   install(
     TARGETS ekg
-    LIBRARY DESTINATION /usr/lib
+    LIBRARY DESTINATION /usr/local/lib
   )
 
   install(
-    DIRECTORY ./include DESTINATION /usr
+    DIRECTORY ./include DESTINATION /usr/local
   )
 
-  message("-- EKG install on Linux ok!")
+  message(STATUS "EKG install on Linux ok!")
 endif()

@@ -35,6 +35,11 @@
 namespace ekg::ui {
   class listbox_widget : public ekg::ui::abstract_widget {
   public:
+    enum op_mode {
+      cached_update,
+      recursive_tree_update,
+    };
+  public:
     void render_item(
       ekg::item &item_header,
       ekg::placement &placement_header,

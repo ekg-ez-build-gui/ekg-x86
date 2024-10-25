@@ -167,10 +167,11 @@ void ekg::os::sdl::get_special_key(io_key &key, ekg::special_key &special_key) {
 
 void ekg::os::sdl_poll_event(SDL_Event &sdl_event) {
   ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
-
   float precise_interval {};
 
   switch (sdl_event.type) {
+  default:
+    break;
   case SDL_WINDOWEVENT:
     switch (sdl_event.window.event) {
       case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -182,39 +183,32 @@ void ekg::os::sdl_poll_event(SDL_Event &sdl_event) {
 
         break;
     }
-
     break;
-
   case SDL_KEYDOWN:
     serialized.event_type = ekg::platform_event_type::key_down;
     serialized.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
     ekg::poll_io_event = true;
     break;
-
   case SDL_KEYUP:
     serialized.event_type = ekg::platform_event_type::key_up;
     serialized.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
     ekg::poll_io_event = true;
     break;
-
   case SDL_TEXTINPUT:
     serialized.event_type = ekg::platform_event_type::text_input;
     serialized.text_input = sdl_event.text.text;
     ekg::poll_io_event = true;
     break;
-
   case SDL_MOUSEBUTTONUP:
     serialized.event_type = ekg::platform_event_type::mouse_button_up;
     serialized.mouse_button = sdl_event.button.button;
     ekg::poll_io_event = true;
     break;
-
   case SDL_MOUSEBUTTONDOWN:
     serialized.event_type = ekg::platform_event_type::mouse_button_down;
     serialized.mouse_button = sdl_event.button.button;
     ekg::poll_io_event = true;
     break;
-
   case SDL_MOUSEWHEEL:
     serialized.event_type = ekg::platform_event_type::mouse_wheel;
     serialized.mouse_wheel_x = sdl_event.wheel.x;
@@ -223,28 +217,24 @@ void ekg::os::sdl_poll_event(SDL_Event &sdl_event) {
     serialized.mouse_wheel_precise_y = sdl_event.wheel.preciseY;
     ekg::poll_io_event = true;
     break;
-
   case SDL_MOUSEMOTION:
     serialized.event_type = ekg::platform_event_type::mouse_motion;
     serialized.mouse_motion_x = sdl_event.motion.x;
     serialized.mouse_motion_y = sdl_event.motion.y;
     ekg::poll_io_event = true;
     break;
-
   case SDL_FINGERUP:
     serialized.event_type = ekg::platform_event_type::finger_up;
     serialized.finger_x = sdl_event.tfinger.x;
     serialized.finger_y = sdl_event.tfinger.y;
     ekg::poll_io_event = true;
     break;
-
   case SDL_FINGERDOWN:
     serialized.event_type = ekg::platform_event_type::finger_down;
     serialized.finger_x = sdl_event.tfinger.x;
     serialized.finger_y = sdl_event.tfinger.y;
     ekg::poll_io_event = true;
     break;
-
   case SDL_FINGERMOTION:
     serialized.event_type = ekg::platform_event_type::finger_motion;
     serialized.finger_x = sdl_event.tfinger.x;
@@ -255,11 +245,9 @@ void ekg::os::sdl_poll_event(SDL_Event &sdl_event) {
     break;
   }
 
-  switch (ekg::poll_io_event) {
-    case true:
-      ekg::cursor = ekg::system_cursor::arrow;
-      ekg::core->process_event();
-      ekg::poll_io_event = false;
-      break;
+  if (ekg::poll_io_event) {
+    ekg::cursor = ekg::system_cursor::arrow;
+    ekg::core->process_event();
+    ekg::poll_io_event = false;
   }
 }

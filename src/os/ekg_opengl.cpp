@@ -613,21 +613,18 @@ void ekg::os::opengl::draw(
           !ekg_is_sampler_protected(this->bound_sampler_list.at(data.sampler_index)->gl_protected_active_index)
         )
       ) {
-        ekg::gpu::sampler_t *&p_sampler {
-          this->bound_sampler_list.at(data.sampler_index)
-        };
 
-        switch (ekg_is_sampler_protected(p_sampler->gl_protected_active_index)) {
-        case true:
-          glUniform1i(this->uniform_active_tex_slot, p_sampler->gl_protected_active_index);
-          glUniform1i(this->uniform_active_texture, EKG_ENABLE_TEXTURE_PROTECTED);
-          break;
-        case false:
-          glBindTexture(GL_TEXTURE_2D, p_sampler->gl_id);
+      ekg::gpu::sampler_t *&p_sampler {
+        this->bound_sampler_list.at(data.sampler_index)
+      };
 
-          glUniform1i(this->uniform_active_tex_slot, this->protected_texture_active_index);
-          glUniform1i(this->uniform_active_texture, EKG_ENABLE_TEXTURE);
-          break;
+      if (ekg_is_sampler_protected(p_sampler->gl_protected_active_index)) {
+        glUniform1i(this->uniform_active_tex_slot, p_sampler->gl_protected_active_index);
+        glUniform1i(this->uniform_active_texture, EKG_ENABLE_TEXTURE_PROTECTED);
+      } else {
+        glBindTexture(GL_TEXTURE_2D, p_sampler->gl_id);
+        glUniform1i(this->uniform_active_tex_slot, this->protected_texture_active_index);
+        glUniform1i(this->uniform_active_texture, EKG_ENABLE_TEXTURE);
       }
 
       previous_sampler_bound = data.sampler_index;
