@@ -1223,6 +1223,12 @@ int32_t laboratory_testing() {
   ekg::button("2", ekg::dock::none);
   ekg::button("3", ekg::dock::fill);
   ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("1", ekg::dock::next | ekg::dock::fill);
   ekg::button("4", ekg::dock::none);
   ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::fill);
   ekg::button("3", ekg::dock::fill | ekg::dock::right);
@@ -1244,6 +1250,7 @@ int32_t laboratory_testing() {
       ekg::action::activity
     );
 
+  ekg::scrollbar("shout fofo maravilhoso");
   ekg::pop_group();
   ekg::vec3 clear_color {};
 

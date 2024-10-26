@@ -30,8 +30,11 @@
 
 void ekg::ui::frame_widget::on_reload() {
   abstract_widget::on_reload();
-  ekg::rect &rect {this->get_abs_rect()};
   this->ui_theme_activity_offset = static_cast<float>(ekg::current_theme_scheme().frame_activity_offset);
+
+  if (this->is_dimension_auto_update_required) {
+    
+  }
 }
 
 void ekg::ui::frame_widget::on_event(ekg::os::io_event_serial &io_event_serial) {

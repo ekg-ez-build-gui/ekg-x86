@@ -36,28 +36,28 @@
 
 /**
  * Pixel imperfection is a problem for UI widget placements, this macro provides
- * correction position for right based on left position.
+ * correction position for right/bottom based on left/top position.
  * 
  * It is important to understand that is impossible to remove all the pixel
  * imperfections, but there are ways to round it, as example, you can place widget
- * from a side (left or right) and align with an offset. That is how EKG fix it.
+ * from a side (left or right, top or bottom) and align with an offset. That is how EKG fix it.
  * 
  * This method calculates the minimum possible position based on left until the pixel
  * escape for two or more offsets distance. Instead you use the container width directly
  * to calculate right widgets positions, EKG must use the left consistency to get the
- * real container width from the side of left (when using the container width directly
+ * real container (width/height) from the side of left (when using the container width directly
  * the position is pixel imperfect).
  * 
  * - Rina.
  **/
-#define ekg_layout_get_pixel_perfect_right_position(left, right, container_width, offset) \
+#define ekg_layout_get_pixel_perfect_position(side_a, side_b, container_dimension, offset) \
   ekg_min( \
     ( \
-      (left + (container_width - left) + offset) \
+      (side_a + (container_dimension - side_a) + offset) \
       - \
-      right \
+      side_b \
     ), \
-    left \
+    side_a \
   ) \
 
 namespace ekg::layout {

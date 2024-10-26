@@ -334,7 +334,14 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
       if (is_left) {
         layout.x = corner_bottom_left.x;
-        layout.y = side_container_fixed.y - layout.h - corner_bottom_left.y;
+        layout.y = (
+          ekg_layout_get_pixel_perfect_position(
+            corner_top_left.y,
+            corner_bottom_left.y,
+            container_rect.h,
+            ekg::layout::offset
+          )
+        );
 
         corner_bottom_left.x += layout.w + ekg::layout::offset;
       }
@@ -350,7 +357,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       if (is_right) {
         corner_bottom_right.x += layout.w;
         layout.x = (
-          ekg_layout_get_pixel_perfect_right_position(
+          ekg_layout_get_pixel_perfect_position(
             corner_bottom_left.x,
             corner_bottom_right.x,
             container_rect.w,
@@ -358,8 +365,16 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
           )
         );
 
+        layout.y = (
+          ekg_layout_get_pixel_perfect_position(
+            corner_top_right.y,
+            corner_bottom_right.y,
+            container_rect.h,
+            ekg::layout::offset
+          )
+        );
+
         corner_bottom_right.x += ekg::layout::offset;
-        layout.y = side_container_fixed.y - layout.h - corner_bottom_right.y;
       }
 
       break;
@@ -388,7 +403,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       if (is_right) {
         corner_top_right.x += layout.w;
         layout.x = (
-          ekg_layout_get_pixel_perfect_right_position(
+          ekg_layout_get_pixel_perfect_position(
             corner_top_left.x,
             corner_top_right.x,
             container_rect.w,
@@ -398,9 +413,13 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
         corner_top_right.x += ekg::layout::offset;
         layout.y = corner_top_right.y;
-
       }
       break;
+    }
+
+    if (is_next && is_top && layout.y + layout.h > container_rect.h) {
+      corner_bottom_left.y -= layout.h + ekg::layout::offset;
+      corner_bottom_right.y = corner_bottom_left.y;
     }
 
     if (should_estimated_extentinize) {
