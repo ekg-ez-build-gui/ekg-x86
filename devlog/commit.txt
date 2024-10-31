@@ -214,4 +214,5 @@
 
 1.2.0 25/10/24
 
--- Written a new docknize layout positions, added two sides: `ekg::dock::right` and `ekg::dock::bottom` .
+-- Written a new docknize layout positions, added two sides: `ekg::dock::right` and `ekg::dock::bottom`.
+-- Fixed `ekg::dock::bottom` dockinization when scroll is going on.

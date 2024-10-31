@@ -42,7 +42,7 @@
  * imperfections, but there are ways to round it, as example, you can place widget
  * from a side (left or right, top or bottom) and align with an offset. That is how EKG fix it.
  * 
- * This method calculates the minimum possible position based on left until the pixel
+ * This method calculate the minimum possible position based on left until the pixel
  * escape for two or more offsets distance. Instead you use the container width directly
  * to calculate right widgets positions, EKG must use the left consistency to get the
  * real container (width/height) from the side of left (when using the container width directly

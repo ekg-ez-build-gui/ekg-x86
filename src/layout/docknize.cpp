@@ -324,6 +324,10 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
 
     switch (flags & ekg::dock::bottom) {
     case ekg::dock::bottom:
+      if (ekg_equals_float(corner_bottom_right.y, 0.0f)) {
+        corner_bottom_right.y += layout.h + ekg::layout::offset;
+      }
+
       if (is_next && is_left) {
         corner_bottom_left.x = parent_offset.x;
         corner_bottom_right.x = 0.0f;
@@ -335,11 +339,14 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       if (is_left) {
         layout.x = corner_bottom_left.x;
         layout.y = (
-          ekg_layout_get_pixel_perfect_position(
-            corner_top_left.y,
-            corner_bottom_left.y,
-            container_rect.h,
-            ekg::layout::offset
+          ekg_min(
+            ekg_layout_get_pixel_perfect_position(
+              corner_top_right.y,
+              corner_bottom_right.y,
+              container_rect.h,
+              ekg::layout::offset
+            ),
+            corner_top_right.y + ekg::layout::offset + layout.h
           )
         );
 
@@ -366,11 +373,14 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         );
 
         layout.y = (
-          ekg_layout_get_pixel_perfect_position(
-            corner_top_right.y,
-            corner_bottom_right.y,
-            container_rect.h,
-            ekg::layout::offset
+          ekg_min(
+            ekg_layout_get_pixel_perfect_position(
+              corner_top_right.y,
+              corner_bottom_right.y,
+              container_rect.h,
+              ekg::layout::offset
+            ),
+            corner_top_right.y + ekg::layout::offset + layout.h
           )
         );
 
@@ -415,11 +425,6 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
         layout.y = corner_top_right.y;
       }
       break;
-    }
-
-    if (is_next && is_top && layout.y + layout.h > container_rect.h) {
-      corner_bottom_left.y -= layout.h + ekg::layout::offset;
-      corner_bottom_right.y = corner_bottom_left.y;
     }
 
     if (should_estimated_extentinize) {
