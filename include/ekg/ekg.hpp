@@ -124,12 +124,12 @@ namespace ekg {
   /**
    * Create frame UI.
    */
-  ekg::ui::frame *frame(std::string_view tag, const ekg::vec2 &pos, const ekg::vec2 &size);
+  ekg::ui::frame *frame(std::string_view tag, ekg::rect rect, ekg::flags dock);
 
   /**
-   * Create embedded frame UI.
+   * Create frame UI.
    */
-  ekg::ui::frame *frame(std::string_view tag, const ekg::vec2 &size, ekg::flags dock = ekg::dock::none);
+  ekg::ui::frame *frame(std::string_view tag, ekg::rect rect);
 
   /**
    * Create button UI.

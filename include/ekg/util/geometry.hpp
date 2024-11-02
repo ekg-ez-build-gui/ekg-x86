@@ -36,6 +36,8 @@
 #define ekg_pixel              (1.000000f)
 #define ekg_pi                 (3.141592653589793238462643383279502884)
 
+#define ekg_no_update_placement (0.0f)
+
 /*
  * The STL std:::min and std::max implementation,
  * are not suitable to perform the required comparions inside of EKG
@@ -79,134 +81,36 @@ namespace ekg {
     horizontal = 2 << 14
   };
 
-  typedef struct vec2 {
+  struct vec2 {
   public:
-    union {
-      struct {
-        float x {};
-        float y {};
-      };
-    };
-  public:
-    inline vec2() {};
-
-    inline vec2(float _x, float _y) {
-      this->x = _x;
-      this->y = _y;
-    };
-  } vec2;
+    float x {};
+    float y {};
+  };
 
   ekg::vec2 operator/(const ekg::vec2 &, float);
 
-  typedef struct vec3 {
+  struct vec3 {
   public:
-    union {
-      struct {
-        float x {};
-        float y {};
-        float z {};
-      };
-    };
+    float x {};
+    float y {};
+    float z {};
+  };
+
+  struct vec4 {
   public:
-    inline vec3() {};
+    float x {};
+    float y {};
+    float z {};
+    float w {};
+  };
 
-    inline vec3(float _x, float _y, float _z) {
-      this->x = _x;
-      this->y = _y;
-      this->z = _z;
-    }
-  } vec3;
-
-  typedef struct vec4 {
+  struct rect {
   public:
-    union {
-      struct {
-        float x {};
-        float y {};
-        float z {};
-        float w {};
-      };
-    };
+    float x {};
+    float y {};
+    float w {};
+    float h {};
   public:
-    inline vec4() {};
-
-    inline vec4(float _x, float _y, float _z, float _w) {
-      this->x = _x;
-      this->y = _y;
-      this->z = _z;
-      this->w = _w;
-    }
-
-    inline vec4(float _x, float _y, const ekg::vec2 &_v) {
-      this->x = _x;
-      this->y = _y;
-      this->z = _v.x;
-      this->w = _v.y;
-    }
-
-    inline vec4(const ekg::vec2 &_v, float _z, float _w) {
-      this->x = _v.x;
-      this->y = _v.y;
-      this->z = _z;
-      this->w = _w;
-    }
-
-    inline vec4(const ekg::vec2 &l, const ekg::vec2 &r) {
-      this->x = l.x;
-      this->y = l.y;
-      this->z = r.x;
-      this->w = r.y;
-    }
-
-    inline vec4(const ekg::vec4 &_v, float _z) {
-      this->x = _v.x;
-      this->y = _v.y;
-      this->z = _v.z;
-      this->w = _z;
-    }
-  } vec4;
-
-  typedef struct rect {
-  public:
-    union {
-      struct {
-        float x {};
-        float y {};
-        float w {};
-        float h {};
-      };
-    };
-  public:
-    inline rect() {};
-
-    inline rect(float _x, float _y, float _w, float _h) {
-      this->x = _x;
-      this->y = _y;
-      this->w = _w;
-      this->h = _h;
-    }
-
-    inline rect(float _x, float _y, const ekg::vec2 &_v) {
-      this->x = _x;
-      this->y = _y;
-      this->w = _v.x;
-      this->h = _v.y;
-    }
-
-    inline rect(const ekg::vec2 &_v, float _w, float _h) {
-      this->x = _v.x;
-      this->y = _v.y;
-      this->w = _w;
-      this->h = _h;
-    }
-
-    inline rect(const ekg::vec2 &_l, const ekg::vec2 &_r) {
-      this->x = _l.x;
-      this->y = _l.y;
-      this->w = _r.x;
-      this->h = _r.y;
-    }
-
     /**
      * Logs the dimensions.
      **/
@@ -221,7 +125,7 @@ namespace ekg {
 
       return buffer.str();
     }
-  } rect;
+  };
 
   bool operator==(const ekg::rect &, const ekg::rect &);
 

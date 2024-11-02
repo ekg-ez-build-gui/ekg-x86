@@ -377,7 +377,7 @@ public:
     this->stack.tag = "msg-gui";
     this->stack.push();
 
-    ekg::frame("message-gui", {700, 600}, {400, 250})
+    ekg::frame("message-gui", {.x = 700, .y = 600, .w = 400, .h = 250})
       ->set_drag(ekg::dock::top);
 
     ekg::label("Message >< of uwu mumu meow", ekg::dock::fill | ekg::dock::next)
@@ -473,14 +473,14 @@ int32_t showcase_useless_window() {
     &ekg_runtime_property
   );
 
-  ekg::frame("tweaks-window", ekg::vec2(700, 200), ekg::vec2(200, 200))
+  ekg::frame("tweaks-window", {.x = 700, .y = 200, .w = 200, .h = 200})
     ->set_drag(ekg::dock::top)
     ->set_resize(ekg::dock::left | ekg::dock::bottom | ekg::dock::right);
 
   auto p_terminal = ekg::textbox("meow", "meow oi", ekg::dock::fill | ekg::dock::next)
     ->set_scaled_height(12);
 
-  ekg::frame("tweaks-tob-bar", ekg::vec2(10.0f, 50.0f), ekg::dock::fill | ekg::dock::next)
+  ekg::frame("tweaks-tob-bar", {.w = 10.0f, .h = 50.0f}, ekg::dock::fill | ekg::dock::next)
     ->set_drag(ekg::dock::full)
     ->make_parent_top_level();
 
@@ -489,7 +489,7 @@ int32_t showcase_useless_window() {
   ekg::button("x", ekg::dock::none);
   ekg::pop_group_parent();
 
-  ekg::frame("tweaks-content", ekg::vec2(700, 200), ekg::dock::fill | ekg::dock::next);
+  ekg::frame("tweaks-content", {.x = 700, .h = 200}, ekg::dock::fill | ekg::dock::next);
   ekg::label("UI internal tweaks", ekg::dock::fill | ekg::dock::next);
 
   ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill | ekg::next)
@@ -516,7 +516,7 @@ int32_t showcase_useless_window() {
   ekg::ui::label *fps {};
   std::string previous_operator {};
 
-  auto p_calculator_frame = ekg::frame("frame-cat", {400, 900}, ekg::dock::none)
+  auto p_calculator_frame = ekg::frame("frame-cat", {.w = 400, .h = 900}, ekg::dock::none)
     ->set_resize(ekg::dock::right | ekg::dock::bottom | ekg::dock::left)
     ->set_drag(ekg::dock::top);
 
@@ -867,7 +867,7 @@ int32_t showcase_useless_window() {
   ekg::gpu::sampler_t ttf_cow_sampler {};
   load_ttf_emoji(&ttf_cow_sampler);
 
-  auto p_cow_ttf_frame = ekg::frame("meow", {200, 200}, {400, 400})
+  auto p_cow_ttf_frame = ekg::frame("meow", {.x = 200, .y = 200, .w = 400, .h = 400})
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::top | ekg::dock::bottom | ekg::dock::right)
     ->set_layer(&ttf_cow_sampler, ekg::layer::background);
@@ -881,7 +881,7 @@ int32_t showcase_useless_window() {
   create_sampler<unsigned char*>("./cow.png", loaded_sampler_map);
   create_sampler<unsigned char*>("./joao_das_galaxias_cat.png", loaded_sampler_map);
 
-  auto p_gato_frame = ekg::frame("foto-de-gato-fofo-amo-vc", {400, 400}, ekg::dock::none)
+  auto p_gato_frame = ekg::frame("foto-de-gato-fofo-amo-vc", {.w = 400, .h = 400}, ekg::dock::none)
     ->set_resize(ekg::dock::right | ekg::dock::bottom | ekg::dock::left)
     ->set_drag(ekg::dock::top)
     ->set_layer(&loaded_sampler_map["./joao_das_galaxias_cat.png"], ekg::layer::background);
@@ -1215,7 +1215,7 @@ int32_t laboratory_testing() {
   ekg::ui::scale = {800.0f, 600.0f};
   ekg::layout::offset = 2.0f;
 
-  ekg::frame("A", {20, 20}, {500, 400})
+  ekg::frame("A", {.x = 20, .y = 20, .w = 200.0f, .h = 200.0f})
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
 
@@ -1233,7 +1233,7 @@ int32_t laboratory_testing() {
   ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::fill);
   ekg::button("3", ekg::dock::fill | ekg::dock::right);
   ekg::button("Exit", ekg::dock::right | ekg::dock::bottom)
-    ->set_width(60.0f)
+    ->set_width(90.0f)
     ->set_task(
       new ekg::task {
         .info = {

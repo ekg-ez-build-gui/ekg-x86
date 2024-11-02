@@ -460,8 +460,15 @@ void ekg::runtime::prepare_tasks() {
             }
 
             default: {
-              p_widgets->dimension.w = rect.w;
-              p_widgets->dimension.h = rect.h;
+              if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width))) {
+                ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width));
+                p_widgets->dimension.w = rect.w;
+              }
+
+              if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
+                ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height));
+                p_widgets->dimension.h = rect.h;
+              }
 
               if (p_widgets->p_data->has_parent()) {
                 p_widgets->dimension.x = rect.x - p_widgets->p_parent->x;

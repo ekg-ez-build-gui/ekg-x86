@@ -135,11 +135,20 @@ namespace ekg::layout {
   );
 
   /**
-   * A mid-functional feature to process dock position
-   * from widgets.
+   * A mid-functional feature to process dock position from widgets.
    * Note: Recursive.
    **/
-  void docknize(ekg::ui::abstract_widget *p_widget);
+  void docknize(
+    ekg::ui::abstract_widget *p_parent_widget
+  );
+
+  /**
+   * Estimate height from a container children list.
+   * Note: Recursive.
+   **/
+  float height(
+    ekg::ui::abstract_widget *p_parent_widget
+  );
 }
 
 #endif

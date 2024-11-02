@@ -150,7 +150,7 @@ void ekg::ui::button_widget::on_draw_refresh() {
 
     ekg::draw::rect(
       rect,
-      ekg::vec4 {theme_scheme.button_activity, theme_scheme.button_outline.w},
+      ekg::vec4 {theme_scheme.button_activity.x, theme_scheme.button_activity.y, theme_scheme.button_activity.z, theme_scheme.button_outline.w},
       ekg::draw_mode::outline
     );
   }

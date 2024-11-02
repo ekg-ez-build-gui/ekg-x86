@@ -56,8 +56,10 @@ namespace ekg {
   };
 
   enum class ui_sync {
-    reset = 1,
-    dimension = 2,
+    reset      = 2 << 1,
+    dimension  = 2 << 2,
+    set_width  = 2 << 3,
+    set_height = 2 << 4
   };
 
   enum class action {

@@ -25,3 +25,5 @@ reduce ekg::slider<t> verbose number setting.
 // Add checkbox
 
 ✔
+
+// add `set_width` and `set_height` to all widgets setters dimension methods >< meowg

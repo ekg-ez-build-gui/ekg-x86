@@ -216,3 +216,4 @@
 
 -- Written a new docknize layout positions, added two sides: `ekg::dock::right` and `ekg::dock::bottom`.
 -- Fixed `ekg::dock::bottom` dockinization when scroll is going on.
+-- Fixed a glitch where dimension setters method was overwriting not specified dimensions, for example `set_width` which overwrite height when reload task is processed.

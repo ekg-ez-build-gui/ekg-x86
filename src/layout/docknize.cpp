@@ -160,7 +160,9 @@ void ekg::layout::extentnize(
   }
 }
 
-void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
+void ekg::layout::docknize(
+  ekg::ui::abstract_widget *p_widget_parent
+) {
   if (p_widget_parent == nullptr || p_widget_parent->p_data == nullptr) {
     return;
   }
@@ -326,6 +328,7 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
     case ekg::dock::bottom:
       if (ekg_equals_float(corner_bottom_right.y, 0.0f)) {
         corner_bottom_right.y += layout.h + ekg::layout::offset;
+        corner_bottom_left.y = corner_bottom_right.y;
       }
 
       if (is_next && is_left) {
@@ -463,6 +466,44 @@ void ekg::layout::docknize(ekg::ui::abstract_widget *p_widget_parent) {
       ekg::layout::docknize(p_widget_parent);
     }
   }
+}
+
+float ekg::layout::height(
+  ekg::ui::abstract_widget *p_parent_widget
+) {
+  if (p_parent_widget == nullptr) {
+    return 0.0f;
+  }
+
+  ekg::ui::abstract_widget *p_widgets {};
+  ekg::flags flags {};
+  float total_height {};
+  float height {};
+
+  for (int32_t &ids : p_parent_widget->p_data->get_child_id_list()) {
+    if (ids == 0 || (p_widgets = ekg::core->get_fast_widget_by_id(ids)) == nullptr) {
+      continue;
+    }
+
+    p_widgets->on_reload();
+
+    flags = p_widgets->p_data->get_place_dock();
+    height = p_widgets->dimension.h;
+
+    if (p_widgets->p_data->has_children()) {
+      height = ekg::layout::height(p_widgets); 
+    }
+
+    total_height += (
+      height
+      *
+      (ekg_equals_float(total_height, 0.0f) || ekg_bitwise_contains(flags, ekg::dock::next))
+      +
+      ekg::layout::offset
+    );
+  }
+
+  return total_height;
 }
 
 void ekg::layout::mask::extentnize(

@@ -182,7 +182,7 @@ void ekg::ui::checkbox_widget::on_draw_refresh() {
   if (p_ui->get_value() && this->flag.highlight) {
     ekg::draw::rect(
       box,
-      ekg::vec4 {theme_scheme.checkbox_activity, theme_scheme.checkbox_outline.w},
+      ekg::vec4 {theme_scheme.checkbox_activity.x, theme_scheme.checkbox_activity.y, theme_scheme.checkbox_activity.z, theme_scheme.checkbox_outline.w},
       ekg::draw_mode::outline
     );
   }
