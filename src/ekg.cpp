@@ -121,11 +121,9 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect) {
   p_ui->set_place(ekg::dock::none);
   ekg::core->gen_widget(p_ui);
 
-  p_ui->set_pos_initial(rect.x, rect.y);
   p_ui->ui() = {rect.x, rect.y, rect.w, rect.h};
-
-  if (!ekg_equals_float(rect.w, ekg_no_update_placement) && !ekg_equals_float(rect.h, ekg_no_update_placement)) {
-    p_ui->set_size_initial(rect.w, rect.h);
+  if (!ekg_equals_float(rect.w, ekg_no_update_placement) || !ekg_equals_float(rect.h, ekg_no_update_placement)) {
+    p_ui->set_auto_initial_dimension(true);
   }
 
   return p_ui;
@@ -140,8 +138,8 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock
   ekg::core->gen_widget(p_ui);
 
   p_ui->ui() = {0.0f, 0.0f, rect.w, rect.h};
-  if (!ekg_equals_float(rect.w, ekg_no_update_placement) && !ekg_equals_float(rect.h, ekg_no_update_placement)) {
-    p_ui->set_size_initial(rect.w, rect.h);
+  if (!ekg_equals_float(rect.w, ekg_no_update_placement) || !ekg_equals_float(rect.h, ekg_no_update_placement)) {
+    p_ui->set_auto_initial_dimension(true);
   }
 
   return p_ui;

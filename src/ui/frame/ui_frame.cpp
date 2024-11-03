@@ -67,26 +67,6 @@ ekg::flags ekg::ui::frame::get_resize_dock() {
   return this->dock_resize;
 }
 
-ekg::ui::frame *ekg::ui::frame::set_pos_initial(float x, float y) {
-  this->rect_initial.x = x;
-  this->rect_initial.y = y;
-  return this;
-}
-
-ekg::vec2 ekg::ui::frame::get_pos_initial() {
-  return {this->rect_initial.x, this->rect_initial.y};
-}
-
-ekg::ui::frame *ekg::ui::frame::set_size_initial(float w, float h) {
-  this->rect_initial.w = w;
-  this->rect_initial.h = h;
-  return this;
-}
-
-ekg::vec2 ekg::ui::frame::get_size_initial() {
-  return {this->rect_initial.w, this->rect_initial.h};
-}
-
 ekg::ui::frame *ekg::ui::frame::set_size(float w, float h) {
   if (this->sync_ui.w != w || this->sync_ui.h != h) {
     this->sync_ui.w = w;
@@ -122,29 +102,13 @@ ekg::vec2 ekg::ui::frame::get_pos() {
   return {this->rect_widget.x, this->rect_widget.y};
 }
 
-ekg::ui::frame *ekg::ui::frame::set_initial_width(float w) {
-  this->rect_initial.w = w;
-  return this;
-}
-
-float ekg::ui::frame::get_initial_width() {
-  return this->rect_initial.w;
-}
-
-ekg::ui::frame *ekg::ui::frame::set_initial_height(float h) {
-  this->rect_initial.h = h;
-  return this;
-}
-
-float ekg::ui::frame::get_initial_height() {
-  return this->rect_initial.h;
-}
-
 ekg::ui::frame *ekg::ui::frame::set_width(float w) {
   if (this->sync_ui.w != w) {
     this->sync_ui.w = w;
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width));
+
     ekg::reload(this->id);
     ekg::synclayout(this->id);
     ekg::dispatch(ekg::env::redraw);
@@ -162,6 +126,8 @@ ekg::ui::frame *ekg::ui::frame::set_height(float h) {
     this->sync_ui.h = h;
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height));
+
     ekg::reload(this->id);
     ekg::synclayout(this->id);
     ekg::dispatch(ekg::env::redraw);

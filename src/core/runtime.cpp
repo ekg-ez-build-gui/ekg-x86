@@ -400,7 +400,9 @@ void ekg::runtime::prepare_tasks() {
       .p_data = nullptr
     },
     .function = [this](ekg::info &info) {
-      ekg::vec4 rect {};
+      bool must_set_x {};
+      bool must_set_y {};
+      bool has_parent {};
 
       for (ekg::ui::abstract_widget *&p_widgets : this->reload_widget_list) {
         if (p_widgets == nullptr || !p_widgets->was_reloaded) {
@@ -408,44 +410,7 @@ void ekg::runtime::prepare_tasks() {
         }
 
         p_widgets->was_reloaded = false;
-
         ekg::flags &sync_flags {p_widgets->p_data->get_sync()};
-        if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::reset))) {
-          ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::reset));
-
-          switch (p_widgets->p_data->get_type()) {
-            case ekg::type::frame: {
-              ekg::ui::frame *p_ui {(ekg::ui::frame *) p_widgets->p_data};
-              ekg::vec2 pos {p_ui->get_pos_initial()};
-              ekg::vec2 size {p_ui->get_size_initial()};
-              ekg::rect &rect_ui {p_ui->ui()};
-
-              rect.x = pos.x;
-              rect.y = pos.y;
-              rect.z = size.x;
-              rect.w = size.y;
-
-              if (p_ui->widget() != rect) {
-                p_widgets->dimension.w = size.x;
-                p_widgets->dimension.h = size.y;
-
-                if (p_ui->get_parent_id() != 0) {
-                  p_widgets->dimension.x = pos.x - p_widgets->p_parent->x;
-                  p_widgets->dimension.y = pos.y - p_widgets->p_parent->y;
-                } else {
-                  p_widgets->p_parent->x = pos.x;
-                  p_widgets->p_parent->y = pos.y;
-                }
-              }
-
-              break;
-            }
-
-            default: {
-              break;
-            }
-          }
-        }
 
         if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension))) {
           ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
@@ -453,9 +418,21 @@ void ekg::runtime::prepare_tasks() {
           ekg::rect &rect {p_widgets->p_data->ui()};
           switch (p_widgets->p_data->get_level()) {
             case ekg::level::top_level: {
-              p_widgets->dimension.w = rect.w;
-              p_widgets->p_parent->x = rect.x;
-              p_widgets->p_parent->y = rect.y;
+              if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width))) {
+                ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width));
+                p_widgets->dimension.w = rect.w;
+              }
+
+              if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_x))) {
+                ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_x));
+                p_widgets->p_parent->x = rect.x;
+              }
+
+              if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_y))) {
+                ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_y));
+                p_widgets->p_parent->x = rect.y;
+              }
+
               break;
             }
 
@@ -470,11 +447,29 @@ void ekg::runtime::prepare_tasks() {
                 p_widgets->dimension.h = rect.h;
               }
 
-              if (p_widgets->p_data->has_parent()) {
+              must_set_x = (
+                static_cast<bool>(
+                  ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_x))
+                )
+              );
+
+              must_set_y = (
+                static_cast<bool>(
+                  ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_y))
+                )
+              );
+
+              has_parent = p_widgets->p_data->has_parent();
+
+              if (must_set_x && has_parent) {
                 p_widgets->dimension.x = rect.x - p_widgets->p_parent->x;
-                p_widgets->dimension.y = rect.y - p_widgets->p_parent->y;
-              } else {
+              } else if (must_set_x) {
                 p_widgets->p_parent->x = rect.x;
+              }
+
+              if (must_set_y && has_parent) {
+                p_widgets->dimension.y = rect.y - p_widgets->p_parent->y;
+              } else if (must_set_y) {
                 p_widgets->p_parent->y = rect.y;
               }
 
@@ -692,7 +687,6 @@ void ekg::runtime::gen_widget(ekg::ui::abstract *p_ui) {
       p_widget->p_data = p_ui;
       update_layout = true;
       p_widget_created = p_widget;
-      p_ui->reset();
 
       if (p_widget->p_data->get_place_dock() == ekg::dock::none) {
         this->p_current_ui_container = p_ui;

@@ -72,6 +72,8 @@ ekg::ui::textbox *ekg::ui::textbox::set_width(float w) {
     this->sync_ui.w = w;
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width));
+
     ekg::reload(this->id);
     ekg::synclayout(this->parent_id);
   }

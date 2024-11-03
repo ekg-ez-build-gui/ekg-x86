@@ -62,8 +62,14 @@ void ekg::ui::slider_widget::on_reload() {
 
   switch (axis) {
     case ekg::axis::horizontal: {
-      this->dimension.w = ekg_min(this->dimension.w, base_text_height);
+      if (p_ui->is_auto_initial_dimension()) {
+        this->dimension.w = ekg_min(this->dimension.w, base_text_height);
+        this->min_size.x = ekg_min(this->min_size.x, base_text_height);
+        p_ui->set_auto_initial_dimension(false);
+      }
+
       this->dimension.h = (base_text_height + dimension_offset) * static_cast<float>(p_ui->get_scaled_height());
+      this->min_size.x = ekg_min(this->min_size.x, base_text_height);
 
       uint64_t range_list_size {
         p_ui->get_range_count()

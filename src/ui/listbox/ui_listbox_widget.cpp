@@ -44,8 +44,13 @@ void ekg::ui::listbox_widget::on_reload() {
   float dimension_offset {text_height / 2};
   float offset {ekg::find_min_offset(text_height, dimension_offset)};
 
+  if (p_ui->is_auto_initial_dimension()) {
+    this->dimension.w = ekg_min(this->dimension.w, text_height);
+    this->min_size.x = ekg_min(this->min_size.x, text_height);
+    p_ui->set_auto_initial_dimension(false);
+  }
+
   this->dimension.h = (text_height + dimension_offset) * static_cast<float>(p_ui->get_scaled_height());
-  this->min_size.x = ekg_min(this->min_size.x, text_height);
   this->min_size.y = ekg_min(this->min_size.y, text_height);
 
   ekg::font item_font {p_ui->get_item_font_size()};

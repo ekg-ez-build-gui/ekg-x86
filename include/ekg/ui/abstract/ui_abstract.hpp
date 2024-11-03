@@ -56,10 +56,11 @@ namespace ekg {
   };
 
   enum class ui_sync {
-    reset      = 2 << 1,
-    dimension  = 2 << 2,
-    set_width  = 2 << 3,
-    set_height = 2 << 4
+    dimension  = 2 << 1,
+    set_x      = 2 << 2,
+    set_y      = 2 << 3,
+    set_width  = 2 << 4,
+    set_height = 2 << 5,
   };
 
   enum class action {
@@ -116,6 +117,7 @@ namespace ekg {
 
       bool alive {true};
       bool visible {true};
+      bool auto_initial_dimension {true};
 
       ekg::flags dock_flags {};
       ekg::flags sync_flags {};
@@ -274,16 +276,40 @@ namespace ekg {
        */
       ekg::gpu::sampler_t *get_layer(ekg::layer layer);
 
-      void reset();
-
+      /**
+       * Get a reference to the widget position.
+       **/
       ekg::rect &widget();
 
+      /**
+       * Get a refence to the UI sync position (at latest the same as widget position but used internaly different).
+       **/
       ekg::rect &ui();
 
+      /**
+       * Returns true if the UI element has parent, else False if not.
+       **/
       bool has_parent() const;
 
+      /**
+       * Returns true if the UI element has children, else False if not.
+       **/
       bool has_children();
+
+      /**
+       * Widgets can use this for different behaviors, as the name says when the widget
+       * is created or arbitrary updated, the size is auto-calculated by the widget.
+       **/
+      ekg::ui::abstract *set_auto_initial_dimension(bool is_auto);
+
+      /**
+       * Get the auto initial dimension state, used internally by the widget.
+       **/
+      bool is_auto_initial_dimension();
     public:
+      /**
+       * Returns the widget ID when cast to `int32_t`.
+       **/
       operator int32_t();
     };
   }

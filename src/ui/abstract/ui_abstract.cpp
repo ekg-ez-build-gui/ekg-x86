@@ -231,11 +231,6 @@ ekg::gpu::sampler_t *ekg::ui::abstract::get_layer(ekg::layer layer) {
   return this->layer_surfaces[static_cast<uint64_t>(layer)];
 }
 
-void ekg::ui::abstract::reset() {
-  ekg_bitwise_add(this->sync_flags, static_cast<uint64_t>(ekg::ui_sync::reset));
-  ekg::reload(this->id);
-}
-
 ekg::ui::abstract *ekg::ui::abstract::unsafe_set_scaled_height_layout(int32_t scaled_height_int) {
   this->scaled_height = scaled_height_int;
   return this;
@@ -251,4 +246,13 @@ bool ekg::ui::abstract::has_children() {
 
 ekg::ui::abstract::operator int32_t() {
   return this->id;
+}
+
+ekg::ui::abstract *ekg::ui::abstract::set_auto_initial_dimension(bool is_auto) {
+  this->auto_initial_dimension = is_auto;
+  return this;
+}
+
+bool ekg::ui::abstract::is_auto_initial_dimension() {
+  return this->auto_initial_dimension;
 }

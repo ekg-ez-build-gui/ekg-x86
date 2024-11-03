@@ -125,6 +125,8 @@ ekg::ui::popup *ekg::ui::popup::set_width(float width) {
     this->sync_ui.w = width;
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width));
+
     ekg::reload(this->id);
     ekg::synclayout(this->parent_id);
   }
@@ -176,6 +178,9 @@ ekg::ui::popup *ekg::ui::popup::set_pos(float x, float y) {
     this->sync_ui.y = y;
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_x));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_y));
+
     ekg::reload(this->id);
   }
 

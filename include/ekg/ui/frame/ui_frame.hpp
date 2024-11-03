@@ -33,8 +33,6 @@ namespace ekg::ui {
   protected:
     ekg::flags dock_resize {};
     ekg::flags dock_drag {};
-
-    ekg::rect rect_initial {};
     std::string tag {};
     ekg::vec2 scale_factor {};
     uint32_t top_level_frame_id {};
@@ -52,22 +50,6 @@ namespace ekg::ui {
     ekg::ui::frame *set_resize(ekg::flags dock);
 
     ekg::flags get_resize_dock();
-
-    ekg::ui::frame *set_pos_initial(float x, float y);
-
-    ekg::vec2 get_pos_initial();
-
-    ekg::ui::frame *set_size_initial(float x, float y);
-
-    ekg::vec2 get_size_initial();
-
-    ekg::ui::frame *set_initial_width(float w);
-
-    float get_initial_width();
-
-    ekg::ui::frame *set_initial_height(float h);
-
-    float get_initial_height();
 
     ekg::ui::frame *set_size(float w, float h);
 

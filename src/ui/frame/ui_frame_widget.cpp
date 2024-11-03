@@ -32,12 +32,11 @@ void ekg::ui::frame_widget::on_reload() {
   abstract_widget::on_reload();
 
   this->ui_theme_activity_offset = static_cast<float>(ekg::current_theme_scheme().frame_activity_offset);
-  if (this->is_dimension_auto_update_required) {
+  if (this->p_data->is_auto_initial_dimension()) {
     this->dimension.w = ekg_min(this->dimension.w, 300.0f);
     this->dimension.h = ekg::layout::height(this);
+    this->p_data->set_auto_initial_dimension(false);
   }
-
-  this->is_dimension_auto_update_required = false;
 }
 
 void ekg::ui::frame_widget::on_event(ekg::os::io_event_serial &io_event_serial) {

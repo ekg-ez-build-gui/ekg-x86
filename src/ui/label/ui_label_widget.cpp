@@ -40,10 +40,13 @@ void ekg::ui::label_widget::on_reload() {
   float dimension_offset {text_height / 2};
   float offset {ekg::find_min_offset(text_width, dimension_offset)};
 
-  this->dimension.w = ekg_min(this->dimension.w, text_width);
-  this->dimension.h = (text_height + dimension_offset) * static_cast<float>(scaled_height);
+  if (p_ui->is_auto_initial_dimension()) {
+    this->dimension.w = ekg_min(this->dimension.w, text_width);
+    this->min_size.x = ekg_min(this->min_size.x, text_height);
+    p_ui->set_auto_initial_dimension(false);
+  }
 
-  this->min_size.x = ekg_min(this->min_size.x, text_height);
+  this->dimension.h = (text_height + dimension_offset) * static_cast<float>(scaled_height);
   this->min_size.y = ekg_min(this->min_size.y, this->dimension.h);
 
   this->rect_text.w = text_width;
@@ -55,7 +58,6 @@ void ekg::ui::label_widget::on_reload() {
   mask.docknize();
 
   ekg::rect &layout_mask {mask.get_rect()};
-  this->dimension.w = ekg_min(this->dimension.w, layout_mask.w);
   this->dimension.h = ekg_min(this->dimension.h, layout_mask.h);
 }
 
