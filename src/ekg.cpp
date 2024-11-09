@@ -115,22 +115,36 @@ void ekg::render() {
 
 ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect) {
   ekg::ui::frame *p_ui {new ekg::ui::frame()};
+  ekg::flags sync_ui_flags {static_cast<ekg::flags>(ekg::ui_sync::dimension)};
+
+  bool is_w_set {!ekg_equals_float(rect.w, ekg_no_update_placement)};
+  bool is_h_set {!ekg_equals_float(rect.h, ekg_no_update_placement)};
 
   p_ui->set_tag(tag);
   p_ui->unsafe_set_type(ekg::type::frame);
-  p_ui->set_place(ekg::dock::none);
+  p_ui->set_place(ekg::dock::free);
   ekg::core->gen_widget(p_ui);
 
   p_ui->ui() = {rect.x, rect.y, rect.w, rect.h};
-  if (!ekg_equals_float(rect.w, ekg_no_update_placement) || !ekg_equals_float(rect.h, ekg_no_update_placement)) {
+
+  sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_x) | static_cast<ekg::flags>(ekg::ui_sync::set_y);
+  sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_set;
+  sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_set;
+
+  if (!ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
     p_ui->set_auto_initial_dimension(true);
   }
 
+  p_ui->unsafe_sync_ui(static_cast<ekg::flags>(sync_ui_flags));
   return p_ui;
 }
 
 ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock) {
   ekg::ui::frame *p_ui {new ekg::ui::frame()};
+  ekg::flags sync_ui_flags {static_cast<ekg::flags>(ekg::ui_sync::dimension)};
+
+  bool is_w_set {!ekg_equals_float(rect.w, ekg_no_update_placement)};
+  bool is_h_set {!ekg_equals_float(rect.h, ekg_no_update_placement)};
 
   p_ui->set_tag(tag);
   p_ui->unsafe_set_type(ekg::type::frame);
@@ -138,10 +152,15 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock
   ekg::core->gen_widget(p_ui);
 
   p_ui->ui() = {0.0f, 0.0f, rect.w, rect.h};
-  if (!ekg_equals_float(rect.w, ekg_no_update_placement) || !ekg_equals_float(rect.h, ekg_no_update_placement)) {
+
+  sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_set;
+  sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_set;
+
+  if (!ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
     p_ui->set_auto_initial_dimension(true);
   }
 
+  p_ui->unsafe_sync_ui(static_cast<ekg::flags>(sync_ui_flags));
   return p_ui;
 }
 

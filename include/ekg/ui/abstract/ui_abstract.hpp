@@ -150,6 +150,12 @@ namespace ekg {
        * not recommend to use, due the object origin be incorrect with the current set.
        */
       ekg::ui::abstract *unsafe_set_type(ekg::type enum_type);
+
+      /**
+       * Make sync,
+       * not recommend to use unless you know if it is necessary, due the no-effect directly.
+       **/
+      ekg::ui::abstract *unsafe_sync_ui(ekg::flags flags);
     public:
       /**
        * The abstract constructor.

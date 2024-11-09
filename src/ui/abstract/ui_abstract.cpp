@@ -184,6 +184,11 @@ ekg::ui::abstract *ekg::ui::abstract::unsafe_set_type(ekg::type enum_type) {
   return this;
 }
 
+ekg::ui::abstract *ekg::ui::abstract::unsafe_sync_ui(ekg::flags flags) {
+  this->sync_flags |= flags;
+  return this;
+}
+
 ekg::type ekg::ui::abstract::get_type() {
   return this->type;
 }

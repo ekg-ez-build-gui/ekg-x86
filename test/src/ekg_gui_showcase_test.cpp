@@ -1219,18 +1219,22 @@ int32_t laboratory_testing() {
     ->set_drag(ekg::dock::full)
     ->set_resize(ekg::dock::left | ekg::dock::right | ekg::dock::bottom);
 
-  ekg::button("1", ekg::dock::fill);
-  ekg::button("2", ekg::dock::none);
+  //ekg::textbox("1", "oi eu gosto do daniel nmemeth ele eh muito louco", ekg::dock::none);
+  ekg::button("1", ekg::dock::fill)->set_font_size(ekg::font::big);
+  ekg::frame("oi eu quero miar ate eu ter 50 mil anos", {.w = 4000.0f, .h = 200.0f}, ekg::dock::next)
+    ->set_layer(&ekg::f_renderer(ekg::font::normal).sampler_texture, ekg::layer::background);
+  ekg::pop_group_parent();
+  ekg::button("45", ekg::dock::none);
   ekg::button("3", ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
-  ekg::button("1", ekg::dock::next | ekg::dock::fill);
+  ekg::button("2", ekg::dock::next | ekg::dock::fill);
+  ekg::button("3", ekg::dock::next | ekg::dock::fill);
+  ekg::button("4", ekg::dock::next | ekg::dock::fill);
+  ekg::button("5", ekg::dock::next | ekg::dock::fill);
+  ekg::button("6", ekg::dock::next | ekg::dock::fill);
+  ekg::button("7", ekg::dock::next | ekg::dock::fill);
+  ekg::button("4", ekg::dock::next | ekg::dock::fill);
   ekg::button("4", ekg::dock::none);
-  ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::fill);
+  ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::next | ekg::dock::fill);
   ekg::button("3", ekg::dock::fill | ekg::dock::right);
   ekg::button("Exit", ekg::dock::right | ekg::dock::bottom)
     ->set_width(90.0f)
@@ -1252,6 +1256,7 @@ int32_t laboratory_testing() {
 
   ekg::scrollbar("shout fofo maravilhoso");
   ekg::pop_group();
+
   ekg::vec3 clear_color {};
 
   while (running) {

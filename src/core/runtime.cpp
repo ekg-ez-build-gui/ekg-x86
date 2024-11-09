@@ -247,20 +247,18 @@ void ekg::runtime::process_render() {
     ekg::ui::redraw = false;
 
     /**
-     * The allocator starts here,
-     * the GPU data instance and geometry resource are "cleared"
-     * and reseted here.
+     * The allocator starts here, the GPU data instance
+     * and geometry resources are clear/reseted here.
      **/
     this->gpu_allocator.invoke();
 
     for (ekg::ui::abstract_widget *&p_widgets : this->loaded_widget_list) {
       if (p_widgets != nullptr && p_widgets->p_data->is_alive() && p_widgets->p_data->is_visible()) {
         /**
-         * The allocator is used here,
-         * each time this statement is called theres one GPU data,
-         * being allocated/filled.
+         * Each time this statement is called, one GPU data is
+         * allocated/filled.
          * 
-         * The order of rendering depends on which functions are invoke first.
+         * The order of rendering depends on which are functions are invoked first.
          * 
          * E.g:
          *  gpu-data-group-1 (on_draw_refresh())
@@ -285,8 +283,8 @@ void ekg::runtime::process_render() {
   }
 
   /**
-   * The allocator draws each GPU-data now serialized.
-   * There is two type concept of draw:
+   * The allocator renderize an serialized GPU data-list.
+   * With some conditions:
    * 
    * 1- A concave shape does not have a rectangle form, and can render text(s) and
    * batched quad(s) at once.
@@ -298,9 +296,9 @@ void ekg::runtime::process_render() {
    * The native GPU API calls are apart from allocator, depends on current GPU API selected.
    * Rendering-hardware interface also known as RHI implements different each GPU API.
    * OpenGL 3/4/ES 3, Vulkan, MoltenVK, DirectX11/12.
-   * May differ the features.
+   * May differ the features or runtime.
    * 
-   * But check the code allocator inside code comments.
+   * But check all allocator comments.
    **/
   this->gpu_allocator.draw();
 }
@@ -445,6 +443,7 @@ void ekg::runtime::prepare_tasks() {
               if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
                 ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height));
                 p_widgets->dimension.h = rect.h;
+                std::cout << p_widgets->p_data->get_tag() << std::endl;
               }
 
               must_set_x = (
@@ -553,7 +552,7 @@ void ekg::runtime::set_current_stack(ekg::stack *p_stack) {
 }
 
 ekg::ui::abstract_widget *ekg::runtime::get_fast_widget_by_id(int32_t id) {
-  /** widget ID 0 is defined as none, or be, ID token accumulation start with 1 and not 0 */
+  /* widget ID 0 is defined as none, or be, ID token accumulation start with 1 and not 0 */
   return id ? this->widget_map[id] : nullptr;
 }
 
@@ -688,7 +687,7 @@ void ekg::runtime::gen_widget(ekg::ui::abstract *p_ui) {
       update_layout = true;
       p_widget_created = p_widget;
 
-      if (p_widget->p_data->get_place_dock() == ekg::dock::none) {
+      if (p_widget->p_data->get_place_dock() == ekg::dock::free) {
         this->p_current_ui_container = p_ui;
       } else {
         append_group = true;

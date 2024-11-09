@@ -399,7 +399,16 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
 
     x += char_data.wsize;
     ft_uint_previous = char32;
-    data.factor += static_cast<int32_t>(x + char32);
+
+    /**
+     * Normally an UV is normalized-clamped, so multiplying by 100
+     * do the number be able to sum the factor and show some
+     * effect on screen.
+     * 
+     * For example, a same number but UV was updated, no factor is changed
+     * then the way to fix it is make UV noticable.
+     **/
+    data.factor += static_cast<int32_t>(x + char32 + (char_data.x * 100));
   }
 
   this->flush();
@@ -412,6 +421,7 @@ void ekg::draw::font_renderer::flush() {
   if (this->last_sampler_generate_list_size != size) {
     this->reload();
     this->last_sampler_generate_list_size = size;
+    ekg::ui::redraw = true;
   }
 }
 
