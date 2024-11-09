@@ -219,3 +219,4 @@
 -- Fixed a glitch where dimension setters method was overwriting not specified dimensions, for example `set_width` which overwrite height when reload task is processed.
 -- New set-dimension system and auto-update initial dimension for widgets.
 -- Fixed UV not noticable to GPU-data factor.
+-- Fixed docknization not storing highest widget for both docks top and bottom.

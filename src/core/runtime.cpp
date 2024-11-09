@@ -443,7 +443,6 @@ void ekg::runtime::prepare_tasks() {
               if (ekg_bitwise_contains(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
                 ekg_bitwise_remove(sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height));
                 p_widgets->dimension.h = rect.h;
-                std::cout << p_widgets->p_data->get_tag() << std::endl;
               }
 
               must_set_x = (

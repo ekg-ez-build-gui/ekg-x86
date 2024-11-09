@@ -1221,9 +1221,9 @@ int32_t laboratory_testing() {
 
   //ekg::textbox("1", "oi eu gosto do daniel nmemeth ele eh muito louco", ekg::dock::none);
   ekg::button("1", ekg::dock::fill)->set_font_size(ekg::font::big);
-  ekg::frame("oi eu quero miar ate eu ter 50 mil anos", {.w = 4000.0f, .h = 200.0f}, ekg::dock::next)
-    ->set_layer(&ekg::f_renderer(ekg::font::normal).sampler_texture, ekg::layer::background);
-  ekg::pop_group_parent();
+  //ekg::frame("oi eu quero miar ate eu ter 50 mil anos", {.w = 4000.0f, .h = 200.0f}, ekg::dock::next)
+  //  ->set_layer(&ekg::f_renderer(ekg::font::normal).sampler_texture, ekg::layer::background);
+  //ekg::pop_group_parent();
   ekg::button("45", ekg::dock::none);
   ekg::button("3", ekg::dock::fill);
   ekg::button("2", ekg::dock::next | ekg::dock::fill);

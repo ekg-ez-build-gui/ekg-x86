@@ -270,6 +270,9 @@ void ekg::layout::docknize(
   ekg::rect corner_bottom_left {parent_offset.x, 0.0f, 0.0f, 0.0f};
   ekg::rect corner_bottom_right {};
 
+  float highest_top {};
+  float highest_bottom {};
+
   for (int32_t &ids: p_widget_parent->p_data->get_child_id_list()) {
     if (ids == 0 || (p_widgets = ekg::core->get_fast_widget_by_id(ids)) == nullptr) {
       continue;
@@ -326,8 +329,10 @@ void ekg::layout::docknize(
 
     switch (flags & ekg::dock::bottom) {
     case ekg::dock::bottom:
+      highest_bottom = ekg_min(highest_bottom, layout.h);
+
       if (ekg_equals_float(corner_bottom_right.y, 0.0f)) {
-        corner_bottom_right.y += layout.h + ekg::layout::offset;
+        corner_bottom_right.y += highest_bottom + ekg::layout::offset;
         corner_bottom_left.y = corner_bottom_right.y;
       }
 
@@ -335,8 +340,9 @@ void ekg::layout::docknize(
         corner_bottom_left.x = parent_offset.x;
         corner_bottom_right.x = 0.0f;
 
-        corner_bottom_left.y += layout.h + ekg::layout::offset;
+        corner_bottom_left.y += highest_bottom + ekg::layout::offset;
         corner_bottom_right.y = corner_bottom_left.y;
+        highest_bottom = 0.0f;
       }
 
       if (is_left) {
@@ -349,7 +355,7 @@ void ekg::layout::docknize(
               container_rect.h,
               ekg::layout::offset
             ),
-            corner_top_right.y + ekg::layout::offset + layout.h
+            corner_top_right.y + ekg::layout::offset + highest_bottom
           )
         );
 
@@ -360,8 +366,9 @@ void ekg::layout::docknize(
         corner_bottom_left.x = parent_offset.x;
         corner_bottom_right.x = 0.0f;
 
-        corner_bottom_right.y += layout.h + ekg::layout::offset;
+        corner_bottom_right.y += highest_bottom + ekg::layout::offset;
         corner_bottom_left.y = corner_bottom_right.y;
+        highest_bottom = 0.0f;
       }
 
       if (is_right) {
@@ -383,7 +390,7 @@ void ekg::layout::docknize(
               container_rect.h,
               ekg::layout::offset
             ),
-            corner_top_right.y + ekg::layout::offset + layout.h
+            corner_top_right.y + ekg::layout::offset + highest_bottom
           )
         );
 
@@ -392,11 +399,14 @@ void ekg::layout::docknize(
 
       break;
     default:
+      highest_top = ekg_min(highest_top, layout.h);
+
       if (is_next && is_left) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
-        corner_top_left.y += layout.h + ekg::layout::offset;
+        corner_top_left.y += highest_top + ekg::layout::offset;
         corner_top_right.y = corner_top_left.y;
+        highest_top = 0.0f;
       }
 
       if (is_left) {
@@ -409,8 +419,9 @@ void ekg::layout::docknize(
       if (is_next && is_right) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
-        corner_top_right.y += layout.h + ekg::layout::offset;
+        corner_top_right.y += highest_top + ekg::layout::offset;
         corner_top_left.y = corner_top_right.y;
+        highest_top = 0.0f;
       }
 
       if (is_right) {
