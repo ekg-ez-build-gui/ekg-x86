@@ -9,6 +9,7 @@ ekg::layout::extent_t ekg::layout::h_extent = {};
 
 void ekg::layout::extentnize(
   float &extent,
+  ekg::layout::fill_align_t *p_fill_align,
   ekg::ui::abstract_widget *p_widget,
   ekg::flags flag_ok,
   ekg::flags flag_stop,
@@ -20,12 +21,13 @@ void ekg::layout::extentnize(
     return;
   }
 
+  int64_t begin_index {begin_and_count};
   switch (axis) {
     case ekg::axis::horizontal: {
       ekg::flags flags {};
       int32_t ids {};
       int64_t flag_ok_count {};
-      int64_t it {begin_and_count};
+      int64_t it {begin_index};
 
       if (
           begin_and_count > static_cast<int64_t>(ekg::layout::h_extent.begin_index)
@@ -35,21 +37,22 @@ void ekg::layout::extentnize(
 
         begin_and_count = static_cast<int64_t>(ekg::layout::h_extent.count);
         extent = ekg::layout::h_extent.extent;
-
-        return;
+        break;
       }
 
       ekg::layout::h_extent.begin_index = static_cast<float>(it);
       ekg::ui::abstract_widget *p_widgets {};
       std::vector<int32_t> &child_id_list {p_widget->p_data->get_child_id_list()};
 
-      uint64_t size {child_id_list.size()};
-      uint64_t latest_index {size - (!child_id_list.empty())};
+      int64_t size {static_cast<int64_t>(child_id_list.size())};
+      int64_t latest_index {size - (!child_id_list.empty())};
 
       bool is_scrollbar {};
       bool is_last_index {};
       bool is_ok_flag {};
       bool is_last_index_but {};
+      bool is_ok {};
+      bool is_stop {};
 
       /**
        * The last index does not check if contains a next flag,
@@ -70,31 +73,31 @@ void ekg::layout::extentnize(
         flags = p_widgets->p_data->get_place_dock();
         is_scrollbar = p_widgets->p_data->get_type() == ekg::type::scrollbar;
         is_last_index = it == latest_index;
+        is_ok = ekg_bitwise_contains(flags, flag_ok);
+        is_stop = ekg_bitwise_contains(flags, flag_stop);
 
         if (
-            (ekg_bitwise_contains(flags, flag_stop) && it != begin_and_count) || is_last_index || is_scrollbar
+            (is_stop && it != begin_and_count) || is_last_index || is_scrollbar
           ) {
 
           extent -= (ekg::layout::offset) * (extent > 0.0f);
 
           is_last_index_but = (
-            ekg_bitwise_contains(flags, flag_ok) && is_last_index
+            is_ok && is_last_index
           );
 
           flag_ok_count += (
-            (is_ok_flag = (
-              !ekg_bitwise_contains(flags, flag_stop)
-              &&
-              is_last_index_but
-            ))
+            !is_stop
+            &&
+            is_last_index_but
           );
 
           is_last_index_but = (
             is_last_index
             &&
-            !ekg_bitwise_contains(flags, flag_ok)
+            !is_ok
             &&
-            !ekg_bitwise_contains(flags, flag_stop)
+            !is_stop
             &&
             !is_scrollbar
           );
@@ -130,7 +133,7 @@ void ekg::layout::extentnize(
           is_last_index_but = (
             is_last_index
             &&
-            (!ekg_bitwise_contains(flags, flag_stop) || (ekg_bitwise_contains(flags, flag_ok) && !ekg_bitwise_contains(flags, flag_stop)))
+            (!is_stop || (is_ok && !is_stop))
             &&
             !is_scrollbar
           );
@@ -138,11 +141,11 @@ void ekg::layout::extentnize(
           ekg::layout::h_extent.end_index = it + (is_last_index * is_last_index_but);
           ekg::layout::h_extent.extent = extent;
           ekg::layout::h_extent.count = flag_ok_count + (flag_ok_count == 0);
-
+          p_fill_align->index = is_stop ? it - (it > 0) : -1;
           break;
         }
 
-        if (ekg_bitwise_contains(flags, flag_ok)) {
+        if (is_ok) {
           flag_ok_count++;
           continue;
         }
@@ -151,12 +154,21 @@ void ekg::layout::extentnize(
       }
 
       begin_and_count = flag_ok_count + (flag_ok_count == 0);
+      if (!p_fill_align->was_found && is_stop) {
+        p_fill_align->was_found = true;
+      }
+
       break;
     }
 
     case ekg::axis::vertical: {
       break;
     }
+  }
+
+  p_fill_align->was_last_fill_found = p_fill_align->index == begin_index;
+  if (p_fill_align->was_found && !p_fill_align->must_calculate_pixel_perfect && p_fill_align->was_last_fill_found) {
+    p_fill_align->must_calculate_pixel_perfect = true;
   }
 }
 
@@ -255,6 +267,7 @@ void ekg::layout::docknize(
   ekg::layout::h_extent = {};
   ekg::layout::extent_t h_extent_backup {};
   ekg::layout::extent_t v_extent_backup {};
+  ekg::layout::fill_align_t fill_align {};
 
   bool is_none {};
   bool is_free {};
@@ -264,6 +277,7 @@ void ekg::layout::docknize(
   bool is_bottom {};
   bool is_fill {};
   bool is_next {};
+  bool was_first_fill_right_align_found {};
 
   ekg::rect corner_top_left {parent_offset};
   ekg::rect corner_top_right {0.0f, parent_offset.y, 0.0f, 0.0f};
@@ -305,6 +319,7 @@ void ekg::layout::docknize(
       count = it;
       ekg::layout::extentnize(
         dimensional_extent,
+        &fill_align,
         p_widget_parent,
         ekg::dock::fill,
         ekg::dock::next | (is_top ? ekg::dock::bottom : ekg::dock::top),
@@ -445,11 +460,21 @@ void ekg::layout::docknize(
       count = it;
       ekg::layout::extentnize(
         dimensional_extent,
+        &fill_align,
         p_widget_parent,
         ekg::dock::fill,
         ekg::dock::next,
         count,
         ekg::axis::horizontal
+      );
+    }
+
+    if (!fill_align.was_pixel_perfect_calculated && fill_align.must_calculate_pixel_perfect) {
+      fill_align.align = container_rect.w - (layout.x + layout.w);
+      fill_align.was_pixel_perfect_calculated = true;
+    } else if (fill_align.was_last_fill_found && fill_align.was_pixel_perfect_calculated) {
+      layout.w = (
+        (container_rect.w - layout.x) - fill_align.align
       );
     }
 

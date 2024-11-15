@@ -81,6 +81,18 @@ namespace ekg::layout {
   extern ekg::layout::extent_t h_extent;
   extern ekg::layout::extent_t v_extent;
 
+  struct fill_align_t {
+  public:
+    bool was_last_fill_found {};
+    bool was_found {};
+    bool must_calculate_pixel_perfect {};
+    bool was_pixel_perfect_calculated {};
+
+    float align {static_cast<float>(UINT32_MAX)}; // idk may i duwmb
+    int64_t index {};
+    int64_t end_fill_index {};
+  };
+
   /**
    * The between rects from widgets can be docknized
    * and return a rect mask (the bouding limits of docknization action).
@@ -127,6 +139,7 @@ namespace ekg::layout {
    **/
   void extentnize(
     float &extent,
+    fill_align_t *p_fill_align,
     ekg::ui::abstract_widget *p_widget,
     ekg::flags flag_ok,
     ekg::flags flag_stop,
