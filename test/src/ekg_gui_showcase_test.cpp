@@ -1213,7 +1213,7 @@ int32_t laboratory_testing() {
 
   ekg::ui::auto_scale = false;
   ekg::ui::scale = {800.0f, 600.0f};
-  ekg::layout::offset = 2.0f;
+  ekg::layout::offset = 4.0f;
 
   ekg::frame("A", {.x = 20, .y = 20, .w = 200.0f, .h = 200.0f})
     ->set_drag(ekg::dock::full)

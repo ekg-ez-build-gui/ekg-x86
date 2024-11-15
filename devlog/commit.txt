@@ -220,3 +220,4 @@
 -- New set-dimension system and auto-update initial dimension for widgets.
 -- Fixed UV not noticable to GPU-data factor.
 -- Fixed docknization not storing highest widget for both docks top and bottom.
+-- Fixed pixel imperfection(s) on layout-dock.

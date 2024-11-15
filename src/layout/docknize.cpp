@@ -472,7 +472,9 @@ void ekg::layout::docknize(
     if (!fill_align.was_pixel_perfect_calculated && fill_align.must_calculate_pixel_perfect) {
       fill_align.align = container_rect.w - (layout.x + layout.w);
       fill_align.was_pixel_perfect_calculated = true;
-    } else if (fill_align.was_last_fill_found && fill_align.was_pixel_perfect_calculated) {
+      corner_top_right.x = fill_align.align;
+      corner_bottom_right.x = fill_align.align + ekg::layout::offset;
+    } else if (is_fill && fill_align.was_last_fill_found && fill_align.was_pixel_perfect_calculated) {
       layout.w = (
         (container_rect.w - layout.x) - fill_align.align
       );
