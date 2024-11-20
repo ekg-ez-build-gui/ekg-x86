@@ -189,6 +189,11 @@ namespace ekg {
   ekg::ui::scrollbar *scrollbar(std::string_view tag);
 
   /**
+   * Returns if group flag is bind.
+   **/
+  bool has_bind_group_flag();
+
+  /**
    * Stop collecting UIs to group.
    */
   void pop_group();

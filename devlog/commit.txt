@@ -221,3 +221,4 @@
 -- Fixed UV not noticable to GPU-data factor.
 -- Fixed docknization not storing highest widget for both docks top and bottom.
 -- Fixed pixel imperfection(s) on layout-dock.
+-- Fixed a glitch where `ekg::dock::next` was adding immediately the current widget height sum the highest and not the highest only, now highest size is calculated after dock logic.

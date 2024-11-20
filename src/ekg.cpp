@@ -146,12 +146,16 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock
   bool is_w_set {!ekg_equals_float(rect.w, ekg_no_update_placement)};
   bool is_h_set {!ekg_equals_float(rect.h, ekg_no_update_placement)};
 
+  if (!ekg::core->has_bind_group_flag()) {
+    dock = ekg::dock::free;
+  }
+
   p_ui->set_tag(tag);
   p_ui->unsafe_set_type(ekg::type::frame);
   p_ui->set_place(dock);
   ekg::core->gen_widget(p_ui);
 
-  p_ui->ui() = {0.0f, 0.0f, rect.w, rect.h};
+  p_ui->ui() = {rect.x, rect.y, rect.w, rect.h};
 
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_set;
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_set;
@@ -289,6 +293,10 @@ ekg::ui::scrollbar *ekg::scrollbar(std::string_view tag) {
   p_ui->set_tag(tag);
 
   return p_ui;
+}
+
+bool ekg::has_bind_group_flag() {
+  return ekg::core->has_bind_group_flag();
 }
 
 void ekg::pop_group() {

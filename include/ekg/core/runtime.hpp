@@ -114,6 +114,8 @@ namespace ekg {
 
     void set_update_high_frequency(ekg::ui::abstract_widget *widget);
 
+    bool has_bind_group_flag();
+
     void end_group_flag();
 
     void end_group_parent_flag();

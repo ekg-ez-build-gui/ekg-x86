@@ -686,7 +686,7 @@ void ekg::runtime::gen_widget(ekg::ui::abstract *p_ui) {
       update_layout = true;
       p_widget_created = p_widget;
 
-      if (p_widget->p_data->get_place_dock() == ekg::dock::free) {
+      if (p_ui->get_place_dock() == ekg::dock::free) {
         this->p_current_ui_container = p_ui;
       } else {
         append_group = true;
@@ -813,6 +813,10 @@ void ekg::runtime::do_task_refresh(ekg::ui::abstract_widget *p_widget) {
     ekg::dispatch(ekg::env::redraw);
     p_widget->was_refreshed = true;
   }
+}
+
+bool ekg::runtime::has_bind_group_flag() {
+  return this->p_current_ui_container != nullptr;
 }
 
 void ekg::runtime::end_group_flag() {

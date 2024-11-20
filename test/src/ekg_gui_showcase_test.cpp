@@ -5,7 +5,7 @@
 #include <chrono>
 #include "application.hpp"
 
-#define application_enable_stb_image_test
+//#define application_enable_stb_image_test
 #ifdef application_enable_stb_image_test
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -439,7 +439,6 @@ int32_t showcase_useless_window() {
   SDL_Event sdl_event {};
   SDL_GLContext sdl_gl_context {SDL_GL_CreateContext(app.p_sdl_win)};
 
-  glewExperimental = GL_TRUE;
   glewInit();
 
   /**
@@ -516,7 +515,7 @@ int32_t showcase_useless_window() {
   ekg::ui::label *fps {};
   std::string previous_operator {};
 
-  auto p_calculator_frame = ekg::frame("frame-cat", {.w = 400, .h = 900}, ekg::dock::none)
+  auto p_calculator_frame = ekg::frame("frame-cat", {.x = 20.0f, .y = 50.0f, .w = 400, .h = 900}, ekg::dock::none)
     ->set_resize(ekg::dock::right | ekg::dock::bottom | ekg::dock::left)
     ->set_drag(ekg::dock::top);
 
@@ -544,12 +543,14 @@ int32_t showcase_useless_window() {
     );
 
   ekg::item themes {
-    ekg::item("🐮 Theme Schemes")
+    {
+      ekg::item("🐮 Theme Schemes")
+    }
   };
 
   for (auto &[name, theme] : ekg::theme().get_theme_scheme_map()) {
     themes.at(0).emplace_back(name);
-  }
+  }  
 
   auto theme_switch_listbox = ekg::listbox("themes", themes, ekg::dock::fill | ekg::dock::next)
     ->set_scaled_height(4);
@@ -583,7 +584,7 @@ int32_t showcase_useless_window() {
       {
         ekg::item("🤭"),
         ekg::item("🐈 Potato"),
-        ekg::item("Astah", {
+        ekg::item("Maravilhosa Astah que esta no Ceu agora", {
           ekg::item("meow"),
           ekg::item("meow")
         }),
@@ -609,7 +610,7 @@ int32_t showcase_useless_window() {
             })
           })
         }),
-        ekg::item("Mordendo a Astah"),
+        ekg::item("Mordendo a Maravilhosa Astah que esta no Ceu agora"),
         ekg::item("Correndo")
       }
     ),
@@ -1102,7 +1103,7 @@ int32_t laboratory_testing() {
       {
         ekg::item("🤭"),
         ekg::item("🐈 Potato"),
-        ekg::item("Astah", {
+        ekg::item("Maravilhosa Astah que esta no Ceu agora", {
           ekg::item("meow"),
           ekg::item("meow")
         }),
@@ -1128,7 +1129,7 @@ int32_t laboratory_testing() {
             })
           })
         }),
-        ekg::item("Mordendo a Astah"),
+        ekg::item("Mordendo a Maravilhosa Astah que esta no Ceu agora"),
         ekg::item("Correndo")
       }
     ),
@@ -1211,6 +1212,348 @@ int32_t laboratory_testing() {
 
   */
 
+
+  /*
+
+  auto p_calculator_frame = ekg::frame("frame-cat", {.x = 20.0f, .y = 50.0f, .w = 400, .h = 900})
+    ->set_resize(ekg::dock::right | ekg::dock::bottom | ekg::dock::left)
+    ->set_drag(ekg::dock::top);
+
+  // 🏳️‍⚧️
+  // 🐈
+  // 🐮 
+  // 🤭
+
+  ekg::button("🐈 oi me pressiona 🤭 mwm 🐮", ekg::dock::fill | ekg::dock::next)
+    ->set_text_align(ekg::dock::center)
+    ->set_font_size(ekg::font::big)
+    ->set_task(      new ekg::task {
+        .info = {
+          .tag = "oi bu"
+        },
+        .function = [](ekg::info &task_info) {
+          SDL_Event sdl_event_quit {};
+          sdl_event_quit.type = SDL_QUIT;
+          SDL_PushEvent(&sdl_event_quit);
+
+          ekg::log() << "task executed: " << task_info.tag;
+        }
+      },
+      ekg::action::activity
+    );
+
+  ekg::item themes {
+    {
+      ekg::item("🐮 Theme Schemes")
+    }
+  };
+
+  for (auto &[name, theme] : ekg::theme().get_theme_scheme_map()) {
+    themes.at(0).emplace_back(name);
+  }  
+
+  auto theme_switch_listbox = ekg::listbox("themes", themes, ekg::dock::fill | ekg::dock::next)
+    ->set_scaled_height(4);
+
+  ekg::label("Apply theme:", ekg::dock::next);
+  ekg::button("Apply", ekg::dock::fill)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "apply-theme"
+        },
+        .function = [theme_switch_listbox](ekg::info&) {
+          std::string_view theme_pick {};
+          for (ekg::item &items : theme_switch_listbox->p_value->at(0)) {
+            if (ekg_bitwise_contains(items.get_attr(), ekg::attr::focused)) {
+              ekg::theme().set_current_theme_scheme(items.get_value());
+              break;
+            }
+          }
+        }
+      },
+      ekg::action::activity
+    );
+
+  auto fps = ekg::label("FPS: ", ekg::dock::fill | ekg::dock::next)
+    ->set_font_size(ekg::font::big);
+
+  ekg::item content = ekg::item {
+    ekg::item(
+      "😊 Nome",
+      {
+        ekg::item("🤭"),
+        ekg::item("🐈 Potato"),
+        ekg::item("Maravilhosa Astah que esta no Ceu agora", {
+          ekg::item("meow"),
+          ekg::item("meow")
+        }),
+        ekg::item("Malboro"),
+        ekg::item("Leviata")
+      },
+      ekg::attr::disabled | ekg::attr::locked
+    ),
+    ekg::item(
+      "Estado",
+      {
+        ekg::item("No Ceu"),
+        ekg::item("Brincando la fora"),
+        ekg::item("🐈 ", {
+          ekg::item("meow"),
+          ekg::item("🐈", {
+            ekg::item("Brincando la fora"),
+            ekg::item("🐈"),
+            ekg::item("🐈", {
+              ekg::item("Brincando la fora"),
+              ekg::item("🐈"),
+              ekg::item("🐈")
+            })
+          })
+        }),
+        ekg::item("Mordendo a Maravilhosa Astah que esta no Ceu agora"),
+        ekg::item("Correndo")
+      }
+    ),
+    ekg::item(
+      "Cor",
+      {
+        ekg::item("Azul"),
+        ekg::item("Azul"),
+        ekg::item("Azul", {
+          ekg::item("meow?"),
+          ekg::item("meow?")
+        }),
+        ekg::item("Azul"),
+        ekg::item("Azul")
+      }
+    ),
+    ekg::item(
+      "Cachorro",
+      {
+        ekg::item("Au"),
+        ekg::item("A"),
+        ekg::item("J", {
+          ekg::item("K?"),
+          ekg::item("L?")
+        }),
+        ekg::item("Meow"),
+        ekg::item("Oi")
+      }
+    )
+  };
+
+  for (uint64_t it {}; it < content.size(); it++) {
+    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
+    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
+    content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
+  }
+
+  uint16_t muuuuu {};
+
+  ekg::button("count muu:", ekg::dock::next)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "count-button"
+        },
+        .function = [&muuuuu](ekg::info &info) {
+          muuuuu++;
+        }
+      },
+      ekg::action::activity
+    );
+
+  auto incremment = ekg::slider<uint16_t>(
+    "increment",
+    ekg::dock::fill
+  )
+  ->set_text_align(ekg::dock::left)
+  ->set_font_size(ekg::font::normal)
+  ->range<uint16_t>(0, 1, 0, 100)
+  ->range<uint16_t>(0).u16.transfer_ownership(&muuuuu);
+
+  ekg::label("Background Color:", ekg::dock::next);
+  ekg::vec3 clear_color {};
+
+  auto p = ekg::slider<float>(
+    "clear_color",
+    ekg::dock::fill
+  )
+  ->set_text_align(ekg::dock::top | ekg::dock::left)
+  ->set_font_size(ekg::font::normal)
+  ->range<double>(0, 0.3f, 0.0f, 1.0f)
+  ->range<double>(0).f32.transfer_ownership(&clear_color.x)
+  ->range<double>(1, 0.3f, 0.0f, 1.0f)
+  ->range<double>(1).f32.transfer_ownership(&clear_color.y)
+  ->range<double>(2, 0.3f, 0.0f, 1.0f)
+  ->range<double>(2).f32.transfer_ownership(&clear_color.z);
+
+  ekg::button("Dead-allocate the instance of life", ekg::dock::fill | ekg::dock::next)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "oi eu amo pastel com beijinho",
+          .p_data = &content
+        },
+        .function = [](ekg::info &info) {
+          auto &content = *static_cast<ekg::item*>(info.p_data);
+          for (uint64_t it {}; it < content.size(); it++) {
+            content.at(it).erase(content.at(it).begin(), content.at(it).begin() + 1); // remove first element or meow
+          }
+
+          std::cout << info.tag << std::endl;
+        }
+      },
+    ekg::action::activity
+  );
+
+  auto list = ekg::listbox(
+    "hello",
+    content,
+    ekg::dock::fill | ekg::dock::next
+  )
+  ->set_column_header_align(ekg::dock::fill)
+  ->set_scaled_height(16)
+  ->set_mode(ekg::mode::multicolumn)
+  ->transfer_ownership(&content);
+
+  ekg::checkbox("DPI-scale:", true, ekg::dock::next | ekg::dock::fill)
+    ->set_box_align(ekg::dock::left)
+    ->set_text_align(ekg::dock::left)
+    ->transfer_ownership(&ekg::ui::auto_scale);
+
+  ekg::textbox("DPI", "1920x1080", ekg::dock::fill)
+    ->set_max_lines(1)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "DPI-scale"
+        },
+        .function = [](ekg::info &task_info) {
+          ekg::ui::textbox *p_ui {static_cast<ekg::ui::textbox*>(task_info.p_ui)};
+          std::string &text {p_ui->p_value->at(0)};
+
+          bool found_x {};
+          uint64_t begin {};
+          uint64_t size {text.size()};
+
+          for (uint64_t it {}; it < text.size(); it++) {
+            char &c {text.at(it)};
+
+            if (c == 'x') {
+              begin = it;
+              ekg::ui::scale.x = std::stof(text.substr(0, begin)); 
+              found_x = true;
+            }
+
+            if (it == size - 1) {
+              ekg::ui::scale.y = std::stof(text.substr(begin+1, it - begin));
+            }
+          }
+
+          ekg::log() << "updated DPI";
+        }
+      },
+      ekg::action::activity
+    );
+
+  auto labelresult = ekg::label("0", ekg::dock::fill | ekg::dock::next);
+  labelresult->set_scaled_height(4);
+  labelresult->set_text_align(ekg::dock::right | ekg::dock::bottom);
+  labelresult->set_font_size(ekg::font::big);
+  labelresult->set_tag("calculator-result");
+
+  auto buselesstop1 = ekg::button("", ekg::dock::fill | ekg::dock::next);
+  buselesstop1->set_scaled_height(2);
+  buselesstop1->set_text_align(ekg::dock::center);
+
+  auto buselesstop2 = ekg::button("", ekg::dock::fill);
+  buselesstop2->set_scaled_height(2);
+  buselesstop2->set_text_align(ekg::dock::center);
+
+  auto bcls = ekg::button("cls", ekg::dock::fill);
+  bcls->set_scaled_height(2);
+  bcls->set_text_align(ekg::dock::center);
+  bcls->set_tag("calculator-cls");
+
+  auto berase = ekg::button("<=", ekg::dock::fill);
+  berase->set_scaled_height(2);
+  berase->set_text_align(ekg::dock::center);
+  berase->set_tag("calculator-erase");
+
+  auto b7 = ekg::button("7", ekg::dock::fill | ekg::dock::next);
+  b7->set_scaled_height(2);
+  b7->set_text_align(ekg::dock::center);
+
+  auto b8 = ekg::button("8", ekg::dock::fill);
+  b8->set_scaled_height(2);
+  b8->set_text_align(ekg::dock::center);
+
+  auto b9 = ekg::button("9", ekg::dock::fill);
+  b9->set_scaled_height(2);
+  b9->set_text_align(ekg::dock::center);
+
+  auto bmultiply = ekg::button("x", ekg::dock::fill);
+  bmultiply->set_scaled_height(2);
+  bmultiply->set_text_align(ekg::dock::center);
+  bmultiply->set_tag("calculator-multiply");
+
+  auto b4 = ekg::button("4", ekg::dock::fill | ekg::dock::next);
+  b4->set_scaled_height(2);
+  b4->set_text_align(ekg::dock::center);
+
+  auto b5 = ekg::button("5", ekg::dock::fill);
+  b5->set_scaled_height(2);
+  b5->set_text_align(ekg::dock::center);
+
+  auto b6 = ekg::button("6", ekg::dock::fill);
+  b6->set_scaled_height(2);
+  b6->set_text_align(ekg::dock::center);
+
+  auto bsubtract = ekg::button("-", ekg::dock::fill);
+  bsubtract->set_scaled_height(2);
+  bsubtract->set_text_align(ekg::dock::center);
+  bsubtract->set_tag("calculator-subtract");
+
+  auto b1 = ekg::button("1", ekg::dock::fill | ekg::dock::next);
+  b1->set_scaled_height(2);
+  b1->set_text_align(ekg::dock::center);
+
+  auto b2 = ekg::button("2", ekg::dock::fill);
+  b2->set_scaled_height(2);
+  b2->set_text_align(ekg::dock::center);
+
+  auto b3 = ekg::button("3", ekg::dock::fill);
+  b3->set_scaled_height(2);
+  b3->set_text_align(ekg::dock::center);
+
+  auto baddition = ekg::button("+", ekg::dock::fill);
+  baddition->set_scaled_height(2);
+  baddition->set_text_align(ekg::dock::center);
+  baddition->set_tag("calculator-addition");
+
+  auto buseless1 = ekg::button("", ekg::dock::fill | ekg::dock::next);
+  buseless1->set_scaled_height(2);
+  buseless1->set_text_align(ekg::dock::center);
+
+  auto b0 = ekg::button("0", ekg::dock::fill);
+  b0->set_scaled_height(2);
+  b0->set_text_align(ekg::dock::center);
+
+  auto buseless2 = ekg::button("", ekg::dock::fill);
+  buseless2->set_scaled_height(2);
+  buseless2->set_text_align(ekg::dock::center);
+
+  auto bassign = ekg::button("=", ekg::dock::fill);
+  bassign->set_scaled_height(2);
+  bassign->set_text_align(ekg::dock::center);
+  bassign->set_tag("calculator-assign");
+
+  ekg::scrollbar("pompom-calc");
+  ekg::pop_group();
+  */
+
+  /*
   ekg::ui::auto_scale = false;
   ekg::ui::scale = {800.0f, 600.0f};
   ekg::layout::offset = 4.0f;
@@ -1232,8 +1575,8 @@ int32_t laboratory_testing() {
   ekg::button("5", ekg::dock::next | ekg::dock::fill);
   ekg::button("6", ekg::dock::next | ekg::dock::fill);
   ekg::button("7", ekg::dock::next | ekg::dock::fill);
+  ekg::button("4", ekg::dock::none)->set_width(90.0f);
   ekg::button("4", ekg::dock::next | ekg::dock::fill);
-  ekg::button("4", ekg::dock::none);
   ekg::button("oi eu amo 🐄(s), 🐈(s), 🥞(s), e s-in-the-⬛", ekg::dock::next | ekg::dock::fill);
   ekg::button("3", ekg::dock::fill | ekg::dock::right);
   ekg::button("Exit", ekg::dock::right | ekg::dock::bottom)
@@ -1257,7 +1600,10 @@ int32_t laboratory_testing() {
   ekg::scrollbar("shout fofo maravilhoso");
   ekg::pop_group();
 
+  */
+
   ekg::vec3 clear_color {};
+
 
   while (running) {
     ekg::ui::dt = 1.0f / last_frame;
@@ -1293,5 +1639,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return laboratory_testing();
+  return showcase_useless_window();
 }

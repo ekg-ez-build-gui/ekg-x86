@@ -12,6 +12,8 @@ Please before cloning EKG, insert `--depth 1` flag, or you will clone almost 1gb
 EKG is recognised as an open-source project by [JetBrains](https://www.jetbrains.com/) 🖤  
 <a href="https://www.jetbrains.com"> <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.png" width="100" height="100" alt="JetBrains Black Box Logo logo."> <a/>
 
+[This project also is a tribute for Astah 🐈‍⬛, an amazing lovely cat.](https://x.com/i/status/1798735370630443338)
+
 # Rendering & Platform Support
 
 The graphics engine is implemented over a RHI-like (Rendering Hardware-Interface-like); supporting multi-API(s) (OpenGL, OpenGL ES3, Vulkan, etc). EKG implements some object-state based concepts, like in the initialization process and sampler creation, due the Khronos API high-performance Vulkan support.
@@ -166,9 +168,6 @@ This example print outputs the name of task in terminal.
 
 # Linking
 
-* Warning: Instead of compiling everything and linking all required libs (Vulkan and OpenGL); soon EKG must implement a second native library code to separate GPU APIs implementations 
-but for now EKG requires link the platform and API libraries together. 
-
 First [download](https://github.com/vokegpu/ekg-ui-library/releases) the latest release and [FreeType2](https://freetype.org/).  
 Let see for SDL2 and OpenGL with GLEW, note: the order link is important, be sure you are linking EKG first.
 
@@ -191,8 +190,6 @@ cxx ... -lekg -lSDL2main -lSDL2 -lfreetype -lglew32
 EKG used some std 17 features, so the minimum std version is 17, note: you must use [CMake](https://cmake.org/download/) with [Ninja](https://github.com/ninja-build/ninja) to generate makefiles.
 
 If you can not compile because of `freetype not found`, insert flag `-DEKG_LINUX_NOT_FOUND_FREETYPE=1`; the CMake build file will force an include.
-
-If you want to build test programs insert `-DEKG_ENABLE_TEST=1`.
 
 ```bash
 cmake -S . -B ./cmake-build-debug -G Ninja

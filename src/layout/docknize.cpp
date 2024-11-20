@@ -344,8 +344,6 @@ void ekg::layout::docknize(
 
     switch (flags & ekg::dock::bottom) {
     case ekg::dock::bottom:
-      highest_bottom = ekg_min(highest_bottom, layout.h);
-
       if (ekg_equals_float(corner_bottom_right.y, 0.0f)) {
         corner_bottom_right.y += highest_bottom + ekg::layout::offset;
         corner_bottom_left.y = corner_bottom_right.y;
@@ -412,10 +410,9 @@ void ekg::layout::docknize(
         corner_bottom_right.x += ekg::layout::offset;
       }
 
+      highest_bottom = ekg_min(highest_bottom, layout.h);
       break;
     default:
-      highest_top = ekg_min(highest_top, layout.h);
-
       if (is_next && is_left) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
@@ -453,6 +450,8 @@ void ekg::layout::docknize(
         corner_top_right.x += ekg::layout::offset;
         layout.y = corner_top_right.y;
       }
+
+      highest_top = ekg_min(highest_top, layout.h);
       break;
     }
 
