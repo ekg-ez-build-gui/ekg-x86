@@ -123,6 +123,7 @@ namespace ekg::ui {
     bool pressed_select,
     bool pressed_open,
     bool &was_selected,
+    bool was_hovered,
     ekg::item &parent,
     ekg::vec2 &ui_pos,
     ekg::rect &ui_rect,

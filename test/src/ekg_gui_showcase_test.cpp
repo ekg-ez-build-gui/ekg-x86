@@ -476,20 +476,20 @@ int32_t showcase_useless_window() {
     ->set_drag(ekg::dock::top)
     ->set_resize(ekg::dock::left | ekg::dock::bottom | ekg::dock::right);
 
-  auto p_terminal = ekg::textbox("meow", "meow oi", ekg::dock::fill | ekg::dock::next)
-    ->set_scaled_height(12);
-
   ekg::frame("tweaks-tob-bar", {.w = 10.0f, .h = 50.0f}, ekg::dock::fill | ekg::dock::next)
     ->set_drag(ekg::dock::full)
     ->make_parent_top_level();
 
-  ekg::button("-", ekg::dock::none);
-  ekg::button("[]", ekg::dock::none);
-  ekg::button("x", ekg::dock::none);
+  ekg::button("x", ekg::dock::right);
+  ekg::button("[]", ekg::dock::right);
+  ekg::button("-", ekg::dock::right);
   ekg::pop_group_parent();
 
   ekg::frame("tweaks-content", {.x = 700, .h = 200}, ekg::dock::fill | ekg::dock::next);
   ekg::label("UI internal tweaks", ekg::dock::fill | ekg::dock::next);
+
+  auto p_terminal = ekg::textbox("meow", "meow oi", ekg::dock::fill | ekg::dock::next)
+    ->set_scaled_height(12);
 
   ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill | ekg::next)
     ->transfer_ownership(&app.vsync)
@@ -567,6 +567,7 @@ int32_t showcase_useless_window() {
           for (ekg::item &items : theme_switch_listbox->p_value->at(0)) {
             if (ekg_bitwise_contains(items.get_attr(), ekg::attr::focused)) {
               ekg::theme().set_current_theme_scheme(items.get_value());
+              std::cout << items.get_value() << std::endl;
               break;
             }
           }

@@ -199,7 +199,7 @@
 -- Fixed memory issues from `ekg::value_t<t, s>` but I do not believe it is totally safe, God my brain can not figure what must do.
 -- `ekg::string_float64_precision` added for double/float64.
 -- Totally deprecated the dynamic range, due the insanely unsafe issues, now it is type-specification-based (you must invoke f32 to float, i64 to uint64 but you are able to ownership infer type safety).
--- Added the left/right corners option to text in slider.
+-- Added the left/right corners option to text in sli4der.
 -- `ekg::layout::extent` now an type object `ekg::layout::extent_t`, plus two new externs (`ekg::layout::v_extent` & `ekg::layout::h_extent`).
 -- `ekg::dock::none` option to the text in slider.
 -- Fixed the scrolling timeout. Now it is working smooth.
@@ -222,3 +222,4 @@
 -- Fixed docknization not storing highest widget for both docks top and bottom.
 -- Fixed pixel imperfection(s) on layout-dock.
 -- Fixed a glitch where `ekg::dock::next` was adding immediately the current widget height sum the highest and not the highest only, now highest size is calculated after dock logic.
+-- Fixed a glitch where the listbox was not updating any selection for non-visible items, if the item was not visible.
