@@ -68,11 +68,17 @@ ekg::flags ekg::ui::frame::get_resize_dock() {
 }
 
 ekg::ui::frame *ekg::ui::frame::set_size(float w, float h) {
-  if (this->sync_ui.w != w || this->sync_ui.h != h) {
-    this->sync_ui.w = w;
-    this->sync_ui.h = h;
+  bool is_w_diff {!ekg_equals_float(this->sync_ui.w, w)};
+  bool is_h_diff {!ekg_equals_float(this->sync_ui.h, h)};
+
+  if (is_w_diff || is_h_diff) {
+    this->sync_ui.w = (w * is_w_diff) + (this->sync_ui.w * !is_w_diff);
+    this->sync_ui.h = (h * is_h_diff) + (this->sync_ui.h * !is_h_diff);
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_diff);
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_diff);
+
     ekg::reload(this->id);
     ekg::synclayout(this->id);
     ekg::dispatch(ekg::env::redraw);
@@ -86,11 +92,17 @@ ekg::vec2 ekg::ui::frame::get_size() {
 }
 
 ekg::ui::frame *ekg::ui::frame::set_pos(float x, float y) {
-  if (this->sync_ui.x != x || this->sync_ui.y != y) {
-    this->sync_ui.x = x;
-    this->sync_ui.y = y;
+  bool is_x_diff {!ekg_equals_float(this->sync_ui.x, x)};
+  bool is_y_diff {!ekg_equals_float(this->sync_ui.y, y)};
+
+  if (is_x_diff || is_y_diff) {
+    this->sync_ui.x = (x * is_x_diff) + (this->sync_ui.x * !is_x_diff);
+    this->sync_ui.y = (y * is_y_diff) + (this->sync_ui.y * !is_y_diff);
 
     ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::dimension));
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_x) * is_x_diff);
+    ekg_bitwise_add(this->sync_flags, static_cast<ekg::flags>(ekg::ui_sync::set_y) * is_y_diff);
+
     ekg::reload(this->id);
     ekg::dispatch(ekg::env::redraw);
   }

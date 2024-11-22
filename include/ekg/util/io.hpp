@@ -177,6 +177,7 @@ namespace ekg {
   };
 
   typedef uint32_t flags;
+  typedef uint32_t id;
 
   /**
    * Number range types, used in specific-features.

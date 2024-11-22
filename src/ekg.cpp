@@ -125,17 +125,22 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect) {
   p_ui->set_place(ekg::dock::free);
   ekg::core->gen_widget(p_ui);
 
-  p_ui->ui() = {rect.x, rect.y, rect.w, rect.h};
+  p_ui->ui() = {
+    rect.x,
+    rect.y,
+    rect.w,
+    rect.h
+  };
 
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_x) | static_cast<ekg::flags>(ekg::ui_sync::set_y);
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_set;
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_set;
 
-  if (!ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
-    p_ui->set_auto_initial_dimension(true);
-  }
-
   p_ui->unsafe_sync_ui(static_cast<ekg::flags>(sync_ui_flags));
+  p_ui->set_auto_initial_dimension(
+    !ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))
+  );
+
   return p_ui;
 }
 
@@ -155,16 +160,21 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock
   p_ui->set_place(dock);
   ekg::core->gen_widget(p_ui);
 
-  p_ui->ui() = {rect.x, rect.y, rect.w, rect.h};
+  p_ui->ui() = {
+    rect.x,
+    rect.y,
+    rect.w,
+    rect.h
+  };
 
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_width) * is_w_set;
   sync_ui_flags |= static_cast<ekg::flags>(ekg::ui_sync::set_height) * is_h_set;
 
-  if (!ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))) {
-    p_ui->set_auto_initial_dimension(true);
-  }
-
   p_ui->unsafe_sync_ui(static_cast<ekg::flags>(sync_ui_flags));
+  p_ui->set_auto_initial_dimension(
+    !ekg_bitwise_contains(static_cast<ekg::flags>(sync_ui_flags), static_cast<ekg::flags>(ekg::ui_sync::set_height))
+  );
+
   return p_ui;
 }
 

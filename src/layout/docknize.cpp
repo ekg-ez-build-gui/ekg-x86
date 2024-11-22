@@ -309,9 +309,9 @@ void ekg::layout::docknize(
     is_none   = ekg_bitwise_contains(flags, ekg::dock::none);
     is_free   = ekg_bitwise_contains(flags, ekg::dock::free);
     is_right  = ekg_bitwise_contains(flags, ekg::dock::right);
-    is_left   = (!is_right && ekg_bitwise_contains(flags, ekg::dock::left)) || !is_right;
+    is_left   = ekg_bitwise_contains(flags, ekg::dock::left) || !is_right;
     is_bottom = ekg_bitwise_contains(flags, ekg::dock::bottom);
-    is_top    = (!is_bottom && ekg_bitwise_contains(flags, ekg::dock::top)) || !is_bottom;
+    is_top    = ekg_bitwise_contains(flags, ekg::dock::top) || !is_bottom;
     is_fill   = ekg_bitwise_contains(flags, ekg::dock::fill);
     is_next   = ekg_bitwise_contains(flags, ekg::dock::next);
 
@@ -540,6 +540,15 @@ float ekg::layout::height(
     );
   }
 
+  total_height += (
+    ekg::layout::offset // top
+    +
+    ekg::layout::offset // top
+    +
+    ekg::layout::offset // bottom
+    +
+    ekg::layout::offset // bottom
+  );
   return total_height;
 }
 

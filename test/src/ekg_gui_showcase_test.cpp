@@ -208,13 +208,17 @@ bool load_ttf_emoji(ekg::gpu::sampler_t *p_sampler) {
   // 🦋
   // 🇧🇷
   // 👽
+  // 🌯
+  // 🐾
+  // 🐳
+  // 🦮
 
   uint32_t previous_size {f_renderer.font_size};
   f_renderer.set_size(512);
 
   FT_Load_Char(
     typography_font_face.ft_face,
-    ekg::utf_string_to_char32("🦋"),
+    ekg::utf_string_to_char32("🐳"),
     FT_LOAD_RENDER | FT_LOAD_COLOR | FT_LOAD_DEFAULT
   );
 
@@ -465,7 +469,6 @@ int32_t showcase_useless_window() {
     .p_gpu_api = new ekg::os::opengl(),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
-
   ekg::runtime runtime {};
   ekg::init(
     &runtime,
@@ -1603,8 +1606,46 @@ int32_t laboratory_testing() {
 
   */
 
-  ekg::vec3 clear_color {};
+  ekg::ui::frame *p_meow_frame {
+    ekg::frame("meow", {.x = 20.0f, .y = 20.0f, .w = 700.0f, .h = 1000.0f})
+  };
 
+  ekg::button("resize my meow meow ain eu amo fazer mu", ekg::dock::fill)
+    ->set_task(
+      new ekg::task {
+        .info = {
+          .tag = "meow"
+        },
+        .function = [p_meow_frame](ekg::info &info) {
+          p_meow_frame->set_size(
+            p_meow_frame->get_width() + 10.0f,
+            p_meow_frame->get_height() + 10.0f
+          );
+        }
+      }
+      ,
+      ekg::action::activity
+    );
+
+  ekg::gpu::sampler_t meow_sampler {};
+  load_ttf_emoji(&meow_sampler);
+
+  ekg::label("Cowtapult v0.1.0!!", ekg::dock::fill)
+    ->set_text_align(ekg::dock::center)
+    ->set_font_size(ekg::font::big)
+    ->set_scaled_height(32);
+
+  ekg::label("", ekg::dock::next | ekg::dock::fill)->set_scaled_height(12);
+  ekg::label("wew", ekg::dock::next | ekg::dock::fill);
+  ekg::frame("image", {.w = 256, .h = 256}, ekg::dock::none)
+    ->set_layer(
+      &meow_sampler,
+      ekg::layer::background
+  );
+
+  ekg::label("ww", ekg::dock::fill);
+
+  ekg::vec3 clear_color {};
 
   while (running) {
     ekg::ui::dt = 1.0f / last_frame;
@@ -1640,5 +1681,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return showcase_useless_window();
+  return laboratory_testing();
 }
