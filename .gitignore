@@ -1,5 +1,7 @@
-test/cmake-build-debug
+test/cmake-build
+test/cmake-build-cache
 /cmake-build-debug
+/cmake-build
 .idea/
 .vscode/
 .sublimetext/

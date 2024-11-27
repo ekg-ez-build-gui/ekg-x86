@@ -1638,11 +1638,9 @@ int32_t laboratory_testing() {
   ekg::label("", ekg::dock::next | ekg::dock::fill)->set_scaled_height(12);
   ekg::label("wew", ekg::dock::next | ekg::dock::fill);
   ekg::frame("image", {.w = 256, .h = 256}, ekg::dock::none)
-    ->set_layer(
-      &meow_sampler,
-      ekg::layer::background
-  );
+    ->set_layer(&meow_sampler, ekg::layer::background);
 
+  ekg::pop_group_parent();
   ekg::label("ww", ekg::dock::fill);
 
   ekg::vec3 clear_color {};
