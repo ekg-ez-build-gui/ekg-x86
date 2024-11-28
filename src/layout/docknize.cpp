@@ -138,10 +138,12 @@ void ekg::layout::extentnize(
             !is_scrollbar
           );
 
+          p_fill_align->index = is_last_index_but ? it - (it > 0) : -1;
+
           ekg::layout::h_extent.end_index = it + (is_last_index * is_last_index_but);
           ekg::layout::h_extent.extent = extent;
           ekg::layout::h_extent.count = flag_ok_count + (flag_ok_count == 0);
-          p_fill_align->index = is_stop ? it - (it > 0) : -1;
+
           break;
         }
 
@@ -471,6 +473,7 @@ void ekg::layout::docknize(
     if (!fill_align.was_pixel_perfect_calculated && fill_align.must_calculate_pixel_perfect) {
       fill_align.align = container_rect.w - (layout.x + layout.w);
       fill_align.was_pixel_perfect_calculated = true;
+      
       corner_top_right.x = fill_align.align;
       corner_bottom_right.x = fill_align.align + ekg::layout::offset;
     } else if (is_fill && fill_align.was_last_fill_found && fill_align.was_pixel_perfect_calculated) {

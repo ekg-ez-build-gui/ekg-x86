@@ -224,3 +224,4 @@
 -- Fixed a glitch where `ekg::dock::next` was adding immediately the current widget height sum the highest and not the highest only, now highest size is calculated after dock logic.
 -- Fixed a glitch where the listbox was not updating any selection for non-visible items, if the item was not visible.
 -- Fixed auto-initial size always true for frame widget.
+-- Fixed a glitch where count line is not limited to previous initial setting paramter on `ekg::draw::font_renderer::get_font_width(std::string_view text, int32_t &lines)`.

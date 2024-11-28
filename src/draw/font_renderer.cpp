@@ -38,8 +38,6 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
     return 0.0f;
   }
 
-  lines = 1;
-
   FT_Face ft_face {};
   FT_UInt ft_uint_previous {};
   FT_Vector ft_vector_previous_char {};
@@ -48,7 +46,9 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
   float text_width {};
   float largest_text_width {};
 
+  uint64_t lines_count {};
   uint64_t text_size {text.size()};
+  
   char32_t char32 {};
   uint8_t char8 {};
   std::string utf_string {};
@@ -64,7 +64,7 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
       it += static_cast<uint64_t>(r_n_break_text);
       largest_text_width = ekg_min(largest_text_width, text_width);
       text_width = 0.0f;
-      lines++;
+      lines_count++;
       continue;
     }
 
@@ -94,7 +94,9 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
     text_width += this->mapped_glyph_char_data[char32].wsize;
   }
 
+  lines = ekg_min(lines, lines_count);
   largest_text_width = ekg_min(largest_text_width, text_width);
+
   return largest_text_width;
 }
 

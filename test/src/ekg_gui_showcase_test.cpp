@@ -1610,7 +1610,18 @@ int32_t laboratory_testing() {
     ekg::frame("meow", {.x = 20.0f, .y = 20.0f, .w = 700.0f, .h = 1000.0f})
   };
 
-  ekg::button("resize my meow meow ain eu amo fazer mu", ekg::dock::fill)
+  ekg::gpu::sampler_t meow_sampler {};
+  load_ttf_emoji(&meow_sampler);
+
+  ekg::label("")->set_scaled_height(12);
+  //ekg::label("www", ekg::dock::none)->set_scaled_height(12);
+
+  ekg::button("oi eu amo viver meow", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::button("oi eu amo a maya", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::button("potato vou te cozinhar", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::button("booo", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+
+  ekg::button("resize my meow meow ain eu amo fazer mu", ekg::dock::fill | ekg::dock::next)
     ->set_task(
       new ekg::task {
         .info = {
@@ -1627,22 +1638,6 @@ int32_t laboratory_testing() {
       ekg::action::activity
     );
 
-  ekg::gpu::sampler_t meow_sampler {};
-  load_ttf_emoji(&meow_sampler);
-
-  ekg::label("Cowtapult v0.1.0!!", ekg::dock::fill)
-    ->set_text_align(ekg::dock::center)
-    ->set_font_size(ekg::font::big)
-    ->set_scaled_height(32);
-
-  ekg::label("", ekg::dock::next | ekg::dock::fill)->set_scaled_height(12);
-  ekg::label("wew", ekg::dock::next | ekg::dock::fill);
-  ekg::frame("image", {.w = 256, .h = 256}, ekg::dock::none)
-    ->set_layer(&meow_sampler, ekg::layer::background);
-
-  ekg::pop_group_parent();
-  ekg::label("ww", ekg::dock::fill);
-
   ekg::vec3 clear_color {};
 
   while (running) {
@@ -1654,11 +1649,10 @@ int32_t laboratory_testing() {
     }
 
     while (SDL_PollEvent(&sdl_event)) {
-      ekg::os::sdl_poll_event(sdl_event);
-
       if (sdl_event.type == SDL_QUIT) {
         running = false;
       }
+      ekg::os::sdl_poll_event(sdl_event);
     }
 
     ekg::update();
