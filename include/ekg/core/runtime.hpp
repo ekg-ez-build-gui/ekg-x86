@@ -41,9 +41,9 @@ namespace ekg {
   extern struct current_hovered_state {
   public:
     int32_t id {};
-    ekg::type type {};
     int32_t up {};
     int32_t down {};
+    ekg::type type {};
     ekg::type down_type {};
     ekg::type up_type {};
     int32_t swap {};
@@ -57,13 +57,16 @@ namespace ekg {
     static ekg::stack front;
   private:
     std::unordered_map<int32_t, ekg::ui::abstract_widget*> widget_map {};
-    std::vector<ekg::ui::abstract_widget*> loaded_widget_list  {};
-    std::vector<ekg::ui::abstract_widget*> refresh_widget_list  {};
-    std::vector<ekg::ui::abstract_widget*> reload_widget_list  {};
-    std::vector<ekg::ui::abstract_widget*> synclayout_widget_list  {};
-    std::vector<ekg::ui::abstract_widget*> redraw_widget_list  {};
-    std::vector<ekg::ui::abstract_widget*> scissor_widget_list  {};
+
     std::vector<ekg::ui::abstract_widget*> update_widget_list {};
+    std::vector<ekg::ui::abstract_widget*> loaded_widget_list {};
+    std::vector<ekg::ui::abstract_widget*> refresh_widget_list {};
+
+    std::vector<ekg::ui::abstract_widget*> reload_widget_list {};
+    uint64_t reload_widget_counter {};
+
+    std::vector<ekg::ui::abstract_widget*> synclayout_widget_list {};
+    uint64_t synclayout_widget_counter {};
 
     ekg::ui::abstract *p_current_ui_container {};
     ekg::ui::abstract_widget *p_abs_activity_widget {};

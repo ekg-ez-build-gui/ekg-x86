@@ -173,6 +173,12 @@ ekg::ui::frame *ekg::ui::frame::set_top_level_frame_id(uint32_t frame_id) {
 
   return this;
 }
+
+ekg::ui::frame *ekg::ui::frame::make_pop_group() {
+  ekg::core->end_group_parent_flag();
+  return this;
+}
+
 ekg::ui::frame *ekg::ui::frame::make_parent_top_level() {
   return this->set_top_level_frame_id(this->parent_id);
 }

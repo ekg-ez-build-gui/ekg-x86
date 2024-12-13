@@ -68,6 +68,11 @@ namespace ekg::ui {
     float get_height();
 
     /**
+     * Make this frame automatically pop.
+     **/
+    ekg::ui::frame *make_pop_group();
+
+    /**
      * Make automatically the parent ID as a top-level frame.\n
      * By calling `set_top_level_frame_id` with the `parent_id`.
      **/

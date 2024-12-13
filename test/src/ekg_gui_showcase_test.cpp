@@ -212,13 +212,14 @@ bool load_ttf_emoji(ekg::gpu::sampler_t *p_sampler) {
   // 🐾
   // 🐳
   // 🦮
+  // 🦛
 
   uint32_t previous_size {f_renderer.font_size};
   f_renderer.set_size(512);
 
   FT_Load_Char(
     typography_font_face.ft_face,
-    ekg::utf_string_to_char32("🐳"),
+    ekg::utf_string_to_char32("🦛"),
     FT_LOAD_RENDER | FT_LOAD_COLOR | FT_LOAD_DEFAULT
   );
 
@@ -427,7 +428,6 @@ int32_t showcase_useless_window() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
-  SDL_GL_SetSwapInterval((app.vsync = true));
 
   app.p_sdl_win = {
     SDL_CreateWindow(
@@ -469,6 +469,7 @@ int32_t showcase_useless_window() {
     .p_gpu_api = new ekg::os::opengl(),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
+
   ekg::runtime runtime {};
   ekg::init(
     &runtime,
@@ -494,6 +495,7 @@ int32_t showcase_useless_window() {
   auto p_terminal = ekg::textbox("meow", "meow oi", ekg::dock::fill | ekg::dock::next)
     ->set_scaled_height(12);
 
+  SDL_GL_SetSwapInterval((app.vsync = false));
   ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill | ekg::next)
     ->transfer_ownership(&app.vsync)
     ->set_task(
@@ -1613,13 +1615,12 @@ int32_t laboratory_testing() {
   ekg::gpu::sampler_t meow_sampler {};
   load_ttf_emoji(&meow_sampler);
 
-  ekg::label("")->set_scaled_height(12);
-  //ekg::label("www", ekg::dock::none)->set_scaled_height(12);
-
-  ekg::button("oi eu amo viver meow", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
-  ekg::button("oi eu amo a maya", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
-  ekg::button("potato vou te cozinhar", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
-  ekg::button("booo", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::label("", ekg::dock::fill | ekg::dock::next)->set_scaled_height(6);
+  ekg::frame("gui-icon", {.w = 256.0f, .h = 256.0f}, ekg::dock::next);
+  ekg::pop_group_parent();
+  ekg::button("play", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::button("settings", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
+  ekg::button("meow", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
 
   ekg::button("resize my meow meow ain eu amo fazer mu", ekg::dock::fill | ekg::dock::next)
     ->set_task(
@@ -1673,5 +1674,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return laboratory_testing();
+  return showcase_useless_window();
 }

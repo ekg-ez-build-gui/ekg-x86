@@ -26,6 +26,7 @@
 #include <chrono>
 
 #include "ekg/core/runtime.hpp"
+#include "ekg/ui/abstract/ui_abstract_widget.hpp"
 #include "ekg/ui/frame/ui_frame.hpp"
 #include "ekg/ui/frame/ui_frame_widget.hpp"
 #include "ekg/ui/button/ui_button_widget.hpp"
@@ -402,7 +403,11 @@ void ekg::runtime::prepare_tasks() {
       bool must_set_y {};
       bool has_parent {};
 
-      for (ekg::ui::abstract_widget *&p_widgets : this->reload_widget_list) {
+      for (uint64_t it {}; it < this->reload_widget_counter; it++) {
+        ekg::ui::abstract_widget *&p_widgets {
+          this->reload_widget_list.at(it)
+        };
+
         if (p_widgets == nullptr || !p_widgets->was_reloaded) {
           continue;
         }
@@ -479,7 +484,7 @@ void ekg::runtime::prepare_tasks() {
         p_widgets->on_reload();
       }
 
-      this->reload_widget_list.clear();
+      this->reload_widget_counter = 0;
     }
   };
 
@@ -489,7 +494,11 @@ void ekg::runtime::prepare_tasks() {
       .p_data = nullptr
     },
     .function = [this](ekg::info &info) {
-      for (ekg::ui::abstract_widget *&p_widgets: this->synclayout_widget_list) {
+      for (uint64_t it {}; it < this->synclayout_widget_counter; it++) {
+        ekg::ui::abstract_widget *& p_widgets {
+          this->synclayout_widget_list.at(it)
+        };
+
         if (p_widgets == nullptr || !p_widgets->was_syncedlayout) {
           continue;
         }
@@ -498,7 +507,7 @@ void ekg::runtime::prepare_tasks() {
         ekg::layout::docknize(p_widgets);
       }
 
-      this->synclayout_widget_list.clear();
+      this->synclayout_widget_counter = 0;
       ekg::dispatch(ekg::env::redraw);
     }
   };
@@ -553,14 +562,6 @@ void ekg::runtime::set_current_stack(ekg::stack *p_stack) {
 ekg::ui::abstract_widget *ekg::runtime::get_fast_widget_by_id(int32_t id) {
   /* widget ID 0 is defined as none, or be, ID token accumulation start with 1 and not 0 */
   return id ? this->widget_map[id] : nullptr;
-}
-
-void ekg::runtime::do_task_reload(ekg::ui::abstract_widget *p_widget) {
-  if (p_widget != nullptr && !p_widget->was_reloaded) {
-    this->reload_widget_list.emplace_back(p_widget);
-    ekg::dispatch(ekg::env::reload);
-    p_widget->was_reloaded = true;
-  }
 }
 
 void ekg::runtime::prepare_ui_env() {
@@ -789,21 +790,49 @@ void ekg::runtime::gen_widget(ekg::ui::abstract *p_ui) {
   ekg::dispatch(ekg::env::swap);
 }
 
-void ekg::runtime::do_task_synclayout(ekg::ui::abstract_widget *p_widget) {
-  if (p_widget != nullptr && !p_widget->was_syncedlayout) {
-    bool is_group {p_widget->p_data->get_type() == ekg::type::frame};
-    bool check_parent {is_group == false && p_widget->p_data->has_parent()};
-
-    if (check_parent) {
-      p_widget = this->get_fast_widget_by_id(p_widget->p_data->get_parent_id());
-    }
-
-    if (p_widget != nullptr) {
-      this->synclayout_widget_list.emplace_back(p_widget);
-      ekg::dispatch(ekg::env::synclayout);
-      p_widget->was_syncedlayout = true;
-    }
+void ekg::runtime::do_task_reload(ekg::ui::abstract_widget *p_widget) {
+  if (!p_widget || p_widget->was_reloaded) {
+    return;
   }
+
+  if (this->reload_widget_counter >= this->reload_widget_list.size()) {
+    this->reload_widget_list.emplace_back();
+  }
+
+  p_widget->was_reloaded = true;
+  this->reload_widget_list.at(this->reload_widget_counter++) = (
+    p_widget
+  );
+
+  ekg::dispatch(ekg::env::reload);
+}
+
+void ekg::runtime::do_task_synclayout(ekg::ui::abstract_widget *p_widget) {
+  if (!p_widget) {
+    return;
+  }
+
+  if (this->synclayout_widget_counter >= this->synclayout_widget_list.size()) {
+    this->synclayout_widget_list.emplace_back();
+  }
+
+  bool is_group {p_widget->p_data->get_type() == ekg::type::frame};
+  bool check_parent {is_group == false && p_widget->p_data->has_parent()};
+
+  if (check_parent) {
+    p_widget = this->get_fast_widget_by_id(p_widget->p_data->get_parent_id());
+  }
+
+  if (p_widget->was_syncedlayout) {
+    return;
+  }
+
+  p_widget->was_syncedlayout = true;
+  this->synclayout_widget_list.at(this->synclayout_widget_counter++) = (
+    p_widget
+  );
+
+  ekg::dispatch(ekg::env::synclayout);
 }
 
 void ekg::runtime::do_task_refresh(ekg::ui::abstract_widget *p_widget) {
