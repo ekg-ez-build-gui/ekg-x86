@@ -26,6 +26,7 @@
 #include <chrono>
 
 #include "ekg/core/runtime.hpp"
+#include "ekg/core/user_input_register.hpp"
 #include "ekg/ui/abstract/ui_abstract_widget.hpp"
 #include "ekg/ui/frame/ui_frame.hpp"
 #include "ekg/ui/frame/ui_frame_widget.hpp"
@@ -581,86 +582,7 @@ void ekg::runtime::prepare_ui_env() {
   this->update_size_changed();
 
   ekg::log() << "Registering user interface input bindings";
-
-  this->service_input.bind("frame-drag-activity", "mouse-1");
-  this->service_input.bind("frame-drag-activity", "finger-click");
-  this->service_input.bind("frame-resize-activity", "mouse-1");
-  this->service_input.bind("frame-resize-activity", "finger-click");
-
-  this->service_input.bind("button-activity", "mouse-1");
-  this->service_input.bind("button-activity", "finger-click");
-
-  this->service_input.bind("checkbox-activity", "mouse-1");
-  this->service_input.bind("checkbox-activity", "finger-click");
-
-  this->service_input.bind("popup-activity", "mouse-1");
-  this->service_input.bind("popup-activity", "finger-click");
-
-  this->service_input.bind("textbox-activity", "mouse-1");
-  this->service_input.bind("textbox-activity", "finger-click");
-  this->service_input.bind("textbox-action-activity", "return");
-  this->service_input.bind("textbox-action-activity", "keypad enter");
-
-  this->service_input.bind("textbox-action-select-all", "lctrl+a");
-  this->service_input.bind("textbox-action-select-all", "rctrl+a");
-
-  this->service_input.bind("textbox-action-select-all-inline", "mouse-1");
-  this->service_input.bind("textbox-action-select", "lshift");
-  this->service_input.bind("textbox-action-select", "rshift");
-
-  this->service_input.bind("textbox-action-select-word", "mouse-1-double");
-  this->service_input.bind("textbox-action-select-word", "finger-hold");
-
-  this->service_input.bind("textbox-action-delete-left", "abs-backspace");
-  this->service_input.bind("textbox-action-delete-right", "abs-delete");
-  this->service_input.bind("textbox-action-break-line", "return");
-  this->service_input.bind("textbox-action-break-line", "keypad enter");
-  this->service_input.bind("textbox-action-break-line", "lshift+return");
-  this->service_input.bind("textbox-action-break-line", "rshift+return");
-  this->service_input.bind("textbox-action-tab", "tab");
-  this->service_input.bind("textbox-action-modifier", "lctrl");
-  this->service_input.bind("textbox-action-modifier", "rctrl");
-
-  this->service_input.bind("textbox-action-up", "abs-up");
-  this->service_input.bind("textbox-action-down", "abs-down");
-  this->service_input.bind("textbox-action-right", "abs-right");
-  this->service_input.bind("textbox-action-left", "abs-left");
-
-  this->service_input.bind("clipboard-copy", "lctrl+c");
-  this->service_input.bind("clipboard-copy", "rctrl+c");
-  this->service_input.bind("clipboard-copy", "copy");
-  this->service_input.bind("clipboard-paste", "lctrl+v");
-  this->service_input.bind("clipboard-paste", "rctrl+v");
-  this->service_input.bind("clipboard-paste", "paste");
-  this->service_input.bind("clipboard-cut", "lctrl+x");
-  this->service_input.bind("clipboard-cut", "rctrl+x");
-  this->service_input.bind("clipboard-cut", "cut");
-
-  this->service_input.bind("listbox-activity-open", "mouse-1-double");
-  this->service_input.bind("listbox-activity-open", "finger-hold");
-
-  this->service_input.bind("listbox-activity-select", "mouse-1");
-  this->service_input.bind("listbox-activity-select", "finger-click");
-  this->service_input.bind("listbox-activity-select-many", "lctrl+mouse-1");
-  this->service_input.bind("listbox-activity-select-many", "rctrl+mouse-1");
-
-  this->service_input.bind("slider-drag-activity", "mouse-1");
-  this->service_input.bind("slider-drag-activity", "finger-click");
-  this->service_input.bind("slider-bar-increase", "mouse-wheel-up");
-  this->service_input.bind("slider-bar-decrease", "mouse-wheel-down");
-  this->service_input.bind("slider-bar-modifier", "lctrl");
-  this->service_input.bind("slider-bar-modifier", "rctrl");
-
-  this->service_input.bind("scrollbar-drag", "mouse-1");
-  this->service_input.bind("scrollbar-drag", "finger-click");
-  this->service_input.bind("scrollbar-scroll", "mouse-wheel");
-  this->service_input.bind("scrollbar-scroll", "finger-swipe");
-
-  // I think it is a severe problem with EKG input-bind system, but I will fix soon.
-  this->service_input.bind("scrollbar-scroll", "lshift+mouse-wheel");
-  this->service_input.bind("scrollbar-scroll", "rshift+mouse-wheel");
-  this->service_input.bind("scrollbar-horizontal-scroll", "lshift+mouse-wheel");
-  this->service_input.bind("scrollbar-horizontal-scroll", "rshift+mouse-wheel");
+  ekg::user_input_register();
 }
 
 void ekg::runtime::gen_widget(ekg::ui::abstract *p_ui) {

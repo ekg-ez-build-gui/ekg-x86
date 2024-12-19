@@ -44,6 +44,12 @@
 #define ekg_bitwise_remove(flags, flag)   (flags &= ~flag)
 #define ekg_bitwise_add(flags, flag)      (flags |= flag)
 
+/**
+ * LOG NO-TRACE dev-case reserved.
+ * Note: this macro call console out (`std::cout`) directly, not safe for official log trace.
+ **/
+#define ekg_log(msg) std::cout << msg << std::endl;
+
 namespace ekg {
   class item : public std::vector<ekg::item> {
   protected:

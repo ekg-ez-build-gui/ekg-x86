@@ -260,9 +260,9 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   /**
    * If input interact position is not colliding with the listbox,
    * there is no reason to waste calls; but with exception of absolute flag,
-   * because when a header is targeted the absolute flag is set to true,
+   * because when a header is targeted, the absolute flag is set to true,
    * but if the interact position is out of listbox boudings, it must keep
-   * process the header targeted (drag or resize).
+   * process the header targeted if drag or resize is going on.
    **/
   bool not_hovering_or_is_not_refresh_time {
     !this->flag.hovered && !this->was_hovered && !is_some_header_targeted && !this->was_selected
@@ -307,7 +307,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
 
   ekg::ui::listbox_widget::op_mode op_mode {
     static_cast<ekg::ui::listbox_widget::op_mode>(
-      pressed_select || pressed_open || is_some_header_targeted || this->latest_target_dragging != -1
+      pressed_select || pressed_select_many || pressed_open || is_some_header_targeted || this->latest_target_dragging != -1
     )
   };
 

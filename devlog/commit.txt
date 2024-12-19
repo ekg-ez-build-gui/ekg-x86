@@ -227,3 +227,4 @@
 -- Fixed a glitch where count line is not limited to previous initial setting paramter on `ekg::draw::font_renderer::get_font_width(std::string_view text, int32_t &lines)`.
 -- Added `ekg::ui::frame::make_pop_group` for automatically pop the frame.
 -- Performance fix, no-useless re-allocations are made for reload and synclayout tasks.
+-- Fixed 

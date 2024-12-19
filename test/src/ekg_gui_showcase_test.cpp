@@ -25,7 +25,6 @@ laboratory::shape::shape() {
       "gl_Position = uMatrixProjection * vec4((aPos * uRect.zw) + uRect.xy, 0.0f, 1.0f);\n"
     "}\n"
   };
-
   std::string_view fsh {
     "#version 450\n"
 
@@ -555,6 +554,7 @@ int32_t showcase_useless_window() {
 
   for (auto &[name, theme] : ekg::theme().get_theme_scheme_map()) {
     themes.at(0).emplace_back(name);
+    break;
   }  
 
   auto theme_switch_listbox = ekg::listbox("themes", themes, ekg::dock::fill | ekg::dock::next)
@@ -664,8 +664,9 @@ int32_t showcase_useless_window() {
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());*/
   }
 
-  uint16_t muuuuu {};
+  content.clear();
 
+  uint16_t muuuuu {};
   ekg::button("count muu:", ekg::dock::next)
     ->set_task(
       new ekg::task {
@@ -869,7 +870,7 @@ int32_t showcase_useless_window() {
   ekg::pop_group();
 
   ekg::input::bind("hiroodrop", {"lctrl+b", "lctrl+lshift+v", "lshift+m"});
-  ekg::input::bind("meow", "lctrl+mouse-1");
+  // ekg::input::bind("amovc", "lctrl+mouse-1");
 
   ekg::gpu::sampler_t ttf_cow_sampler {};
   load_ttf_emoji(&ttf_cow_sampler);
@@ -918,7 +919,7 @@ int32_t showcase_useless_window() {
   uint64_t last_frame {1};
   ekg::timing fps_timing {};
 
-  ekg::input::bind("amovc", "mouse");
+  //ekg::input::bind("amovc", "mouse");
 
   bool multithreading {false};
   std::thread update_thread {};
