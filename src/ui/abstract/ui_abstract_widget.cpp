@@ -25,6 +25,7 @@
 #include "ekg/ui/abstract/ui_abstract_widget.hpp"
 #include "ekg/util/gui.hpp"
 #include "ekg/draw/draw.hpp"
+#include "ekg/core/memory.hpp"
 
 ekg::ui::abstract_widget::abstract_widget() {
   this->p_parent = &this->empty_parent;
@@ -40,7 +41,17 @@ void ekg::ui::abstract_widget::on_create() {
 }
 
 void ekg::ui::abstract_widget::on_destroy() {
+  if (EKG_MEMORY_MUST_FREE_TASKS_AUTOMATICALLY) {
+    for (uint64_t it {}; it < EKG_MEMORY_ACTIONS_SIZE; it++) {
+      ekg::task *p_task {
+        this->p_data->get_task((ekg::action)it)
+      };
 
+      if (p_task->unsafe_is_allocated) {
+        delete p_task;
+      }
+    }
+  }
 }
 
 void ekg::ui::abstract_widget::on_reload() {

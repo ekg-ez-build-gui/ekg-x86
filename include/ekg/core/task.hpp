@@ -52,6 +52,48 @@ namespace ekg {
     ekg::info info {};
     std::function<void(ekg::info&)> function {};
     bool is_dispatched {};
+    bool unsafe_is_allocated {};
+  public:
+    /**
+     * EKG free tasks automatically by mapping `new` keywords calls.
+     * User-side is off from memory management when direct explicity invoke `new`,
+     * as behavior of allocating randomly and not freeing after the widget
+     * was destroyed --- EKG must make memory safe as maximum possible
+     * in the case of bad management from user-side.
+     * 
+     * A good practice for using EKG tasks is not using new, but addressing
+     * stacked tasks.
+     * 
+     * ```c++
+     * class/struct your_gui_scene {
+     * public:
+     *  ekg::task meow_task; // <- stacked
+     * public:
+     *  your_gui_scene() {
+     *    meow_task = ekg::task {
+     *      // values go here
+     *    };
+     *  }
+     * };
+     * ```
+     * 
+     * The main point is using `ekg::task` in stack variables
+     * and not direct allocating using `new` if you want address
+     * in different(s) widgets.
+     * 
+     * As option, you can disable EKG tasks memory managment by setting
+     * `EKG_MEMORY_MUST_FREE_TASKS_AUTOMATICALLY` to false,
+     * so EKG will not care about all of this.
+     **/
+    void *operator new (size_t mem_alloc_size) {
+      ekg::task *p_instance {
+        (ekg::task*)
+        ::operator new(mem_alloc_size)
+      };
+      
+      p_instance->unsafe_is_allocated = true;
+      return p_instance;
+    }
   };
 }
 
