@@ -28,6 +28,7 @@
 #include "ekg/core/runtime.hpp"
 #include "ekg/core/user_input_register.hpp"
 #include "ekg/ui/abstract/ui_abstract_widget.hpp"
+#include "ekg/ui/display.hpp"
 #include "ekg/ui/frame/ui_frame.hpp"
 #include "ekg/ui/frame/ui_frame_widget.hpp"
 #include "ekg/ui/button/ui_button_widget.hpp"

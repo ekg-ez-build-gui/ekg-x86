@@ -51,10 +51,15 @@
 #define ekg_log(msg) std::cout << msg << std::endl;
 
 namespace ekg {
+  typedef uint32_t flags;
+  typedef uint32_t id;
+}
+
+namespace ekg {
   class item : public std::vector<ekg::item> {
   protected:
     std::string value {};
-    uint16_t attr_bits {};
+    ekg::flags attr_bits {};
     ekg::placement placement {};
     uint64_t visible_count {};
     bool *p_semaphore {nullptr};
@@ -64,13 +69,13 @@ namespace ekg {
 
     item(
       std::string_view insert_value,
-      uint16_t insert_attr_bits = 0
+      ekg::flags insert_attr_bits = 0
     );
 
     item(
       std::string_view insert_value,
       std::vector<ekg::item> insert_item_list,
-      uint16_t insert_attr_bits = 0
+      ekg::flags insert_attr_bits = 0
     );
 
     /**
@@ -114,13 +119,13 @@ namespace ekg {
 
     std::string get_value();
   
-    void set_attr(uint16_t bits);
+    void set_attr(ekg::flags bits);
 
-    uint16_t get_attr();
+    ekg::flags get_attr();
 
-    void set_text_align(uint16_t dock);
+    void set_text_align(ekg::flags dock);
 
-    uint16_t get_text_align();
+    ekg::flags get_text_align();
 
     /**
      * Get the amount of visible items.
@@ -181,9 +186,6 @@ namespace ekg {
       return *this;
     }
   };
-
-  typedef uint32_t flags;
-  typedef uint32_t id;
 
   /**
    * Number range types, used in specific-features.

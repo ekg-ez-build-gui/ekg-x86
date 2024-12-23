@@ -276,6 +276,18 @@ void ekg::gpu::allocator::sync_scissor(
   this->scissor_instance.h = scissor.h;
 }
 
+void ekg::gpu::allocator::unsafe_set_scissor_placement(
+  float x,
+  float y,
+  float w,
+  float h
+) {
+  this->scissor_instance.x = x;
+  this->scissor_instance.y = y;
+  this->scissor_instance.w = w;
+  this->scissor_instance.h = h;
+}
+
 void ekg::gpu::allocator::push_back_geometry(
   float x,
   float y,

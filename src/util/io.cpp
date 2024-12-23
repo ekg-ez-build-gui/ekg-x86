@@ -31,24 +31,24 @@
 
 ekg::item::item(
   std::string_view insert_value,
-  uint16_t insert_attr_bits
+  ekg::flags insert_attr_bits
 ) {
   this->placement.rect.w = 100.0f;
   this->value = insert_value;
   this->attr_bits = insert_attr_bits;
-  this->placement.text_dock_flags = ekg::dock::left | ekg::dock::top;
+  this->placement.text_dock_flags = ekg::dock::left;
 }
 
 ekg::item::item(
   std::string_view insert_value,
   std::vector<ekg::item> insert_item_list,
-  uint16_t insert_attr_bits
+  ekg::flags insert_attr_bits
 ) {
   this->placement.rect.w = 100.0f;
   this->value = insert_value;
   this->insert(this->begin(), insert_item_list.begin(), insert_item_list.end());
   this->attr_bits = insert_attr_bits;
-  this->placement.text_dock_flags = ekg::dock::left | ekg::dock::top;
+  this->placement.text_dock_flags = ekg::dock::left;
 }
 
 ekg::item::~item() {
@@ -89,21 +89,21 @@ std::string ekg::item::get_value() {
   return this->value;
 }
 
-void ekg::item::set_attr(uint16_t bits) {
+void ekg::item::set_attr(ekg::flags bits) {
   this->attr_bits = bits;
 }
 
-uint16_t ekg::item::get_attr() {
+ekg::flags ekg::item::get_attr() {
   return this->attr_bits;
 }
 
-void ekg::item::set_text_align(uint16_t bits) {
+void ekg::item::set_text_align(ekg::flags bits) {
   if (this->placement.text_dock_flags != bits) {
     this->placement.text_dock_flags = bits;
   }
 }
 
-uint16_t ekg::item::get_text_align() {
+ekg::flags ekg::item::get_text_align() {
   return this->placement.text_dock_flags;
 }
 

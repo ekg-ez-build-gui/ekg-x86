@@ -86,7 +86,7 @@ void ekg::ui::listbox_widget::on_reload() {
     ekg::item &item {p_ui->p_value->at(it)};
     ekg::placement &placement {item.unsafe_get_placement()};
 
-    text_lines = 0;
+    text_lines = 1;
     text_width = f_renderer_column_header.get_text_width(item.get_value(), text_lines);
 
     if (ekg_bitwise_contains(column_header_dock_flags, ekg::dock::fill)) {
@@ -192,7 +192,6 @@ void ekg::ui::listbox_widget::on_reload() {
     );
 
     this->embedded_scroll.rect_child = relative_largest_rect;
-    std::cout << highest_arbitrary_index_pos << std::endl;
   } else {
     this->embedded_scroll.rect_child.w = relative_largest_rect.w;
   }
@@ -1013,7 +1012,7 @@ void ekg::ui::listbox_template_reload(
     item_rect = ui_rect + placement.rect;
     flags = item.get_attr();
 
-    text_lines = 0;
+    text_lines = 1;
     text_width = f_renderer.get_text_width(item.get_value(), text_lines);
 
     offset = ekg::find_min_offset(text_width, dimension_offset);

@@ -560,7 +560,7 @@ int32_t showcase_useless_window() {
   auto theme_switch_listbox = ekg::listbox("themes", themes, ekg::dock::fill | ekg::dock::next)
     ->set_scaled_height(4);
 
-  ekg::label("Apply theme:", ekg::dock::next);
+  ekg::label("Apply theme:", ekg::dock::next)->set_text_align(ekg::dock::left);
   ekg::button("Apply", ekg::dock::fill)
     ->set_task(
       new ekg::task {

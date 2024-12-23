@@ -106,12 +106,13 @@ ekg::rect &ekg::ui::abstract_widget::get_abs_rect() {
   };
 
   /**
-   * As pointed here: ekg/layout/docknize -> ekg::layout::docknize -> fill property
+   * ~~As pointed here: ekg/layout/docknize -> ekg::layout::docknize -> fill property~~
    * 
-   * The pixel imperfect is easy fixed with an int32_t cast.
-   * I do not care anymore about incorrect quads aligned,
-   * too stupid.
+   * ~~The pixel imperfect is easy fixed with an int32_t cast.~~
+   * ~~I do not care anymore about incorrect quads aligned,
+   * ~~too stupid.~~
    * 
+   * I do not know what I am talking about.
    * - Rina.
    **/
 

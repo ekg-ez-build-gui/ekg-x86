@@ -228,3 +228,5 @@
 -- Added `ekg::ui::frame::make_pop_group` for automatically pop the frame.
 -- Performance fix, no-useless re-allocations are made for reload and synclayout tasks.
 -- Added memory-safe method to EKG-tasks and one option to disable that. 
+-- Added an unsafe function `ekg::draw::scissor`/method to explicit display a new scissor placement (position and size).
+-- Solved a visual-glitch where the line always was zero on listbox header(s) and item(s) text-label.

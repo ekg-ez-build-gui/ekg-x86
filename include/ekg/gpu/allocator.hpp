@@ -135,6 +135,20 @@ namespace ekg::gpu {
       ekg::rect &rect_child,
       ekg::rect *p_parent_scissor
     );
+
+    /**
+     * Set scissor position and size, unsafe due the stack GPU-data order in allocator,
+     * which affect the rendering.
+     * 
+     * When a GPU-data is created it receives the current scissor placement (position and size),
+     * and the next GPU-data stacked may not receive the same placements.
+     **/
+    void unsafe_set_scissor_placement(
+      float x,
+      float y,
+      float w,
+      float h
+    );
   };
 }
 

@@ -62,6 +62,13 @@ namespace ekg::draw {
     ekg::rect *p_parent_scissor
   );
 
+  void scissor(
+    float x,
+    float y,
+    float w,
+    float h
+  );
+
   /**
    * Enable high-priority:
    * Instead of sending the currrent GPU data to the current index,
