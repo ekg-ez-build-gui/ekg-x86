@@ -494,7 +494,7 @@ int32_t showcase_useless_window() {
   auto p_terminal = ekg::textbox("meow", "meow oi", ekg::dock::fill | ekg::dock::next)
     ->set_scaled_height(12);
 
-  SDL_GL_SetSwapInterval((app.vsync = false));
+  SDL_GL_SetSwapInterval((app.vsync = true));
   ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill | ekg::next)
     ->transfer_ownership(&app.vsync)
     ->set_task(
@@ -554,7 +554,6 @@ int32_t showcase_useless_window() {
 
   for (auto &[name, theme] : ekg::theme().get_theme_scheme_map()) {
     themes.at(0).emplace_back(name);
-    break;
   }  
 
   auto theme_switch_listbox = ekg::listbox("themes", themes, ekg::dock::fill | ekg::dock::next)
@@ -663,8 +662,6 @@ int32_t showcase_useless_window() {
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());
     content.at(it).insert(content.at(it).end(), content.at(it).begin(), content.at(it).end());*/
   }
-
-  content.clear();
 
   uint16_t muuuuu {};
   ekg::button("count muu:", ekg::dock::next)
@@ -1050,7 +1047,7 @@ int32_t laboratory_testing() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
-  SDL_GL_SetSwapInterval((app.vsync = false));
+  SDL_GL_SetSwapInterval((app.vsync = true));
 
   app.p_sdl_win = {
     SDL_CreateWindow(

@@ -25,6 +25,8 @@
 #include "ekg/ui/listbox/ui_listbox_widget.hpp"
 #include "ekg/ekg.hpp"
 #include "ekg/draw/draw.hpp"
+#include "ekg/ui/display.hpp"
+#include "ekg/util/geometry.hpp"
 
 #include <algorithm>
 
@@ -111,8 +113,9 @@ void ekg::ui::listbox_widget::on_reload() {
     rendering_cache_arbitrary_index_pos = 0;
 
     if (
-        ekg_bitwise_contains(column_header_dock_flags, ekg::dock::top) ||
-        !ekg_bitwise_contains(column_header_dock_flags, ekg::dock::bottom)
+        (ekg_bitwise_contains(column_header_dock_flags, ekg::dock::top))
+        ||
+        (!ekg_bitwise_contains(column_header_dock_flags, ekg::dock::bottom))
        ) {
       this->rect_content_place.y = placement.rect.h + ekg_pixel;
       this->column_header_height = placement.rect.h + ekg_pixel;
@@ -306,7 +309,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
 
   ekg::ui::listbox_widget::op_mode op_mode {
     static_cast<ekg::ui::listbox_widget::op_mode>(
-      pressed_select || pressed_select_many || pressed_open || is_some_header_targeted || this->latest_target_dragging != -1
+      pressed_select || pressed_select_many || pressed_open || is_some_header_targeted || this->latest_target_dragging != -1 || this->must_force_tree_refresh
     )
   };
 
@@ -341,7 +344,6 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   case ekg::ui::listbox_widget::op_mode::recursive_tree_update:
     size = p_ui->p_value->size();
     ekg::ui::redraw = true;
-
     if (this->latest_target_dragging != -1) {
       uint64_t set_header_new_index {static_cast<uint64_t>(this->latest_target_dragging)};
       point.x = ekg_clamp(interact.x, rect.x, rect.x + rect.w);
@@ -351,10 +353,15 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
         ekg::placement &placement_header {item_header.unsafe_get_placement()};
 
         item_rect = placement_header.rect + rect;
-        item_rect.x = item_rect.x + this->embedded_scroll.scroll.x;
+        item_rect.x += this->embedded_scroll.scroll.x;
 
-        point.y = ekg_clamp(interact.y, item_rect.y, item_rect.y + this->rect_original_dragging_targeted_header.h);
-        if (ekg::rect_collide_vec(item_rect, point) && this->latest_target_dragging != it) {
+        point.y = ekg_clamp(
+          interact.y,
+          item_rect.y,
+          item_rect.y + this->rect_original_dragging_targeted_header.h
+        );
+
+        if (ekg::rect_collide_vec_precisely(item_rect, point) && this->latest_target_dragging != it) {
           set_header_new_index = it;
           break;
         }
@@ -406,6 +413,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
         this->flag.absolute = true;
       }
 
+
       is_dragging_or_resizing = (
         this->flag.extra_state = this->target_resizing != -1 || this->target_dragging != -1
       );
@@ -417,12 +425,9 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
 
       must = (
         ekg::rect_collide_vec(delta_rect, interact)
+        ||
+        is_dragging_or_resizing
       );
-
-      // there is no reason for calculate items if interact is hovering the header
-      if (must) {
-        continue;
-      }
 
       /**
        * Do not copy all the content by simple one reason:
@@ -437,7 +442,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
       rendering_cache.set_attr(item_header.get_attr());
       rendering_cache.set_text_align(item_header.get_text_align());
 
-      if (!is_dragging_or_resizing) {
+      if (!must && !is_dragging_or_resizing) {
         ekg::ui::listbox_template_on_event(
           io_event_serial,
           arbitrary_index_pos,
@@ -490,6 +495,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
 
     float between_headers_target_resize {ekg_pixel * 4};
     float normalized_horizontal_scroll {this->embedded_scroll.get_normalized_vertical_scroll()};
+    bool is_header_flags_fill {static_cast<bool>(ekg_bitwise_contains(p_ui->get_column_header_align(), ekg::dock::fill))};
 
     this->targeting_header_to_resize = -1;
     this->targeting_header_to_drag = -1;
@@ -509,7 +515,7 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
       delta_rect.w = between_headers_target_resize + between_headers_target_resize;
 
       must = (
-        some_targeted_header == -1 && !this->flag.extra_state && ekg::rect_collide_vec(delta_rect, interact)
+        !is_header_flags_fill && some_targeted_header == -1 && !this->flag.extra_state && ekg::rect_collide_vec(delta_rect, interact)
       );
 
       if (must) {
@@ -636,9 +642,6 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
   ekg::rect content_scissor_bounding {};
   ekg::rect widget_absolute_rect_scissor {this->scissor};
 
-  scrollable_rect.x = static_cast<int32_t>(scrollable_rect.x);
-  scrollable_rect.y = static_cast<int32_t>(scrollable_rect.y);
-
   float bottom_place {this->rect_content_abs.y + this->rect_content_abs.h};
 
   ekg::flags flags {p_ui->get_column_header_align()};
@@ -655,6 +658,9 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
 
   float normalized_horizontal_scroll {this->embedded_scroll.get_normalized_vertical_scroll()};
   this->header_relative_x = 0.0f;
+
+  scrollable_rect.x = static_cast<int32_t>(scrollable_rect.x);
+  scrollable_rect.y = static_cast<int32_t>(scrollable_rect.y);
 
   for (uint64_t it_header {}; it_header < rendering_cache_size; it_header++) {
     ekg::item &item_header {this->item_rendering_cache.at(it_header)};
@@ -709,8 +715,6 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
     ekg::item &item_header {this->item_rendering_cache.at(this->target_dragging)};
     ekg::placement &placement_header {item_header.unsafe_get_placement()};
 
-    ekg::draw::enable_high_priority();
-
     is_header_targeted = true;
     this->render_item(
       item_header,
@@ -725,8 +729,6 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
       is_multicolumn,
       f_renderer
     );
-
-    ekg::draw::disable_high_priority();
   }
 }
 

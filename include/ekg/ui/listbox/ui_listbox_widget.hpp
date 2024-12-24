@@ -70,6 +70,7 @@ namespace ekg::ui {
     bool was_hovered {};
     bool was_selected {};
     bool must_update_items {};
+    bool must_force_tree_refresh {};
 
     int32_t targeting_header_to_resize {};
     int32_t targeting_header_to_drag {};
