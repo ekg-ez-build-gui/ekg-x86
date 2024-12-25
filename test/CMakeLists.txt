@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-message("-- EKG tests enabled")
-message("-- EKG GUI showcase test building")
+message(STATUS "EKG tests enabled")
+message(STATUS "EKG GUI showcase test building")
 
 project(ekg-gui-showcase-test)
 
@@ -21,7 +21,7 @@ else()
   # It is a common issue related by the Linux community.
   if (EKG_LINUX_NOT_FOUND_FREETYPE)
     include_directories(/usr/include/freetype2)
-    message("-- Using var EKG_LINUX_NOT_FOUND_FREETYPE to include `/usr/include/freetype2` directly")
+    message(STATUS "Using var EKG_LINUX_NOT_FOUND_FREETYPE to include `/usr/include/freetype2` directly")
   endif()
 
   set(PLATFORM               "linux")
@@ -32,7 +32,7 @@ include_directories(../include)
 add_executable(ekg-gui-showcase-test "src/ekg_gui_showcase_test.cpp")
 
 file(GLOB LIBRARY_PATH "../lib/${PLATFORM}/libekg.a")
-message("-- EKG GUI test found native library on: ${LIBRARY_PATH}")
+message(STATUS "EKG GUI test found native library on: ${LIBRARY_PATH}")
 
 if (WIN32)
   set(THIRD_PARTY_LIBRARIES mingw32 SDL2main SDL2 opengl32 glew32 freetype)
@@ -47,4 +47,4 @@ target_link_libraries(
   -static-libgcc -static-libstdc++    
 )
 
-message("-- EKG GUI showcase test building done")
+message(STATUS "EKG GUI showcase test building done")

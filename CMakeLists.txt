@@ -28,6 +28,38 @@ set(EKG_VERSION        1.2.0)
 message(STATUS "Building EKG user interface library version ${EKG_VERSION}")
 project(ekg VERSION ${EKG_VERSION} DESCRIPTION "graphical user interface")
 
+set(
+  MATCH_SPECIALIZED_COMPILERS_ID
+  "/emcc"
+)
+
+string(
+  REGEX MATCH
+  ${MATCH_SPECIALIZED_COMPILERS_ID}
+  MATCHED_COMPILER_FILENAME
+  ${CMAKE_CXX_COMPILER}
+)
+
+if(
+  EKG_WASM_LINUX_EMCC_BUILD
+  OR
+  MATCHED_COMPILER_FILENAME STREQUAL "/emcc"
+  )
+  message(STATUS "Found specialized compiler ID: ${MATCHED_COMPILER_FILENAME}, WASM build type")
+  set(EKG_WASM_LINUX_EMCC_BUILD 1)
+elseif(EKG_WASM_LINUX_EMCC_BUILD)
+  message(FATAL_ERROR "No specialized compiler ID was found with '/emcc' for WASM build type")
+endif()
+
+if(
+  CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+  OR
+  CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+)
+  message(STATUS "Found compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+  add_compile_options(-O3)
+endif()
+
 # Enable if your base OS is Debian-based (e.g Ubuntu).
 # It is a common issue related by the Linux community.
 if (EKG_LINUX_NOT_FOUND_FREETYPE)
@@ -44,6 +76,9 @@ if(WIN32 OR EKG_FORCE_WINDOWS)
 elseif(ANDROID OR EKG_FORCE_ANDROID)
   set(LIBRARY_OUTPUT_PATH "${ANDROID_ABI}/")
   set(PLATFORM            "${ANDROID_ABI}")
+elseif(LINUX AND EKG_WASM_LINUX_EMCC_BUILD)
+  set(LIBRARY_OUTPUT_PATH "../lib/linux-wasm/")
+  set(PLATFORM            "linux-wasm")
 elseif(LINUX OR EKG_FORCE_LINUX)
   # WSL is not detected as Linux-based OS, same you use a Linux kernel-based distribution.
   set(LIBRARY_OUTPUT_PATH "../lib/linux/")
@@ -53,16 +88,15 @@ endif()
 message(STATUS "Generating EKG ${PLATFORM} native library")
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
-if(
-  CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
-  OR
-  CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-)
-  add_compile_options(-O3)
-endif()
-
 include_directories(./include)
 add_library(ekg STATIC ${SOURCE_FILES})
+
+if (EKG_WASM_LINUX_EMCC_BUILD)
+  set_target_properties(
+    ekg
+    PROPERTIES LINK_FLAGS "--bind -s USE_FREETYPE=1"
+  )
+endif()
 
 message(STATUS "EKG native library building done")
 
