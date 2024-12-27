@@ -1069,7 +1069,7 @@ int32_t laboratory_testing() {
   ekg::runtime_property ekg_runtime_property {
     .p_font_path = "whitneybook.otf",
     .p_font_path_emoji = "twemoji.ttf",
-    .p_gpu_api = new ekg::os::opengl(),
+    .p_gpu_api = new ekg::os::opengl("#version 330"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
 
@@ -1673,5 +1673,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return showcase_useless_window();
+  return laboratory_testing();
 }

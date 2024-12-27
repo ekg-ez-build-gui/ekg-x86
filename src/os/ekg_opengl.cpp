@@ -3,39 +3,42 @@
 #include "ekg/gpu/api.hpp"
 #include <cstdio>
 #include <unordered_map>
+#include <iostream>
+#include <regex>
 
 ekg::os::opengl::opengl(std::string_view set_glsl_version) {
-  this->glsl_version = "#version 450";
-
   if (set_glsl_version.empty()) {
-    ekg::log() << "[GPU][API] not viable glsl version, empty, must 330 higher";
+    ekg::log() << "[GPU][API] not viable glsl version, empty, must: 330 higher for core-profile or 300 higher for ES";
     return;
   }
 
-  uint64_t size {set_glsl_version.size() - 1};
-  uint8_t number_size {};
+  std::string glsl_version {set_glsl_version};
+  std::regex es_re {"es"};
 
-  for (uint64_t it {}; it < set_glsl_version.size(); it++) {
-    auto &a_char {set_glsl_version.at((size) - it)};
-    if (a_char >= 48 && a_char <= 58) {
-      number_size++;
-    } else {
-      break;
+  if (std::regex_search(glsl_version, es_re)) {
+    this->opengl_version = ekg::os::opengl_version::es;
+  } else {
+    this->opengl_version = ekg::os::opengl_version::core_profile;
+  }
+
+  std::regex number_re {"\\d+"};  
+  if (std::regex_search(glsl_version, number_re)) {
+    std::sregex_iterator next(glsl_version.begin(), glsl_version.end(), number_re);
+    std::sregex_iterator end {};
+    std::string version {};
+    while (next != end) {
+      std::smatch match = *next;
+      version = match.str();
+      next++;
     }
-  }
 
-  if (number_size != 3) {
-    ekg::log() << "[GPU][API] not viable glsl version, unknown number, must `#version 330` higher";
-    return;
-  }
-
-  size += 1;
-  std::string version_metadata {set_glsl_version.substr(size - number_size, number_size)};
-  int32_t version {std::stoi(version_metadata)};
-
-  if (version < 330) {
-    ekg::log() << "[GPU][API] not viable glsl version, incorrect number, must `#version 330` higher";
-    return;
+    if (version.empty() || version.size() != 3) {
+      ekg::log() << "[GPU][API] not viable glsl version, invalid number, must: 330 higher for core-profile or 300 higher for ES";
+      return;
+    }
+  } else {
+    ekg::log() << "[GPU][API] not viable glsl version, unknown number, must: 330 higher for core-profile or 300 higher for ES";
+    return; 
   }
 
   this->glsl_version = set_glsl_version;

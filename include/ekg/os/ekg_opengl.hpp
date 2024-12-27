@@ -42,8 +42,14 @@
 #define EKG_ENABLE_TEXTURE 2
 
 namespace ekg::os {
+  enum class opengl_version {
+    es,
+    core_profile
+  };
+
   class opengl : public ekg::gpu::api {
   protected:
+    ekg::os::opengl_version opengl_version {};
     std::vector<ekg::gpu::sampler_t*> bound_sampler_list {};
     std::string_view glsl_version {};
     
@@ -73,7 +79,9 @@ namespace ekg::os {
      * OpenGL ES 3 needs explicit set to the GLSL ES version.
      */
     explicit opengl(std::string_view set_glsl_version = "#version 450");
-  public:    
+  public:
+    ekg::os::opengl_version get_version();
+
     void log_vendor_details() override;
 
     void init() override;
