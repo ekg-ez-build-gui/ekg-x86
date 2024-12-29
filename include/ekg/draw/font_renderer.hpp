@@ -65,7 +65,7 @@ namespace ekg::draw {
     FT_UInt ft_uint_previous {};
 
     std::string_view font_path {};
-    uint32_t font_size {18};
+    uint32_t font_size {};
     ekg::gpu::sampler_t sampler_texture {};
 
     int32_t full_width {};

@@ -232,3 +232,4 @@
 -- Solved a visual-glitch where the line always was zero on listbox header(s) and item(s) text-label.
 -- Fixed a glitch where dragging and swap was not working out of header(s)-rect boudings.
 -- Added WASM build-type compatibility.
+-- Fixed GLES3 font, but not quality not enough to be totally fixed.

@@ -1,6 +1,9 @@
 #include "ekg/os/ekg_opengl.hpp"
+#include "ekg/gpu/opengl_pipeline_template.hpp"
 #include "ekg/ekg.hpp"
 #include "ekg/gpu/api.hpp"
+#include "ekg/util/image.hpp"
+
 #include <cstdio>
 #include <unordered_map>
 #include <iostream>
@@ -53,159 +56,19 @@ void ekg::os::opengl::init() {
     this->glsl_version
   };
 
-  std::string vsh_src {
-    no_view_glsl_version + "\n"
-    "layout (location = 0) in vec2 aPos;\n"
-    "layout (location = 1) in vec2 aTexCoord;\n"
+  std::string vsh_src {};
+  ekg::gpu::get_standard_vertex_shader(
+    no_view_glsl_version,
+    this->opengl_version,
+    vsh_src
+  );
 
-    "uniform mat4 uProjection;\n"
-    "uniform vec4 uRect;\n"
-
-    "out vec2 vTexCoord;\n"
-    "out vec2 vPos;\n"
-    "out vec4 vRect;\n"
-
-    "void main() {\n"
-      "vec2 vertex = aPos;\n"
-
-      "if (uRect.z > -1.0f && uRect.w > -1.0f) {"
-        "vertex *= uRect.zw;\n"
-      "}\n"
-
-      "vertex += uRect.xy;\n"
-
-      "gl_Position = uProjection * vec4(vertex, 0.0f, 1.0f);\n"
-      "vTexCoord = aTexCoord;\n"
-      "vRect = uRect;\n"
-      "vPos = aPos;\n"
-    "}\n"
-  };
-
-  std::string fsh_src {
-    no_view_glsl_version + "\n"
-    "layout (location = 0) out vec4 aFragColor;\n"
-    "uniform sampler2D uTextureSampler;\n"
-
-    "in vec2 vTexCoord;\n"
-    "in vec2 vPos;\n"
-    "in vec4 vRect;\n"
-
-    "uniform int uLineThickness;\n"
-    "uniform int uActiveTexture;\n"
-    "uniform float uViewportHeight;\n"
-    "uniform float uContent[8];\n"
-
-    "void main() {\n"
-      "aFragColor = vec4(\n"
-        "uContent[0],\n"
-        "uContent[1],\n"
-        "uContent[2],\n"
-        "uContent[3]\n"
-      ");\n"
-
-      "vec2 fragPos = vec2(gl_FragCoord.x, uViewportHeight - gl_FragCoord.y);\n"
-
-      /**
-       * The scissoring works like swapchain-one (does not stack), of course,
-       * this scissor is a little different, the pixel-perfect precision makes
-       * a better cut of fragments. And does not require any overhead from
-       * calling command buffers to GPU rastarizer.
-       **/
-      "bool shouldDiscard = (\n"
-        "fragPos.x <= uContent[4] ||\n"
-        "fragPos.y <= uContent[5] ||\n"
-        "fragPos.x >= uContent[4] + uContent[6] ||\n"
-        "fragPos.y >= uContent[5] + uContent[7]\n"
-      ");\n"
-
-      "float lineThicknessf = float(uLineThickness);\n"
-
-      /**
-       * The pixel-perfect outline is possible on fragment shader,
-       * due the precision of fragments position, and the
-       * normalised-space.
-       **/
-      "if (uLineThickness > 0) {\n"
-        "vec4 outline = vec4(\n"
-          "vRect.x + lineThicknessf,\n"
-          "vRect.y + lineThicknessf,\n"
-          "vRect.z - (lineThicknessf * 2.0f),\n"
-          "vRect.w - (lineThicknessf * 2.0f)\n"
-        ");\n"
-
-        "shouldDiscard = (\n"
-          "shouldDiscard || (\n"
-            "fragPos.x > outline.x &&\n"
-            "fragPos.x < outline.x + outline.z &&\n"
-            "fragPos.y > outline.y &&\n"
-            "fragPos.y < outline.y + outline.w\n"
-          ")\n"
-        ");\n"
-      "} else if (uLineThickness < 0) {\n"
-        "float radius = vRect.z / 2.0f;\n"
-
-        "vec2 diff = vec2(\n"
-          "(vRect.x + radius) - fragPos.x,\n"
-          "(vRect.y + radius) - fragPos.y\n"
-        ");\n"
-
-        "float dist = (diff.x * diff.x + diff.y * diff.y);\n"
-        "aFragColor.w = (\n"
-          "1.0f - smoothstep(0.0, radius * radius, dot(dist, dist))\n"
-        ");\n"
-      "}\n"
-
-      /**
-       * The discard must not call `discard` keyword,
-       * discarding pixels using keyword is performanceless
-       * comparated to alpha blending equals to zero.
-       **/
-      "if (shouldDiscard) {\n"
-        "aFragColor.w = 0.0f;\n"
-      "} else {\n"
-        "vec4 textureColor;\n"
-        "switch (uActiveTexture) {\n"
-          "case 1:\n"           
-            "textureColor = texture(uTextureSampler, vTexCoord);\n"
-
-            /**
-             * The sampler used here is the font, and this sampler needs swizzled mapped,
-             * instead of doing swizzling on CPU-side, here is actually the best place.
-             * Due the necessity of put swizzle for ttf text fonts, the emojis must not swizzle.
-             * The non swizzable range masterfully fix it.
-             * 
-             * vRect.z is negative, because any concave rendering shape does not have a fixed
-             * dimension size. So the rendering engine re-uses the Rect width to calculate
-             * when must stop the GPU-side swizzle.
-             **/
-            "float non_swizzlable_range = -vRect.z;\n"
-
-            "if (vTexCoord.x < non_swizzlable_range) {\n"
-              "textureColor = textureColor.aaar;\n"
-              "textureColor = vec4(\n"
-                "textureColor.rgb * aFragColor.rgb,\n"
-                "textureColor.a\n"
-              ");\n"
-            "}\n"
-
-            "aFragColor = vec4(\n"
-              "textureColor.rgb,\n"
-              "textureColor.a - (1.0f - aFragColor.a)\n"
-            ");\n"
-            "break;\n"
-          "case 2:\n"
-            "textureColor = texture(uTextureSampler, vPos);\n"
-
-            "aFragColor = vec4(\n"
-              "textureColor.rgb,\n"
-              "textureColor.a - (1.0f - aFragColor.a)\n"
-            ");\n"
-            "aFragColor = textureColor;\n"
-            "break;\n"
-          "}\n"
-      "}\n"
-    "}\n"
-  };
+  std::string fsh_src {};
+  ekg::gpu::get_standard_fragment_shader(
+    no_view_glsl_version,
+    this->opengl_version,
+    fsh_src
+  );
 
   if (!this->rendering_shader_fragment_source.empty()) {
     fsh_src = this->rendering_shader_fragment_source;
@@ -466,15 +329,14 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_glyph_char_data,
   float &non_swizzlable_range
 ) {
-  int32_t internal_format {GL_RGBA};
-#if defined(__ANDROID__)
-  /*
-   * Android does not support GL_RED, perharps because of the GL ES version.
-   * For this reason, the format is GL_ALPHA and not GL_RED.
-   * Also both of internal format, and format is the same.
-   */
-  internal_format = GL_ALPHA;
-#endif
+  bool is_current_opengl_version_gl_es {
+    this->opengl_version == ekg::os::opengl_version::es
+  };
+
+  GLint sub_image_format {
+    is_current_opengl_version_gl_es ? GL_RGBA : GL_RED
+  };
+  
   if (!p_sampler->gl_id) {
     glGenTextures(1, &p_sampler->gl_id);
   }
@@ -502,37 +364,81 @@ uint64_t ekg::os::opengl::generate_font_atlas(
 
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
-  FT_ULong c {};
+  FT_Vector char_size {};
 
-  uint64_t flags {};
+  std::vector<unsigned char> image_data_content {};
+  unsigned char *p_image_data {};
+  size_t previous_size {1};
+
+  ekg::flags flags {};
   float offset {};
 
   for (char32_t &char32 : loaded_sampler_generate_list) {
-    flags = 0;
-
     switch (char32 < 256 || !p_font_face_emoji->font_face_loaded) {
       case true: {
         ft_face = p_font_face_text->ft_face;
         ft_glyph_slot = p_font_face_text->ft_face->glyph;
         non_swizzlable_range = offset;
+        flags = FT_LOAD_RENDER;
         break;
       }
 
       default: {
         ft_face = p_font_face_emoji->ft_face;
         ft_glyph_slot = p_font_face_emoji->ft_face->glyph;
-        flags = FT_LOAD_COLOR;
-
+        flags = FT_LOAD_RENDER | FT_LOAD_COLOR;
         break;
       }
     }
 
-    if (FT_Load_Char(ft_face, char32, FT_LOAD_RENDER | FT_LOAD_COLOR | FT_LOAD_DEFAULT)) {
+    if (FT_Load_Char(ft_face, char32, flags)) {
       continue;
     }
 
     ekg::draw::glyph_char_t &char_data {mapped_glyph_char_data[char32]};
     char_data.x = offset / static_cast<float>(atlas_width);
+
+    p_image_data = ft_glyph_slot->bitmap.buffer;
+
+    if (
+        is_current_opengl_version_gl_es
+        &&
+        !ekg_bitwise_contains(flags, FT_LOAD_COLOR)
+      ) {
+
+      const unsigned char *p_src_copy {
+        ft_glyph_slot->bitmap.buffer
+      };
+
+      char_size.x = char_data.w;
+      char_size.y = char_data.h;
+
+      if (image_data_content.size() != previous_size) {
+        image_data_content.resize(
+          static_cast<size_t>(char_size.x)
+          *
+          static_cast<size_t>(char_size.y)
+          *
+          static_cast<size_t>(4)
+        );
+
+        previous_size = image_data_content.size();
+      }
+
+      ekg::format_convert_result result {
+        ekg::image_src_r8_convert_to_r8g8b8a8(
+          char_size,
+          p_src_copy,
+          image_data_content
+        )
+      };
+
+      if (result == ekg::format_convert_result::failed) {
+        ekg::log() << "Warning: could not convert character '" << char32 << "' from r8 to r8g8b8a8 on OpenGL ES3";
+      } else {
+        p_image_data = image_data_content.data();
+      }
+    }
 
     glTexSubImage2D(
       GL_TEXTURE_2D,
@@ -541,9 +447,11 @@ uint64_t ekg::os::opengl::generate_font_atlas(
       0,
       static_cast<GLsizei>(char_data.w),
       static_cast<GLsizei>(char_data.h),
-      flags == FT_LOAD_COLOR ? GL_BGRA : GL_RED,
+      (
+        ekg_bitwise_contains(flags, FT_LOAD_COLOR) ? GL_BGRA : sub_image_format
+      ),
       GL_UNSIGNED_BYTE,
-      ft_glyph_slot->bitmap.buffer
+      p_image_data
     );
 
     offset += char_data.w;
@@ -552,7 +460,9 @@ uint64_t ekg::os::opengl::generate_font_atlas(
 
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  non_swizzlable_range = non_swizzlable_range / static_cast<float>(atlas_width);
+  non_swizzlable_range = (
+    non_swizzlable_range / static_cast<float>(atlas_width)
+  );
 
   return ekg_ok;
 }

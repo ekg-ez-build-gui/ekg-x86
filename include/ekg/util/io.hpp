@@ -49,6 +49,7 @@
  * Note: this macro call console out (`std::cout`) directly, not safe for official log trace.
  **/
 #define ekg_log(msg) std::cout << msg << std::endl;
+#define ekg_log_assert(assert, msg) if (!assert) ekg_log(msg);
 
 namespace ekg {
   typedef uint32_t flags;

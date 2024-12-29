@@ -424,9 +424,9 @@ void multithreading_update(uint64_t *p_async_fps, ekg::runtime *p_ekg_runtime) {
 int32_t showcase_useless_window() {
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
   app.p_sdl_win = {
     SDL_CreateWindow(
@@ -463,9 +463,10 @@ int32_t showcase_useless_window() {
    */
 
   ekg::runtime_property ekg_runtime_property {
-    .p_font_path = "Arial.ttf",
+    .p_font_path = "comic-mono.ttf",
     .p_font_path_emoji = "twemoji.ttf",
-    .p_gpu_api = new ekg::os::opengl(),
+    .p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
+    //.p_gpu_api = new ekg::os::opengl("#version 450"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
 
@@ -495,8 +496,7 @@ int32_t showcase_useless_window() {
     ->set_scaled_height(12);
 
   SDL_GL_SetSwapInterval((app.vsync = true));
-  ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill | ekg::next)
-    ->transfer_ownership(&app.vsync)
+  ekg::checkbox("Application Vsync", app.vsync, ekg::dock::fill)
     ->set_task(
       new ekg::task {
         .info = {
@@ -977,7 +977,7 @@ int32_t showcase_useless_window() {
     }
 
     ekg::update();
-    
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, 1.0f);
     glViewport(0.0f, 0.0f, ekg::ui::width, ekg::ui::height);
@@ -1069,7 +1069,7 @@ int32_t laboratory_testing() {
   ekg::runtime_property ekg_runtime_property {
     .p_font_path = "whitneybook.otf",
     .p_font_path_emoji = "twemoji.ttf",
-    .p_gpu_api = new ekg::os::opengl("#version 330"),
+    .p_gpu_api = new ekg::os::opengl("#version 450"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
 
@@ -1611,10 +1611,12 @@ int32_t laboratory_testing() {
     ekg::frame("meow", {.x = 20.0f, .y = 20.0f, .w = 700.0f, .h = 1000.0f})
   };
 
+  ekg::label("meow", ekg::dock::fill | ekg::dock::next)->set_scaled_height(6);
+
+  /*
   ekg::gpu::sampler_t meow_sampler {};
   load_ttf_emoji(&meow_sampler);
 
-  ekg::label("", ekg::dock::fill | ekg::dock::next)->set_scaled_height(6);
   ekg::frame("gui-icon", {.w = 256.0f, .h = 256.0f}, ekg::dock::next);
   ekg::pop_group_parent();
   ekg::button("play", ekg::dock::fill | ekg::dock::next)->set_text_align(ekg::dock::center);
@@ -1637,6 +1639,7 @@ int32_t laboratory_testing() {
       ,
       ekg::action::activity
     );
+  */
 
   ekg::vec3 clear_color {};
 
@@ -1673,5 +1676,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return laboratory_testing();
+  return showcase_useless_window();
 }

@@ -59,6 +59,12 @@ void ekg::init(
   ekg::runtime *p_ekg_runtime,
   ekg::runtime_property *p_ekg_runtime_property
 ) {
+  ekg::log() << "Initializing FreeType library";
+
+  if (FT_Init_FreeType(&ekg::draw::font_renderer::ft_library)) {
+    ekg::log() << "Error: Failed to init FreeType library";
+  }
+
   ekg::log() << "Initializing built-in OS platform-interface";
 
   p_ekg_runtime->p_os_platform = p_ekg_runtime_property->p_os_platform;
@@ -71,10 +77,6 @@ void ekg::init(
   p_ekg_runtime->p_gpu_api->log_vendor_details();
 
   ekg::log() << "Initializing EKG";
-
-  if (FT_Init_FreeType(&ekg::draw::font_renderer::ft_library)) {
-    ekg::log() << "Error: Failed to init FreeType library";
-  }
 
   ekg::core = p_ekg_runtime;
   ekg::running = true;

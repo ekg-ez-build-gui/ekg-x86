@@ -193,6 +193,10 @@ void ekg::draw::font_renderer::set_size(uint32_t size) {
 }
 
 void ekg::draw::font_renderer::reload() {
+  if (this->font_size == 0) {
+    return;
+  }
+
   if (
       (!this->font_face_text.font_path.empty() && ekg::draw::reload_font_face(&this->font_face_text, this->font_size_changed, this->font_size)) ||
       (!this->font_face_emoji.font_path.empty() && ekg::draw::reload_font_face(&this->font_face_emoji, this->font_size_changed, this->font_size))
@@ -218,22 +222,26 @@ void ekg::draw::font_renderer::reload() {
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
 
+  ekg::flags flags {};
+
   for (char32_t &char32 : this->loaded_sampler_generate_list) {
     switch (char32 < 256 || !this->font_face_emoji.font_face_loaded) {
       case true: {
         ft_face = this->font_face_text.ft_face;
         ft_glyph_slot = this->font_face_text.ft_face->glyph;
+        flags = FT_LOAD_RENDER;
         break;
       }
 
       default: {
         ft_face = this->font_face_emoji.ft_face;
         ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
+        flags = FT_LOAD_RENDER | FT_LOAD_COLOR;
         break;
       }
     }
 
-    if (FT_Load_Char(ft_face, char32, FT_LOAD_RENDER | FT_LOAD_DEFAULT | FT_LOAD_COLOR)) {
+    if (FT_Load_Char(ft_face, char32, flags)) {
       continue;
     }
 
