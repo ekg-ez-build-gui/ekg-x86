@@ -12,11 +12,17 @@ namespace ekg {
     failed
   };
 
+  ekg::format_convert_result image_src_r8g8b8_convert_to_r8g8b8a8(
+    FT_Vector size,
+    const unsigned char *p_src,
+    std::vector<unsigned char> &dst
+  );
+
   ekg::format_convert_result image_src_r8_convert_to_r8g8b8a8(
     FT_Vector size,
     const unsigned char *p_src,
     std::vector<unsigned char> &dst
-  );  
+  );
 }
 
 #endif
