@@ -21,47 +21,51 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.10)
+set(EKG_VERSION 1.2.0)
 
-set(CMAKE_CXX_STANDARD 17)
-set(EKG_VERSION        1.2.0)
-
-message(STATUS "Building EKG user interface library version ${EKG_VERSION}")
-project(ekg VERSION ${EKG_VERSION} DESCRIPTION "graphical user interface")
-
-set(
-  MATCH_SPECIALIZED_COMPILERS_ID
-  "/emcc"
+project(
+  ekg
+  VERSION ${EKG_VERSION}
+  DESCRIPTION "graphical user interface"
 )
 
-string(
-  REGEX MATCH
-  ${MATCH_SPECIALIZED_COMPILERS_ID}
-  MATCHED_COMPILER_FILENAME
-  ${CMAKE_CXX_COMPILER}
-)
-
-if(
-  EKG_WASM_LINUX_EMCC_BUILD
-  OR
-  MATCHED_COMPILER_FILENAME STREQUAL "/emcc"
+if(CMAKE_TOOLCHAIN_FILE)
+  string(
+    REGEX MATCH
+    "/Emscripten"
+    compiler_filename
+    ${CMAKE_TOOLCHAIN_FILE}
   )
-  message(STATUS "Found specialized compiler ID: ${MATCHED_COMPILER_FILENAME}, WASM build type")
-  set(EKG_WASM_LINUX_EMCC_BUILD 1)
-elseif(EKG_WASM_LINUX_EMCC_BUILD)
-  message(FATAL_ERROR "No specialized compiler ID was found with '/emcc' for WASM build type")
+
+  if(
+    EKG_EMSCRIPTEN_BUILD_TYPE
+    OR
+    ${compiler_filename} STREQUAL "/Emscripten"
+  )
+    message(STATUS "Toolchain ID: ${compiler_filename}, WASM build-type")
+    set(EKG_EMSCRIPTEN_BUILD_TYPE 1)
+  elseif(EKG_EMSCRIPTEN_BUILD_TYPE)
+    message(FATAL_ERROR "No specialized toolchain ID  was found with '/Emscripten' for WASM build-type")
+  endif()
+elseif(EKG_EMSCRIPTEN_BUILD_TYPE)
+  message(FATAL_ERROR "No specialized toolchain ID  was found with '/Emscripten' for WASM build-type")
 endif()
 
 if(
   CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
   OR
   CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+  OR
+  EKG_EMSCRIPTEN_BUILD_TYPE
 )
-  message(STATUS "Found compiler ID: ${CMAKE_CXX_COMPILER_ID}")
   add_compile_options(-O3)
 endif()
 
-# Enable if your base OS is Debian-based (e.g Ubuntu).
-# It is a common issue related by the Linux community.
+message(STATUS "Found compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+
+include_directories(./include)
+
+# It is a common issue related by the Linux-community.
 if (EKG_LINUX_NOT_FOUND_FREETYPE)
   include_directories(/usr/include/freetype2)
   message(
@@ -76,7 +80,7 @@ if(WIN32 OR EKG_FORCE_WINDOWS)
 elseif(ANDROID OR EKG_FORCE_ANDROID)
   set(LIBRARY_OUTPUT_PATH "${ANDROID_ABI}/")
   set(PLATFORM            "${ANDROID_ABI}")
-elseif(LINUX AND EKG_WASM_LINUX_EMCC_BUILD)
+elseif(EKG_EMSCRIPTEN_BUILD_TYPE)
   set(LIBRARY_OUTPUT_PATH "../lib/linux-wasm/")
   set(PLATFORM            "linux-wasm")
 elseif(LINUX OR EKG_FORCE_LINUX)
@@ -85,18 +89,17 @@ elseif(LINUX OR EKG_FORCE_LINUX)
   set(PLATFORM            "linux")
 endif()
 
+message(STATUS "Building EKG user interface library version ${EKG_VERSION}")
 message(STATUS "Generating EKG ${PLATFORM} native library")
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
-include_directories(./include)
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 add_library(ekg STATIC ${SOURCE_FILES})
 
-if (EKG_WASM_LINUX_EMCC_BUILD)
-  set_target_properties(
-    ekg
-    PROPERTIES LINK_FLAGS "--bind -s USE_FREETYPE=1"
-  )
-endif()
+set_target_properties(
+  ekg
+  PROPERTIES
+  CXX_STANDARD 17
+)
 
 message(STATUS "EKG native library building done")
 

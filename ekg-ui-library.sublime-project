@@ -41,7 +41,7 @@
 		{
 			"name": "Linux Build WASM",
 			"shell_cmd":
-				"cd $folder && emcmake cmake -S . -B ./cmake-build/ -G Ninja -DEKG_LINUX_NOT_FOUND_FREETYPE=1 -DCMAKE_CXX_COMPILER=/home/rina/emsdk/emsdk/upstream/emscripten/emcc -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && cmake --build ./cmake-build",
+				"cd $folder && emcmake cmake -S . -B ./cmake-build/ -G Ninja -DEKG_EMSCRIPTEN_BUILD_TYPE=1 -DEKG_LINUX_NOT_FOUND_FREETYPE=1 -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && cmake --build ./cmake-build",
 		}
 	],
 }

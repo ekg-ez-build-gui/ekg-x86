@@ -366,8 +366,8 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   FT_Face ft_face {};
   FT_Vector char_size {};
 
-  std::vector<unsigned char> image_data_content {};
-  unsigned char *p_image_data {};
+  std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
+  unsigned char *p_current_image_buffer {};
   size_t previous_size {1};
 
   ekg::flags flags {};
@@ -398,7 +398,7 @@ uint64_t ekg::os::opengl::generate_font_atlas(
     ekg::draw::glyph_char_t &char_data {mapped_glyph_char_data[char32]};
     char_data.x = offset / static_cast<float>(atlas_width);
 
-    p_image_data = ft_glyph_slot->bitmap.buffer;
+    p_current_image_buffer = ft_glyph_slot->bitmap.buffer;
 
     if (
         is_current_opengl_version_gl_es
@@ -413,8 +413,8 @@ uint64_t ekg::os::opengl::generate_font_atlas(
       char_size.x = char_data.w;
       char_size.y = char_data.h;
 
-      if (image_data_content.size() != previous_size) {
-        image_data_content.resize(
+      if (r8_to_r8g8b8a8_swizzled_image.size() != previous_size) {
+        r8_to_r8g8b8a8_swizzled_image.resize(
           static_cast<size_t>(char_size.x)
           *
           static_cast<size_t>(char_size.y)
@@ -422,21 +422,21 @@ uint64_t ekg::os::opengl::generate_font_atlas(
           static_cast<size_t>(4)
         );
 
-        previous_size = image_data_content.size();
+        previous_size = r8_to_r8g8b8a8_swizzled_image.size();
       }
 
       ekg::format_convert_result result {
         ekg::image_src_r8_convert_to_r8g8b8a8(
           char_size,
           p_src_copy,
-          image_data_content
+          r8_to_r8g8b8a8_swizzled_image
         )
       };
 
       if (result == ekg::format_convert_result::failed) {
         ekg::log() << "Warning: could not convert character '" << char32 << "' from r8 to r8g8b8a8 on OpenGL ES3";
       } else {
-        p_image_data = image_data_content.data();
+        p_current_image_buffer = r8_to_r8g8b8a8_swizzled_image.data();
       }
     }
 
@@ -451,7 +451,7 @@ uint64_t ekg::os::opengl::generate_font_atlas(
         ekg_bitwise_contains(flags, FT_LOAD_COLOR) ? GL_BGRA : sub_image_format
       ),
       GL_UNSIGNED_BYTE,
-      p_image_data
+      p_current_image_buffer
     );
 
     offset += char_data.w;
