@@ -167,7 +167,6 @@ void ekg::os::sdl::get_special_key(io_key &key, ekg::special_key &special_key) {
 
 void ekg::os::sdl_poll_event(SDL_Event &sdl_event) {
   ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
-  float precise_interval {};
 
   switch (sdl_event.type) {
   default:

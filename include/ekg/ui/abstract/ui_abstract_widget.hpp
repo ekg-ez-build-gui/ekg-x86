@@ -71,8 +71,7 @@ namespace ekg::ui {
     bool was_syncedlayout {};
   public:
     ekg::rect get_static_rect();
-
-    [[nodiscard]] ekg::rect &get_abs_rect();
+    ekg::rect &get_abs_rect();
   public:
     explicit abstract_widget();
 

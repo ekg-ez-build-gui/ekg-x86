@@ -28,9 +28,9 @@
 
 void ekg::ui::checkbox_widget::on_reload() {
   abstract_widget::on_reload();
+  this->get_abs_rect();
 
   ekg::ui::checkbox *p_ui {(ekg::ui::checkbox *) this->p_data};
-  ekg::rect &rect {this->get_abs_rect()};
   ekg::draw::font_renderer &f_renderer {ekg::f_renderer(p_ui->get_font_size())};
   int32_t scaled_height {p_ui->get_scaled_height()};
 

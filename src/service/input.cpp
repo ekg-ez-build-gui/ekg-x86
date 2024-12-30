@@ -28,8 +28,6 @@
 #include "ekg/ekg.hpp"
 
 void ekg::service::input::init() {
-  uint64_t it {};
-
   /**
    * Forced null termination at end due the necessary optmization,
    * when changing dynamically the special key state.

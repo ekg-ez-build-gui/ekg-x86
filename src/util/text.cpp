@@ -89,27 +89,22 @@ char32_t ekg::utf_string_to_char32(std::string_view string) {
   char32_t char32 {};
 
   uint64_t it {};
-  uint8_t bytes_read {};
   uint8_t char8 {static_cast<uint8_t>(string.at(0))};
 
   if (char8 <= 0x7F) {
     char32 = char8;
-    bytes_read = 1;
   } else if (char8 <= 0xDF) {
     char32 = char8 & 0x1F;
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
-    bytes_read = 2;
   } else if (char8 <= 0xEF) {
     char32 = char8 & 0x0F;
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
-    bytes_read = 3;
   } else {
     char32 = char8 & 0x07;
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
     char32 = (char32 << 6) | (string.at(++it) & 0x3F);
-    bytes_read = 4;
   }
 
   return char32;
@@ -157,7 +152,6 @@ std::string ekg::utf_substr(std::string_view string, uint64_t offset, uint64_t s
 
   uint64_t index {};
   uint64_t utf_sequence_size {};
-  uint64_t substr_size {};
   uint64_t begin {UINT64_MAX};
   uint8_t char8 {};
   bool at_last_index {};

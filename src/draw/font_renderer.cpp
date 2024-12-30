@@ -106,7 +106,6 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text) {
   }
 
   FT_Face ft_face {};
-  FT_Vector ft_vec {};
   FT_UInt ft_uint_previous {};
   FT_Vector ft_vector_previous_char {};
   FT_GlyphSlot ft_glyph_slot {};
@@ -218,7 +217,6 @@ void ekg::draw::font_renderer::reload() {
     this->font_face_emoji.ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
   }
 
-  FT_ULong c {};
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
 
@@ -313,8 +311,6 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
   bool break_text {};
   bool r_n_break_text {};
 
-  FT_ULong c {};
-  FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
   FT_Vector ft_vector_previous_char {};
 

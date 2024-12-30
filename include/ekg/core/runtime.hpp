@@ -73,10 +73,6 @@ namespace ekg {
     ekg::stack *p_current_stack {};
 
     int32_t token_id {};
-    int32_t widget_id_focused {};
-    int32_t prev_widget_id_focused {};
-    int32_t swap_widget_id_focused {};
-
     bool enable_high_priority_frequency {};
   public:
     ekg::service::input service_input {};

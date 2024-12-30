@@ -151,16 +151,15 @@ void ekg::ui::textbox_widget::move_target_cursor(ekg::ui::textbox_widget::cursor
  * works okay, but I will write a fast select rect batching.
  */
 void ekg::ui::textbox_widget::update_ui_text_data() {
+  this->get_abs_rect();
+
   ekg::ui::textbox *p_ui {(ekg::ui::textbox*) this->p_data};
   ekg::draw::font_renderer &f_renderer {ekg::f_renderer(p_ui->get_font_size())};
-  ekg::rect &rect {this->get_abs_rect()};
 
   this->rect_text.w = 0.0f;
   this->total_utf_chars = 0;
   std::string formated_text {};
 
-  float x {};
-  float y {this->text_offset};
   uint64_t text_chunk_size {p_ui->p_value->size()};
 
   this->rect_cursor.w = 2.0f;
@@ -1172,11 +1171,8 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
   FT_UInt ft_uint_previous {};
   FT_Vector_ ft_vector_previous_char {};
 
-  bool optimize_batching {};
   bool do_not_fill_line {};
-  bool draw_additional_selected_last_char {};
   bool is_utf_char_last_index {};
-  bool render_cursor {};
 
   /**
    * 0 == previous char wsize
@@ -1212,7 +1208,6 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
   // Get the diff. between the visible text position and subtract with rect position for performn the scrolling effect.
   float visible_text_height {this->text_height * this->visible_text[1]};
   float rendering_text_scroller_diff {rect.y - (rect.y + this->embedded_scroll.scroll.y + visible_text_height)};
-  float rendering_text_offset {((this->text_height / 2) - ((this->text_height - f_renderer.offset_text_height) / 2))};
 
   data.buffer_content[1] = floorf(rect.y);
 

@@ -25,7 +25,6 @@ void ekg::layout::extentnize(
   switch (axis) {
     case ekg::axis::horizontal: {
       ekg::flags flags {};
-      int32_t ids {};
       int64_t flag_ok_count {};
       int64_t it {begin_index};
 
@@ -49,7 +48,6 @@ void ekg::layout::extentnize(
 
       bool is_scrollbar {};
       bool is_last_index {};
-      bool is_ok_flag {};
       bool is_last_index_but {};
       bool is_ok {};
       bool is_stop {};
@@ -65,7 +63,7 @@ void ekg::layout::extentnize(
        * the offset position when split the fill width, but the
        * last extent space is not necessary, so we need to subtract.
        **/
-      for (it = it; it < size; it++) {
+      for (; it < size; it++) {
         if ((p_widgets = ekg::core->get_fast_widget_by_id(child_id_list.at(it))) == nullptr) {
           continue;
         }
@@ -201,7 +199,6 @@ void ekg::layout::docknize(
     return;
   }
 
-  float group_top_offset {ekg::layout::offset};
   float initial_offset {};
  
   bool has_scroll_embedded {};
@@ -235,51 +232,34 @@ void ekg::layout::docknize(
     }
   }
 
-  /**
-   * Container size (scaled container size), works right for left docknization
-   * but right dockinization no, due the precision and difference between
-   * sides where is calculated the positions of widget.
-   * So there is a special size number to use as container rect.
-   **/
-  ekg::vec2 side_container_fixed {
-    0.0f,
-    container_rect.h - ((initial_offset + ekg::layout::offset))
-  };
-
   float container_size_offset {(initial_offset + ekg::layout::offset) * 2.0f};
   container_rect.w -= container_size_offset;
   container_rect.h -= container_size_offset;
 
   ekg::ui::abstract_widget *p_widgets {};
   ekg::flags flags {};
+
   int64_t it {};
   float dimensional_extent {};
   int64_t count {};
 
-  ekg::rect widget_rect {};
   ekg::rect parent_offset {ekg::layout::offset + initial_offset, ekg::layout::offset + initial_offset, 0.0f, 0.0f};
   ekg::rect prev_widget_layout {};
 
-  ekg::flags prev_flags {};
   bool should_reload_widget {};
-  bool skip_widget {};
   bool should_estimated_extentinize {};
   float max_previous_height {};
 
   ekg::layout::h_extent = {};
   ekg::layout::extent_t h_extent_backup {};
-  ekg::layout::extent_t v_extent_backup {};
   ekg::layout::fill_align_t fill_align {};
 
-  bool is_none {};
-  bool is_free {};
   bool is_left {};
   bool is_right {};
   bool is_top {};
   bool is_bottom {};
   bool is_fill {};
   bool is_next {};
-  bool was_first_fill_right_align_found {};
 
   ekg::rect corner_top_left {parent_offset};
   ekg::rect corner_top_right {0.0f, parent_offset.y, 0.0f, 0.0f};
@@ -308,8 +288,6 @@ void ekg::layout::docknize(
 
     should_estimated_extentinize = true;
 
-    is_none   = ekg_bitwise_contains(flags, ekg::dock::none);
-    is_free   = ekg_bitwise_contains(flags, ekg::dock::free);
     is_right  = ekg_bitwise_contains(flags, ekg::dock::right);
     is_left   = ekg_bitwise_contains(flags, ekg::dock::left) || !is_right;
     is_bottom = ekg_bitwise_contains(flags, ekg::dock::bottom);
@@ -494,7 +472,6 @@ void ekg::layout::docknize(
 
     ekg::layout::h_extent = h_extent_backup;
     prev_widget_layout = layout;
-    prev_flags = flags;
     it++;
   }
 
@@ -565,8 +542,6 @@ void ekg::layout::mask::extentnize(
   extent = 0.0f;
   switch (axis) {
     case ekg::axis::horizontal: {
-      ekg::flags flags {};
-      int32_t ids {};
       int64_t flag_ok_count {};
       int64_t it {begin_and_count};
 
@@ -601,7 +576,7 @@ void ekg::layout::mask::extentnize(
        * the offset position when split the fill width, but the
        * last extent space is not necessary, so we need to subtract.
        **/
-      for (it = it; it < size; it++) {
+      for (; it < size; it++) {
         ekg::layout::mask::rect &dock_rect {this->dock_rect_list.at(it)};
         if (dock_rect.p_rect == nullptr) {
           continue;
@@ -678,12 +653,6 @@ void ekg::layout::mask::insert(const ekg::layout::mask::rect &dock_rect) {
 }
 
 void ekg::layout::mask::docknize() {
-  float left_or_right {};
-  float centered_dimension {this->offset.z / 2};
-  float opposite {};
-  float uniform {};
-  float clamped_offset {};
-
   int64_t count {};
   float dimensional_extent {};
   float rect_height {};
@@ -694,7 +663,6 @@ void ekg::layout::mask::docknize() {
 
   bool is_left {};
   bool is_right {};
-  bool is_center {};
   bool is_top {};
   bool is_bottom {};
   bool is_not_bind {};
@@ -723,8 +691,6 @@ void ekg::layout::mask::docknize() {
    * starts from left (dimension width divided by 2 based) to right.
    **/
   ekg::rect center_right_corner {};
-
-  ekg::rect center {};
 
   switch (this->axis) {
   case ekg::axis::horizontal:
@@ -757,7 +723,6 @@ void ekg::layout::mask::docknize() {
 
       is_left = ekg_bitwise_contains(dock_rect.flags, ekg::dock::left);
       is_right = ekg_bitwise_contains(dock_rect.flags, ekg::dock::right);
-      is_center = ekg_bitwise_contains(dock_rect.flags, ekg::dock::center);
       is_bottom = ekg_bitwise_contains(dock_rect.flags, ekg::dock::bottom);
       is_top = ekg_bitwise_contains(dock_rect.flags, ekg::dock::top);
       is_not_bind = !ekg_bitwise_contains(dock_rect.flags, ekg::dock::bind);

@@ -30,29 +30,26 @@
 void ekg::ui::slider_widget::on_reload() {
   abstract_widget::on_reload();
 
+  this->get_abs_rect();
+
   ekg::ui::slider *p_ui {static_cast<ekg::ui::slider*>(this->p_data)};
-  ekg::axis axis {p_ui->get_axis()};
-  ekg::number number {p_ui->get_number()};
-  ekg::font base_font_size {p_ui->get_font_size()};
-  ekg::draw::font_renderer &f_renderer {ekg::f_renderer(base_font_size)};
-  ekg::draw::font_renderer &small_f_renderer {ekg::f_renderer(ekg::font::small)};
   ekg::service::theme_scheme_t &theme_scheme {ekg::current_theme_scheme()};
 
-  ekg::rect &rect {this->get_abs_rect()};
-  ekg::rect relative_rect {};
+  ekg::font base_font_size {p_ui->get_font_size()};
+  ekg::draw::font_renderer &f_renderer {ekg::f_renderer(base_font_size)};
+
+  ekg::axis axis {p_ui->get_axis()};
+  ekg::number number {p_ui->get_number()};
   ekg::flags text_align_flags {p_ui->get_text_align()};
 
   bool is_text_enabled {static_cast<bool>(ekg_bitwise_contains(text_align_flags, ekg::dock::none))};
 
   float base_text_height {f_renderer.get_text_height()};
   float dimension_offset {static_cast<float>((int32_t) (base_text_height / 2.0f))};
-  float offset {ekg::find_min_offset(base_text_height, dimension_offset)};
   float bar_offset {p_ui->get_bar_offset()};
 
   float min_text_width {};
   float max_text_width {};
-  float text_width {};
-  float small_font_text_height {small_f_renderer.get_text_height()};
 
   float bar_thickness {
     static_cast<float>(theme_scheme.slider_bar_thickness) / 100

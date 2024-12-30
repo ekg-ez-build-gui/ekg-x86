@@ -226,7 +226,6 @@ void ekg::runtime::process_update() {
   this->service_input.on_update();
 
   if (!this->update_widget_list.empty()) {
-    size_t counter {};
     for (uint64_t it {}; it < this->update_widget_list.size(); it++) {
       if (it >= this->update_widget_list.size()) {
         break;
@@ -310,7 +309,7 @@ void ekg::runtime::prepare_tasks() {
   ekg::log() << "Preparing internal EKG core";
 
   this->service_handler.allocate() = new ekg::task {
-    {
+    .info = {
       .tag    = "refresh",
       .p_data = nullptr
     },
@@ -341,7 +340,7 @@ void ekg::runtime::prepare_tasks() {
   };
 
   this->service_handler.allocate() = new ekg::task {
-    {
+    .info = {
       .tag    = "swap",
       .p_data = nullptr
     },
@@ -396,7 +395,7 @@ void ekg::runtime::prepare_tasks() {
   };
 
   this->service_handler.allocate() = new ekg::task {
-    {
+    .info = {
       .tag    = "reload",
       .p_data = nullptr
     },
@@ -491,7 +490,7 @@ void ekg::runtime::prepare_tasks() {
   };
 
   this->service_handler.allocate() = new ekg::task {
-    {
+    .info = {
       .tag    = "synclayout",
       .p_data = nullptr
     },
@@ -515,7 +514,7 @@ void ekg::runtime::prepare_tasks() {
   };
 
   this->service_handler.allocate() = new ekg::task {
-    {
+    .info = {
       .tag    = "gc",
       .p_data = nullptr,
     },

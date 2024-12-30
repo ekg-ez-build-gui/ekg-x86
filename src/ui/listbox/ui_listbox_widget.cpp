@@ -70,13 +70,11 @@ void ekg::ui::listbox_widget::on_reload() {
   float text_width {};
   int32_t text_lines {};
   uint64_t items_header_size {p_ui->p_value->size()};
-  uint64_t old_cache_size {};
 
   text_height = f_renderer_column_header.get_text_height();
   dimension_offset = text_height / 2;
 
   ekg::mode mode {p_ui->get_mode()};
-  bool is_multicolumn {mode == ekg::mode::multicolumn};
   bool opened {};
 
   float scaled_width {rect.w};
@@ -300,9 +298,9 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   ekg::rect scrollable_rect {this->rect_content_abs + this->embedded_scroll.scroll};
   ekg::vec2 ui_pos {rect.x, rect.y};
   ekg::rect delta_rect {};
-  ekg::rect item_rect {};
   ekg::vec4 &interact {ekg::input::interact()};
   ekg::vec4 point {};
+  ekg::rect item_rect {};
 
   ekg::ui::listbox *p_ui {static_cast<ekg::ui::listbox*>(this->p_data)};
   ekg::mode mode {p_ui->get_mode()};
@@ -317,7 +315,6 @@ void ekg::ui::listbox_widget::on_event(ekg::os::io_event_serial &io_event_serial
   bool is_multicolumn {mode == ekg::mode::multicolumn};
   bool must {};
   bool hovering {};
-  bool contains_flag {};
 
   ekg::flags flags {};
   uint64_t arbitrary_index_pos {};
@@ -638,7 +635,6 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
   );
 
   ekg::rect scrollable_rect {this->rect_content_abs + this->embedded_scroll.scroll};
-  ekg::rect item_rect {};
   ekg::rect content_scissor_bounding {};
   ekg::rect widget_absolute_rect_scissor {this->scissor};
 
@@ -647,7 +643,6 @@ void ekg::ui::listbox_widget::on_draw_refresh() {
   ekg::flags flags {p_ui->get_column_header_align()};
   uint64_t rendering_cache_size {this->item_rendering_cache.size()};
 
-  bool must_stop_rendering {};
   bool is_header_targeted {};
   bool is_multicolumn {p_ui->get_mode() == ekg::mode::multicolumn};
 
@@ -747,11 +742,14 @@ void ekg::ui::listbox_widget::render_item(
 ) {
   ekg::service::theme_scheme_t &theme_scheme {ekg::current_theme_scheme()};
   ekg::vec4 &interact {ekg::input::interact()};
+  
+  ekg::rect multicolumn_item_rect {};
   ekg::rect &rect {this->get_abs_rect()};
   ekg::rect item_rect {};
-  ekg::rect multicolumn_item_rect {};
-  ekg::flags flags {item_header.get_attr()};
+  
   bool must_stop_rendering {};
+  ekg::flags flags {item_header.get_attr()};
+  
   ekg::rect targeted_rect {this->rect_current_dragging_targeted_header};
   targeted_rect.y += rect.y;
 
@@ -1006,7 +1004,7 @@ void ekg::ui::listbox_template_reload(
     (theme_scheme.listbox_subitem_offset_space + ekg_pixel) * should_apply_offset_by_column_based
   };
 
-  for (it = it; it < parent.size(); it++) {
+  for (; it < parent.size(); it++) {
     ekg::item &item {parent.at(it)};
     ekg::placement &placement {item.unsafe_get_placement()};
 

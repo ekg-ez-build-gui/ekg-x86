@@ -29,8 +29,9 @@
 
 void ekg::ui::button_widget::on_reload() {
   abstract_widget::on_reload();
+  this->get_abs_rect();
+
   ekg::ui::button *p_ui {(ekg::ui::button *) this->p_data};
-  ekg::rect &rect {this->get_abs_rect()};
   ekg::draw::font_renderer &f_renderer {ekg::f_renderer(p_ui->get_font_size())};
 
   float text_width {f_renderer.get_text_width(p_ui->get_text())};
