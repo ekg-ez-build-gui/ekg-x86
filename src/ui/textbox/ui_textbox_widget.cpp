@@ -1228,12 +1228,17 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
 
     data.factor += static_cast<int32_t>(y) + 32;
     if (y > rect.h) {
-      data.factor += static_cast<int32_t>(text_chunk_size) * 32;
+      data.factor += ekg_generate_factor_hash(
+        static_cast<int32_t>(text_chunk_size) * 32, 32, 32
+      );
       break;
     }
 
-    if (text.empty() &&
-        this->find_cursor(cursor, static_cast<int64_t>(utf_char_index), static_cast<int64_t>(chunk_index), false)) {
+    if (
+        text.empty()
+        &&
+        this->find_cursor(cursor, static_cast<int64_t>(utf_char_index), static_cast<int64_t>(chunk_index), false)
+      ) {
       do_not_fill_line = true;
 
       ekg::rect &select_rect {this->cursor_draw_data_list.emplace_back()};
@@ -1273,22 +1278,34 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
         char_data.was_sampled = true;
       }
 
-      if (this->find_cursor(
-          cursor,
-          static_cast<int64_t>(utf_char_index),
-          static_cast<int64_t>(chunk_index),
-          is_utf_char_last_index
-        ) &&
-          !(chunk_index > cursor.pos[0].chunk_index && chunk_index < cursor.pos[1].chunk_index)) {
+      if (
+          this->find_cursor(
+            cursor,
+            static_cast<int64_t>(utf_char_index),
+            static_cast<int64_t>(chunk_index),
+            is_utf_char_last_index
+          )
+          &&
+          !(
+            chunk_index > cursor.pos[0].chunk_index
+            &&
+            chunk_index < cursor.pos[1].chunk_index
+          )
+        ) {
+
         ekg::rect &select_rect {this->cursor_draw_data_list.emplace_back()};
 
         // The end of line cursor drawing require check before to addition.
         select_rect.x = (
           x +
           (
-            char_data.wsize * static_cast<float>(
-              is_utf_char_last_index &&
-              cursor.pos[0] == cursor.pos[1] &&
+            char_data.wsize
+            *
+            static_cast<float>(
+              is_utf_char_last_index
+              &&
+              cursor.pos[0] == cursor.pos[1]
+              &&
               cursor.pos[0].text_index == utf_char_index + 1
             )
           )
@@ -1298,12 +1315,20 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
 
         // Draw the offset signal for next line selected.
         select_rect.w = (
-          cursor.pos[0] != cursor.pos[1] ?
+          cursor.pos[0] != cursor.pos[1] ? // else true
             (
-              (char_data.wsize) +
-              (this->rect_cursor.w + this->rect_cursor.w) *
-              (is_utf_char_last_index && cursor.pos[1].chunk_index > chunk_index && cursor.pos[0].chunk_index == chunk_index)
-            ) :
+              (char_data.wsize)
+              +
+              (this->rect_cursor.w + this->rect_cursor.w)
+              *
+              (
+                is_utf_char_last_index
+                &&
+                cursor.pos[1].chunk_index > chunk_index
+                &&
+                cursor.pos[0].chunk_index == chunk_index
+              )
+            ) : // else false
             (
               this->rect_cursor.w
             )
@@ -1365,7 +1390,9 @@ void ekg::ui::textbox_widget::on_draw_refresh() {
           coordinates.y
         );
 
-        data.factor += static_cast<int32_t>(x) + static_cast<int32_t>(char32);
+        data.factor += ekg_generate_factor_hash(
+          x, char32, char_data.x
+        );
       }
 
       if (x + this->embedded_scroll.scroll.x > rect.w) {

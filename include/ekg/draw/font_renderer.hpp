@@ -53,6 +53,16 @@ if (!char_data.was_sampled) { \
   char_data.was_sampled = true; \
 }
 
+/**
+ * Normally an UV is normalized-clamped, so multiplying by 100
+ * do the number be able to sum the factor and show some
+ * effect on screen.
+ * 
+ * For example, a same number but UV was updated, no factor is changed
+ * then the way to fix it is make UV noticable.
+ **/
+#define ekg_generate_factor_hash(axis, c32, char_data_x) static_cast<int32_t>(axis + c32 + char_data_x * 100)
+
 namespace ekg::draw {
   class font_renderer {
   public:

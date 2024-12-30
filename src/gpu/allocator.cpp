@@ -217,7 +217,7 @@ uint32_t ekg::gpu::allocator::get_current_data_id() {
 }
 
 ekg::gpu::data_t *ekg::gpu::allocator::get_data_by_id(int32_t id) {
-  if (id < 0 || id > this->data_instance_index) {
+  if (id < 0 || static_cast<uint64_t>(id) > this->data_instance_index) {
     return nullptr;
   }
 

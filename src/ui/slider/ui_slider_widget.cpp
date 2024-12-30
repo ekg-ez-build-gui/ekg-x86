@@ -265,13 +265,6 @@ void ekg::ui::slider_widget::on_draw_refresh() {
           it,
           range.text
         );
-
-        /**
-         * Note: EKG allocator contains an issue on rendering where the next
-         * UV coords is jittering due some stupid text size (unknown wsize).
-         * May you want know more: https://github.com/vokegpu/ekg-ui-library/issues/22
-         **/
-        //range.text += " ";
       }
 
       ekg::draw::rect(

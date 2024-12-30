@@ -22,6 +22,11 @@ ekg::format_convert_result ekg::image_src_r8_convert_to_r8g8b8a8(
       break;
     }
 
+    /**
+     * may I be wrong? but the format is ARGB and not RGBA,
+     * I do not know.
+     **/
+
     dst.at(index + 0) = char8_red_color;
     dst.at(index + 1) = 255;
     dst.at(index + 2) = 255;

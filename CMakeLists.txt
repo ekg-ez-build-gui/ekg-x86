@@ -58,7 +58,7 @@ if(
   OR
   EKG_EMSCRIPTEN_BUILD_TYPE
 )
-  add_compile_options(-Wall -g)
+  add_compile_options(-Wall -Wextra -g)
   add_compile_options(-O3)
 endif()
 

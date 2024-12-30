@@ -556,8 +556,8 @@ void ekg::layout::mask::extentnize(
       }
 
       ekg::layout::h_extent.begin_index = static_cast<float>(it);
-      uint64_t size {this->dock_rect_list.size()};
-      uint64_t latest_index {size - (!this->dock_rect_list.empty())};
+      int64_t size {static_cast<int64_t>(this->dock_rect_list.size())};
+      int64_t latest_index {static_cast<int64_t>(size - (!this->dock_rect_list.empty()))};
       int32_t should_skip_next {};
 
       bool is_last_index {};

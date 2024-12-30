@@ -320,8 +320,11 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
 
     break_text = char8 == '\n';
     if (break_text || (r_n_break_text = (char8 == '\r' && it < text_size && text.at(it + 1) == '\n'))) {
+      ekg::draw::glyph_char_t &char_data {this->mapped_glyph_char_data[char32]};
+
       it += static_cast<uint64_t>(r_n_break_text);
-      data.factor += static_cast<int32_t>(y + char32);
+      data.factor += ekg_generate_factor_hash(y, char32, char_data.x);
+
       y += this->text_height;
       x = 0.0f;
       continue;
@@ -406,15 +409,7 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
     x += char_data.wsize;
     ft_uint_previous = char32;
 
-    /**
-     * Normally an UV is normalized-clamped, so multiplying by 100
-     * do the number be able to sum the factor and show some
-     * effect on screen.
-     * 
-     * For example, a same number but UV was updated, no factor is changed
-     * then the way to fix it is make UV noticable.
-     **/
-    data.factor += static_cast<int32_t>(x + char32 + (char_data.x * 100));
+    data.factor += ekg_generate_factor_hash(x, char32, char_data.x);
   }
 
   this->flush();
