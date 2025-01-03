@@ -89,6 +89,7 @@ namespace ekg::draw {
     bool flag_first_time {true};
     bool font_face_changed {};
     bool font_size_changed {};
+    bool was_initialized {};
 
     ekg::gpu::allocator *p_allocator {};
     std::unordered_map<char32_t, ekg::draw::glyph_char_t> mapped_glyph_char_data {};

@@ -46,9 +46,10 @@ namespace ekg::draw {
   public:
     FT_Face ft_face {};
     FT_GlyphSlot ft_glyph_slot {};
-    std::string_view font_path {};
+    std::string font_path {};
     bool font_face_changed {};
     bool font_face_loaded {};
+    FT_Vector highest_glyph_size {};
   };
 
   bool reload_font_face(

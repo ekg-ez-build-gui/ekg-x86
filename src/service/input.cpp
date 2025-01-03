@@ -28,6 +28,8 @@
 #include "ekg/ekg.hpp"
 
 void ekg::service::input::init() {
+  ekg::log() << "Initialising input-bind system!";
+
   /**
    * Forced null termination at end due the necessary optmization,
    * when changing dynamically the special key state.

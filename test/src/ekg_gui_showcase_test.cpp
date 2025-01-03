@@ -464,7 +464,7 @@ int32_t showcase_useless_window() {
 
   ekg::runtime_property ekg_runtime_property {
     .p_font_path = "comic-mono.ttf",
-    .p_font_path_emoji = "twemoji.ttf",
+    //.p_font_path_emoji = "twemoji.ttf",
     .p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
     //.p_gpu_api = new ekg::os::opengl("#version 450"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
@@ -1044,9 +1044,9 @@ void test_out_of_context_uis() {
 int32_t laboratory_testing() {
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetSwapInterval((app.vsync = true));
 
   app.p_sdl_win = {
@@ -1066,10 +1066,14 @@ int32_t laboratory_testing() {
   glewExperimental = GL_TRUE;
   glewInit();
 
+  ekg::ui::auto_scale = false;
+  ekg::ui::scale = {1280, 800};
+
   ekg::runtime_property ekg_runtime_property {
-    .p_font_path = "whitneybook.otf",
-    .p_font_path_emoji = "twemoji.ttf",
-    .p_gpu_api = new ekg::os::opengl("#version 450"),
+    //.p_font_path = "comic-mono.ttf",
+    //.p_font_path_emoji = "twemoji.ttf",
+    .p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
+    //.p_gpu_api = new ekg::os::opengl("#version 450"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
 
@@ -1612,6 +1616,7 @@ int32_t laboratory_testing() {
   };
 
   ekg::label("meow", ekg::dock::fill | ekg::dock::next)->set_scaled_height(6);
+  ekg::textbox("oi", "idk", ekg::dock::fill | ekg::dock::next);
 
   /*
   ekg::gpu::sampler_t meow_sampler {};
@@ -1676,5 +1681,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return showcase_useless_window();
+  return laboratory_testing();
 }

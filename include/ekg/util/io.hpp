@@ -179,6 +179,12 @@ namespace ekg {
 
     ~log() {
       ekg::log::buffer << '\n';
+      #define EKG_LOG_DEBUG
+      #ifdef EKG_LOG_DEBUG
+      ekg::log::buffered = true;
+      ekg::log::flush();
+      ekg_log("");
+      #endif
     }
 
     template<typename t>

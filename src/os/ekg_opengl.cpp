@@ -329,13 +329,43 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_glyph_char_data,
   float &non_swizzlable_range
 ) {
+  FT_Vector highest_glyph_size {
+    (
+      p_font_face_text->highest_glyph_size.x
+      *
+      p_font_face_text->highest_glyph_size.y
+    )
+    >
+    (
+      p_font_face_emoji->highest_glyph_size.x
+      *
+      p_font_face_emoji->highest_glyph_size.y
+    )
+    ? (p_font_face_text->highest_glyph_size) : (p_font_face_emoji->highest_glyph_size)
+  };
+
+  GLint sub_image_format {
+    GL_RED
+  };
+
   bool is_current_opengl_version_gl_es {
     this->opengl_version == ekg::os::opengl_version::es
   };
 
-  GLint sub_image_format {
-    is_current_opengl_version_gl_es ? GL_RGBA : GL_RED
-  };
+  std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
+  unsigned char *p_current_image_buffer {};
+
+  if (is_current_opengl_version_gl_es) {
+    sub_image_format = GL_RGBA;
+
+    r8_to_r8g8b8a8_swizzled_image.resize(
+      highest_glyph_size.x
+      *
+      highest_glyph_size.y
+      *
+      4
+    );
+  }
   
   if (!p_sampler->gl_id) {
     glGenTextures(1, &p_sampler->gl_id);
@@ -365,10 +395,6 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
   FT_Vector char_size {};
-
-  std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
-  unsigned char *p_current_image_buffer {};
-  size_t previous_size {1};
 
   ekg::flags flags {};
   float offset {};
@@ -412,18 +438,6 @@ uint64_t ekg::os::opengl::generate_font_atlas(
 
       char_size.x = char_data.w;
       char_size.y = char_data.h;
-
-      if (r8_to_r8g8b8a8_swizzled_image.size() != previous_size) {
-        r8_to_r8g8b8a8_swizzled_image.resize(
-          static_cast<size_t>(char_size.x)
-          *
-          static_cast<size_t>(char_size.y)
-          *
-          static_cast<size_t>(4)
-        );
-
-        previous_size = r8_to_r8g8b8a8_swizzled_image.size();
-      }
 
       ekg::format_convert_result result {
         ekg::image_src_r8_convert_to_r8g8b8a8(

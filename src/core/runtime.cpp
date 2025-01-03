@@ -52,6 +52,7 @@ ekg::stack ekg::runtime::front {};
 ekg::current_hovered_state ekg::hovered {};
 
 void ekg::runtime::update_size_changed() {
+  ekg::log() << "Refreshing layout and font sizes!";
   ekg::layout::scale_calculate();
 
   uint32_t font_size {
@@ -573,7 +574,7 @@ void ekg::runtime::prepare_ui_env() {
   this->f_renderer_small.bind_allocator(&this->gpu_allocator);
 
   this->f_renderer_normal.sampler_texture.gl_protected_active_index = true;
-  this->f_renderer_normal.set_size(0);
+  this->f_renderer_normal.set_size(18);
   this->f_renderer_normal.bind_allocator(&this->gpu_allocator);
 
   this->f_renderer_big.sampler_texture.gl_protected_active_index = true;
