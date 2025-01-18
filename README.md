@@ -1,5 +1,7 @@
 # 🐄 EKG 🐈
 
+**Note: EKG current develop is into a new stage, and can not be build until feature is done, [[read more]](https://github.com/vokegpu/ekg-docs/blob/master/model/header.md)**
+
 EKG is a retained UI-toolkit/UI library to create fancy high-perfmance GUIs, always looking for low-specs hardware.
 
 Library documentation and project documentation: [here](https://docs.hdoc.io/vokegpu/ekg/)  
