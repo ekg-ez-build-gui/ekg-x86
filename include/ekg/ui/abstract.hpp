@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2022-2024 Rina Wilk / vokegpu@gmail.com
+ * Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,25 @@
  * SOFTWARE.
  */
 
-#include "ekg/service/handler.hpp"
-#include "ekg/util/io.hpp"
+#ifndef EKG_UI_ABSTRACT_HPP
+#define EKG_UI_ABSTRACT_HPP
 
-ekg::task_t *&ekg::service::handler::allocate() {
-  return this->pre_allocated_task_list.emplace_back();
-}
+#include "ekg/ui/properties.hpp"
 
-void ekg::service::handler::dispatch(ekg::task_t *p_task) {
-  this->task_queue.push(p_task);
-}
-
-void ekg::service::handler::dispatch_pre_allocated_task(uint64_t index) {
-  ekg::task_t *&p_task {
-    this->pre_allocated_task_list.at(index)
+namespace ekg {
+  enum type {
+    abstract,
+    frame
   };
+};
 
-  if (!p_task->is_dispatched) {
-    this->task_queue.push(p_task);
-    p_task->is_dispatched = true;
-  }
+namespace ekg::ui {
+  class abstract {
+  public:
+    ekg::properties_t properties {};
+  public:
+
+  };
 }
 
-void ekg::service::handler::do_update() {
-  while (!this->task_queue.empty()) {
-    ekg::task_t *p_ekg_event {this->task_queue.front()};
-    p_ekg_event->function(p_ekg_event->info);
-    p_ekg_event->is_dispatched = false;
-    this->task_queue.pop();
-  }
-}
+#endif

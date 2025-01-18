@@ -1,0 +1,104 @@
+/**
+ * MIT License
+ * 
+ * Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+#ifndef EKG_IO_SAFETY_HPP
+#define EKG_IO_SAFETY_HPP
+
+#include "ekg/ekg.hpp"
+
+namespace ekg::io {
+  template<typename t>
+  t *new_widget_instance() {
+    return dynamic_cast<t*>(
+      ekg::core->push_back_widget_safety(
+        dynamic_cast<abstract*>(new t {})
+      ).get()
+    );
+  }
+
+  template<typename t>
+  ekg::ui::abstract *ekg::make(t descriptor) {
+    ekg::stack_t *p_stack {
+      ekg::core->get_current_stack()
+    };
+
+    if (p_stack == nullptr) {
+      ekg::log(ekg::log::error) << "Failed failed to create a widget instance, the current stack instance is null";
+      return nullptr;
+    }
+
+    ekg::ui::abstract *p_created_widget {
+      nullptr
+    };
+
+    ekg::properties_t properties {
+      .tag = descriptor.tag,
+      .type = descriptor.type,
+      .unique_id = ekg::core->generate_unique_id()
+    };
+
+    switch (descriptor.type) {
+      case ekg::type::frame: {
+        ekg::frame_t *p_descriptor {
+          ekg_static_cast_to_any_as_ptr(
+            ekg::frame_t,
+            descriptor
+          )
+        };
+
+        ekg::ui::frame *p_frame {
+          ekg::io::new_widget_instance<ekg::ui::frame>()
+        };
+
+        p_frame->descriptor = *p_descriptor;
+        properties.p_descriptor = &p_frame->descriptor;
+        properties.p_widget = &p_frame;
+
+        p_created_widget = p_frame;
+        break;
+      }
+    }
+
+    p_created_widget->properties = properties;
+    
+    ekg::properties_t *p_current_parent_proprerties {
+      ekg::core->get_current_parent_properties()
+    };
+
+    if (
+      p_created_widget->properties.is_parentable
+      &&
+      p_current_parent_properties != nullptr
+    ) {
+      ekg::add_child_to_parent(
+        &p_current_parent_properties,
+        &p_created_widget
+      );
+    }
+
+    return p_created_widget;
+  }
+}
+
+#endif

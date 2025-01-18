@@ -51,16 +51,22 @@ elseif(EKG_EMSCRIPTEN_BUILD_TYPE)
   message(FATAL_ERROR "No specialized toolchain ID  was found with '/Emscripten' for WASM build-type")
 endif()
 
-if(
+if(EKG_EMSCRIPTEN_BUILD_TYPE)
+  set(COMPILE_OPTIMIZATION_NUMBER -O3)
+elseif(
   CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
   OR
   CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-  OR
-  EKG_EMSCRIPTEN_BUILD_TYPE
 )
-  add_compile_options(-Wall -Wextra -g)
-  add_compile_options(-O3)
+  set(COMPILE_OPTIMIZATION_NUMBER -O3)
 endif()
+
+add_compile_options(
+  ${COMPILE_OPTIMIZATION_NUMBER}
+  -Wall
+  -Wextra
+  -g
+)
 
 message(STATUS "Found compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -101,6 +107,14 @@ set_target_properties(
   PROPERTIES
   CXX_STANDARD 17
 )
+
+if(EKG_EMSCRIPTEN_BUILD_TYPE)
+  set_target_properties(
+    ekg
+    PROPERTIES
+    LINK_FLAGS -sALLOW_MEMORY_GROWTH=1
+  )
+endif()
 
 message(STATUS "EKG native library building done")
 

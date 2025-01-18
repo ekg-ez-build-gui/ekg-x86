@@ -218,7 +218,7 @@ bool load_ttf_emoji(ekg::gpu::sampler_t *p_sampler) {
 
   FT_Load_Char(
     typography_font_face.ft_face,
-    ekg::utf_string_to_char32("🦛"),
+    ekg::utf_string_to_char32("🐮"),
     FT_LOAD_RENDER | FT_LOAD_COLOR | FT_LOAD_DEFAULT
   );
 
@@ -424,9 +424,9 @@ void multithreading_update(uint64_t *p_async_fps, ekg::runtime *p_ekg_runtime) {
 int32_t showcase_useless_window() {
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
   app.p_sdl_win = {
     SDL_CreateWindow(
@@ -464,9 +464,9 @@ int32_t showcase_useless_window() {
 
   ekg::runtime_property ekg_runtime_property {
     .p_font_path = "comic-mono.ttf",
-    //.p_font_path_emoji = "twemoji.ttf",
-    .p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
-    //.p_gpu_api = new ekg::os::opengl("#version 450"),
+    .p_font_path_emoji = "twemoji.ttf",
+    //.p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
+    .p_gpu_api = new ekg::os::opengl("#version 330"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)
   };
 
@@ -475,6 +475,15 @@ int32_t showcase_useless_window() {
     &runtime,
     &ekg_runtime_property
   );
+
+  ekg::frame("meow", {.x = 0.0f, .y = 0.0f, .w = 200.0f}, ekg::dock::none)
+    ->set_drag(ekg::dock::top)
+    ->set_resize(ekg::dock::left | ekg::dock::bottom | ekg::dock::right);
+  
+  ekg::label("Meow!", ekg::dock::fill);
+  ekg::button("Meow Here", ekg::dock::fill | ekg::dock::next);
+
+  ekg::pop_group();
 
   ekg::frame("tweaks-window", {.x = 700, .y = 200, .w = 200, .h = 200})
     ->set_drag(ekg::dock::top)
@@ -1681,5 +1690,5 @@ int32_t laboratory_testing() {
 }
 
 int32_t main(int32_t, char**) {
-  return laboratory_testing();
+  return showcase_useless_window();
 }

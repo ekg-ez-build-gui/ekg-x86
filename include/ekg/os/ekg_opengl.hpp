@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+// TODO: fix pattern to new-project rules
+// TODO: remove useless macros
+// TODO: add some comments if necessary
+
 #ifndef EKG_OS_OPENGL_H
 #define EKG_OS_OPENGL_H
 

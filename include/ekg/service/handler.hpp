@@ -31,19 +31,19 @@
 #include <map>
 #include <unordered_map>
 
-#include "ekg/core/task.hpp"
+#include "ekg/io/task.hpp"
 
 namespace ekg::service {
   class handler {
   protected:
-    std::queue<ekg::task*> task_queue {};
-    std::vector<ekg::task*> pre_allocated_task_list {};
+    std::queue<ekg::task_t*> task_queue {};
+    std::vector<ekg::task_t*> pre_allocated_task_list {};
   public:
-    ekg::task *&allocate();
+    ekg::task_t *&allocate();
 
     void dispatch_pre_allocated_task(uint64_t index);
-    void dispatch(ekg::task *p_task);
-    void on_update();
+    void dispatch(ekg::task_t *p_task);
+    void do_update();
   };
 }
 

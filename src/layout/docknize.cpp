@@ -63,7 +63,7 @@ void ekg::layout::extentnize(
        * the offset position when split the fill width, but the
        * last extent space is not necessary, so we need to subtract.
        **/
-      for (; it < size; it++) {
+      for (it = it; it < size; it++) {
         if ((p_widgets = ekg::core->get_fast_widget_by_id(child_id_list.at(it))) == nullptr) {
           continue;
         }
@@ -576,7 +576,7 @@ void ekg::layout::mask::extentnize(
        * the offset position when split the fill width, but the
        * last extent space is not necessary, so we need to subtract.
        **/
-      for (; it < size; it++) {
+      for (it = it; it < size; it++) {
         ekg::layout::mask::rect &dock_rect {this->dock_rect_list.at(it)};
         if (dock_rect.p_rect == nullptr) {
           continue;

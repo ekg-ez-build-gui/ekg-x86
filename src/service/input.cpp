@@ -37,7 +37,7 @@ void ekg::service::input::init() {
    * If lshift is pressed, then the last char is set to `+`,
    * or be `lshift+` (from `lshift\0` to `lshift+`).
    * Unpressed special key result in `\0.
-   */
+   **/
 
   this->special_keys[0][0] = '\0';
   this->special_keys[0][1] = 's';

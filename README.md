@@ -2,7 +2,8 @@
 
 EKG is a retained UI-toolkit/UI library to create fancy high-perfmance GUIs, always looking for low-specs hardware.
 
-Documentation: [here](https://docs.hdoc.io/vokegpu/ekg/)  
+Library documentation and project documentation: [here](https://docs.hdoc.io/vokegpu/ekg/)  
+Development documentation: [here](https://github.com/vokegpu/ekg-docs)  
 Development updates: [here](https://github.com/orgs/gamedevs-do-apocalipse/discussions/5)
 
 Please before cloning EKG, insert `--depth 1` flag, or you will clone almost 1gb (yeah this is bizzare, soon EKG MUST fix it filtering the repository).

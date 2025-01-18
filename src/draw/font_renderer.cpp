@@ -445,7 +445,7 @@ void ekg::draw::font_renderer::flush() {
   uint64_t size {this->loaded_sampler_generate_list.size()};
   if (this->last_sampler_generate_list_size != size) {
     ekg::log() << "Sampler updated from-to: " << this->last_sampler_generate_list_size << " " << size;
- 
+
     this->reload();
     this->last_sampler_generate_list_size = size;
     ekg::ui::redraw = true;
@@ -461,7 +461,7 @@ void ekg::draw::font_renderer::init() {
 
   this->loaded_sampler_generate_list.resize(256);
   for (char32_t char32 {}; char32 < 256; char32++) {
-    this->loaded_sampler_generate_list[char32] = char32;
+    this->loaded_sampler_generate_list.at(char32) = char32;
   }
 
   ekg::log() << "Initializing 256 default chars!";

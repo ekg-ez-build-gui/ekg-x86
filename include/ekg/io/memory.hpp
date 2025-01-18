@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2022-2024 Rina Wilk / vokegpu@gmail.com
+ * Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,27 @@
  * SOFTWARE.
  */
 
-#include "ekg/service/handler.hpp"
-#include "ekg/util/io.hpp"
+#ifndef EKG_IO_MEMORY_HPP
+#define EKG_IO_MEMORY_HPP
 
-ekg::task_t *&ekg::service::handler::allocate() {
-  return this->pre_allocated_task_list.emplace_back();
-}
+#define EKG_MEMORY_MUST_FREE_TASKS_AUTOMATICALLY true
+#define EKG_MEMORY_ACTIONS_SIZE 7
 
-void ekg::service::handler::dispatch(ekg::task_t *p_task) {
-  this->task_queue.push(p_task);
-}
+#define ekg_static_cast_to_any_as_ptr(t, any) static_cast<t*>((void*)&any)
 
-void ekg::service::handler::dispatch_pre_allocated_task(uint64_t index) {
-  ekg::task_t *&p_task {
-    this->pre_allocated_task_list.at(index)
+namespace ekg {
+  typedef uint64_t id;
+  typedef uint64_t flags;
+
+  enum result {
+    success,
+    failed,
+    widget_not_found
   };
-
-  if (!p_task->is_dispatched) {
-    this->task_queue.push(p_task);
-    p_task->is_dispatched = true;
-  }
 }
 
-void ekg::service::handler::do_update() {
-  while (!this->task_queue.empty()) {
-    ekg::task_t *p_ekg_event {this->task_queue.front()};
-    p_ekg_event->function(p_ekg_event->info);
-    p_ekg_event->is_dispatched = false;
-    this->task_queue.pop();
-  }
+enum ekg::memory {
+  constexpr uint64_t invalid_unique_id {UINT64_MAX};
 }
+
+#endif
