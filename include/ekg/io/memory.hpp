@@ -31,8 +31,8 @@
 #define ekg_static_cast_to_any_as_ptr(t, any) static_cast<t*>((void*)&any)
 
 namespace ekg {
-  typedef uint64_t id;
-  typedef uint64_t flags;
+  typedef uint64_t id_t;
+  typedef uint64_t flags_t;
 
   enum result {
     success,

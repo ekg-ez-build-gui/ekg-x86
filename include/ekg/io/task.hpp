@@ -31,4 +31,12 @@ namespace ekg {
   };
 }
 
+struct ekg::io {
+  enum runtime_task_operation {
+    swap,
+    reload,
+    layout_docknize
+  };
+}
+
 #endif

@@ -1,32 +1,81 @@
+/**
+ * MIT License
+ * 
+ * Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #ifndef EKG_CORE_RUNTIME_HPP
 #define EKG_CORE_RUNTIME_HPP
 
 #include "ekg/ui/abstract.hpp"
 #include "ekg/service/handler.hpp"
+#include "ekg/service/theme.hpp"
+#include "ekg/service/input.hpp"
+#include "ekg/gpu/allocator.hpp"
+#include "ekg/layout/docknize.hpp"
 
 #include <memory>
 
 namespace ekg {
   class runtime {
-  public:
+  private:
+    /**
+     * TODO: answer questions about this part specifically until second `:` statment.
+     **/
     std::vector<std::unique_ptr<ekg::ui::abstract>> loaded_widget_list {};
-    ekg::id global_id {};
+    ekg::id_t global_id {};
 
     std::vector<ekg::ui::abstract*> context_widget_list {};
-    ekg::io::target_collector_t swap_target_collector {}; 
-  public:
-    ekg::service::handler handler {};
-  public:
-    void do_init();
-    void do_quit();
-    void do_update();
-    void do_render();
+    std::vector<ekg::ui::abstract*> high_frequency_widget_list {};
+    ekg::ui::abstract *p_abs_activity_widget {};
 
-    ekg::ui::abstract *push_back_new_widget_safety(
+    ekg::io::target_collector_t swap_gtarget_collector {};
+    ekg::io::serialized_input_event_t serialized_input_event {};
+  public:
+    ekg::timing_t ui_timeout_timing {};
+    ekg::timing_t ui_scrolling_timing {};
+  public:
+    ekg::service::handler service_handler {};
+    ekg::service::theme service_theme {};
+    ekg::service::input service_input {};
+
+    ekg::gpu::allocator gpu_allocator {};
+    ekg::gpu::api *p_gpu_api {};
+
+    ekg::draw::font_renderer draw_font_renderer_small {};
+    ekg::draw::font_renderer draw_font_renderer_normal {};
+    ekg::draw::font_renderer draw_font_renderer_big {};
+
+    ekg::layout::mask layout_mask {};
+  public:
+    ekg::ui::abstract *emplace_back_new_widget_safety(
       ekg::ui::abstract *p_widget
     );
 
-    ekg::id generate_unique_id();
+    ekg::id_t generate_unique_id();
+  public:
+    void init();
+    void quit();
+    void update();
+    void render();
   };
 }
 

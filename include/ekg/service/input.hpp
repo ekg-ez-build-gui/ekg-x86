@@ -33,6 +33,21 @@
 #include "ekg/util/geometry.hpp"
 #include "ekg/os/platform.hpp"
 
+namespace ekg {
+  struct input_t {
+  public:
+    ekg::timing_t timing_last_interact {};
+    ekg::vec4 interact {};
+    bool was_pressed {};
+    bool was_released {};
+    bool has_motion {};
+    bool was_wheel {};
+    bool was_typed {};
+  };
+
+  ekg::input_t &input();
+};
+
 namespace ekg::service {
   class input {
   protected:
@@ -55,14 +70,7 @@ namespace ekg::service {
     ekg::timing double_interact {};
     ekg::timing last_time_wheel_was_fired {};
   public:
-    ekg::timing timing_last_interact {};
-    ekg::vec4 interact {};
-
-    bool was_pressed {};
-    bool was_released {};
-    bool has_motion {};
-    bool was_wheel {};
-    bool was_typed {};
+    ekg::input_t input {};
   protected:
     void complete_with_units(std::string &string_builder, std::string_view key_name);
 
@@ -84,7 +92,7 @@ namespace ekg::service {
 
     bool receive(std::string_view key);
 
-    void on_event(ekg::os::io_event_serial &io_event_serial);
+    void on_event();
 
     void on_update();
   };

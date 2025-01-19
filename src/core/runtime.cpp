@@ -1,6 +1,6 @@
 #include "ekg/core/runtime.hpp"
 
-void ekg::runtime::do_init() {
+void ekg::runtime::init() {
   ekg::log() << "Initializing task-handler service...";
 
   this->swap_target_collector->unique_id = ekg::memory::invalid_unique_id;
@@ -15,7 +15,7 @@ void ekg::runtime::do_init() {
         return;
       }
 
-      ekg::flags result {};
+      ekg::flags_t result {};
       std::vector<ekg::ui::abstract*> top_level_widget_list {};
       this->context_widget_list.clear();
 
@@ -66,19 +66,208 @@ void ekg::runtime::do_init() {
   };
 }
 
-void ekg::runtime::do_quit() {
+void ekg::runtime::quit() {
 
 }
 
-void ekg::runtime::do_update() {
+void ekg::runtime::event() {
+  this->service_input.on_event();
+
+  ekg::input_t &input {
+    this->service_input.input
+  };
+
+  bool is_on_scrolling_timeout {!ekg::reach(this->ui_scroll_timing, 250)};
+  ekg::hovered.id *= !(input.was_pressed || input.was_released || input.has_motion);
+
+  if (
+      this->p_abs_activity_widget != nullptr &&
+      (this->p_abs_activity_widget->flag.absolute || is_on_scrolling_timeout)
+    ) {
+
+    this->p_abs_activity_widget->on_pre_event();
+    this->p_abs_activity_widget->on_event();
+
+    if (this->p_abs_activity_widget->flag.scrolling) {
+      ekg::reset(this->ui_scroll_timing);
+    }
+
+    this->p_abs_activity_widget->on_post_event();
+    return;
+  }
+
+  if (is_on_scrolling_timeout) {
+    return;
+  }
+
+  this->p_abs_activity_widget = nullptr;
+
+  bool hovered {};
+  bool first_absolute {};
+
+  ekg::ui::abstract_widget *p_widget_focused {};
+
+  for (ekg::ui::abstract_widget *&p_widgets: this->loaded_widget_list) {
+    if (p_widgets == nullptr || !p_widgets->p_data->is_alive()) {
+      continue;
+    }
+
+    p_widgets->on_pre_event();
+
+    /**
+     * Text input like textbox and keyboard events should not update stack, instead just mouse events.
+     **/
+    hovered = (
+      !(
+        .event_type == ekg::platform_event_type::key_down   ||
+        .event_type == ekg::platform_event_type::key_up     ||
+        .event_type == ekg::platform_event_type::text_input
+       )
+      && p_widgets->flag.hovered
+      && p_widgets->p_data->is_visible()
+      && p_widgets->p_data->get_state() != ekg::state::disable
+    );
+
+    if (hovered) {
+      p_widget_focused != nullptr && (p_widget_focused->flag.was_hovered = false);
+      ekg::hovered.id = p_widgets->p_data->get_id();
+      p_widget_focused = p_widgets;
+      first_absolute = false;
+    }
+
+    /**
+     * The absolute/top-level system check for the first absolute fired widget,
+     * everytime a widget is hovered then reset again the checking state.
+     *
+     * The order of scrollable widgets like scroll widget is not sequentially,
+     * e.g, the mouse is hovering some children of frame 2 and absolute widget scroll from frame 2 is fired:
+     *
+     * frame 1           // hovered, check for the first absolute
+     *
+     * frame 2 (frame 1) // hovered, then reset and find for the first absolute again
+     * widgets...        // hovering some of children widgets, then reset over again
+     * scroll (frame 2)  // found the first absolute, target it
+     *
+     * frame 3 (frame 1) // not hovering, then does not reset any absolute checking
+     * ...
+     *
+     * scroll (frame 1)  // do not target this fired absolute widget.
+     * end of e.g.
+     **/
+    if (p_widgets->flag.absolute && !first_absolute) {
+      p_widget_focused = p_widgets;
+      first_absolute = true;
+    }
+
+    p_widgets->on_post_event();
+    if (!hovered && !p_widgets->flag.absolute) {
+      p_widgets->flag.was_hovered = false;
+      p_widgets->on_event();
+    }
+  }
+
+  ekg::hovered.type = ekg::type::abstract;
+
+  if (p_widget_focused != nullptr) {
+    p_widget_focused->on_pre_event();
+    p_widget_focused->on_event();
+    p_widget_focused->on_post_event();
+
+    if (p_widget_focused->flag.absolute) {
+      this->p_abs_activity_widget = p_widget_focused;
+    }
+
+    ekg::hovered.type = p_widget_focused->p_data->get_type();
+  }
+
+  if (input.was_pressed) {
+    ekg::hovered.down = ekg::hovered.id;
+    ekg::hovered.down_type = p_widget_focused != nullptr ? p_widget_focused->p_data->get_type() : ekg::type::abstract;
+  } else if (input.was_released) {
+    ekg::hovered.up = ekg::hovered.id;
+    ekg::hovered.down_type = p_widget_focused != nullptr ? p_widget_focused->p_data->get_type() : ekg::type::abstract;
+  }
+
+  if (
+      ekg::hovered.last != ekg::hovered.id &&
+      ekg::hovered.id != 0 &&
+      (input.was_pressed || input.was_released)
+    ) {
+
+    ekg::hovered.swap = ekg::hovered.id;
+    ekg::hovered.last = ekg::hovered.id;
+
+    ekg::dispatch(ekg::env::swap);
+    ekg::dispatch(ekg::env::redraw);
+  }
+}
+
+void ekg::runtime::update() {
 
 }
 
-void ekg::runtime::do_render() {
+void ekg::runtime::render() {
+  if (ekg::ui::redraw) {
+    ekg::ui::redraw = false;
 
+    /**
+     * The allocator starts here, the GPU data instance
+     * and geometry resources are clear/reseted here.
+     **/
+    this->gpu_allocator.invoke();
+
+    for (ekg::ui::abstract *&p_widgets : this->context_widget_list) {
+      if (p_widgets != nullptr && p_widgets->properties.is_visible) {
+        /**
+         * Each time this statement is called, one GPU data is
+         * allocated/filled.
+         * 
+         * The order of rendering depends on which are functions are invoked first.
+         * 
+         * E.g:
+         *  gpu-data-group-1 (on_draw_refresh())
+         *  gpu-data-group-2
+         *  gpu-data-group-3
+         * 
+         * `gpu-data-group-3` is always hovering all the previous GPU data groups.
+         **/
+        p_widgets->on_draw_refresh();
+      }
+    }
+
+    /**
+     * The allocator does not need to be called all the time,
+     * cause it is require more CPU-side calls and GPU-communication/synchronization.
+     * 
+     * The use of the word "revoke" means that the `invoked signal` ended with a
+     * possible `revoke`, i.e all the generated/populated/filled GPU-data is processed and
+     * converted to a geometry GPU-buffer. Removing all the unnecessary GPU-data.
+     **/
+    this->gpu_allocator.revoke();
+  }
+
+  /**
+   * The allocator renderize an serialized GPU data-list.
+   * With some conditions:
+   * 
+   * 1- A concave shape does not have a rectangle form, and can render text(s) and
+   * batched quad(s) at once.
+   * 2- A convex shape have a unique form: rectangle.
+   * 
+   * The convex form is rendered one per one draw call. It is stupid I know, but with this is possible add cool effects.
+   * While concave have the possibility of rendering a lot of shapes at once, is not viable to add many custom effects.
+   * 
+   * The native GPU API calls are apart from allocator, depends on current GPU API selected.
+   * Rendering-hardware interface also known as RHI implements different each GPU API.
+   * OpenGL 3/4/ES 3, Vulkan, MoltenVK, DirectX11/12.
+   * May differ the features or runtime.
+   * 
+   * But check all allocator comments.
+   **/
+  this->gpu_allocator.draw();
 }
 
-ekg::ui::abstract *ekg::runtime::push_back_new_widget_safety(
+ekg::ui::abstract *ekg::runtime::emplace_back_new_widget_safety(
   ekg::ui::abstract *p_widget
 ) {
   return this->loaded_widget_list.emplace_back(
@@ -86,6 +275,6 @@ ekg::ui::abstract *ekg::runtime::push_back_new_widget_safety(
   ).get();
 }
 
-ekg::id ekg::runtime::generate_unique_id() {
+ekg::id_t ekg::runtime::generate_unique_id() {
   return ++this->global_id;
 }

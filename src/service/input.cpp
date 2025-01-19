@@ -27,6 +27,10 @@
 #include <algorithm>
 #include "ekg/ekg.hpp"
 
+ekg::input_t &ekg::input() {
+  return ekg::core->service_input.input;
+}
+
 void ekg::service::input::init() {
   ekg::log() << "Initialising input-bind system!";
 
@@ -104,22 +108,22 @@ void ekg::service::input::init() {
 }
 
 void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized) {
-  this->was_pressed = false;
-  this->was_released = false;
-  this->has_motion = false;
-  this->was_typed = false;
+  this->input.was_pressed = false;
+  this->input.was_released = false;
+  this->input.has_motion = false;
+  this->input.was_typed = false;
 
   float wheel_precise_interval {};
 
   switch (io_event_serialized.event_type) {
     case ekg::platform_event_type::text_input: {
-      this->was_pressed = true;
-      this->was_typed = true;
+      this->input.was_pressed = true;
+      this->input.was_typed = true;
       break;
     }
 
     case ekg::platform_event_type::key_down: {
-      this->was_pressed = true;
+      this->input.was_pressed = true;
 
       std::string key_name {};
       std::string string_builder {};
@@ -160,7 +164,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
     }
 
     case ekg::platform_event_type::key_up: {
-      this->was_released = true;
+      this->input.was_released = true;
       std::string key_name {};
       std::string string_builder {};
 
@@ -211,7 +215,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       key_name = "mouse-";
       key_name += std::to_string(io_event_serialized.mouse_button);
 
-      this->was_pressed = true;
+      this->input.was_pressed = true;
       this->complete_with_units(string_builder, key_name);
       this->callback(string_builder, true);
       this->input_released_list.push_back(string_builder);
@@ -236,7 +240,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       std::string string_builder {};
       std::string key_name {"mouse-up"};
 
-      this->was_released = true;
+      this->input.was_released = true;
       this->callback(key_name, true);
       this->input_released_list.push_back(key_name);
 
@@ -252,9 +256,9 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
     }
 
     case ekg::platform_event_type::mouse_motion: {
-      this->has_motion = true;
-      this->interact.x = static_cast<float>(io_event_serialized.mouse_motion_x);
-      this->interact.y = static_cast<float>(io_event_serialized.mouse_motion_y);
+      this->input.has_motion = true;
+      this->input.interact.x = static_cast<float>(io_event_serialized.mouse_motion_x);
+      this->input.interact.y = static_cast<float>(io_event_serialized.mouse_motion_y);
       break;
     }
 
@@ -263,7 +267,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->complete_with_units(string_builder, "mouse-wheel");
       this->callback(string_builder, true);
       this->input_released_list.push_back(string_builder);
-      this->was_wheel = true;
+      this->input.was_wheel = true;
 
       this->callback("mouse-wheel-up", io_event_serialized.mouse_wheel_y > 0);
       this->callback("mouse-wheel-down", io_event_serialized.mouse_wheel_y < 0);
@@ -286,23 +290,23 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       wheel_precise_interval = wheel_precise_interval + (static_cast<float>(wheel_precise_interval > 0.99) * 0.5f);
       wheel_precise_interval = ekg_min(wheel_precise_interval, 0.2f);
 
-      this->interact.z = io_event_serialized.mouse_wheel_precise_x * wheel_precise_interval;
-      this->interact.w = io_event_serialized.mouse_wheel_precise_y * wheel_precise_interval;
+      this->input.interact.z = io_event_serialized.mouse_wheel_precise_x * wheel_precise_interval;
+      this->input.interact.w = io_event_serialized.mouse_wheel_precise_y * wheel_precise_interval;
       
       ekg::reset(this->last_time_wheel_was_fired);
       break;
     }
 
     case ekg::platform_event_type::finger_down: {
-      this->was_pressed = true;
+      this->input.was_pressed = true;
       ekg::reset(this->timing_last_interact);
       bool reach_double_interact {ekg::reach(this->double_interact, 500)};
 
-      this->interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
 
-      this->last_finger_interact.x = this->interact.x;
-      this->last_finger_interact.y = this->interact.y;
+      this->last_finger_interact.x = this->input.interact.x;
+      this->last_finger_interact.y = this->input.interact.y;
 
       this->callback("finger-click", true);
       this->callback("finger-click-double", !reach_double_interact);
@@ -315,7 +319,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
     }
 
     case ekg::platform_event_type::finger_up: {
-      this->was_released = true;
+      this->input.was_released = true;
       this->callback("finger-hold", (this->finger_hold_event = ekg::reach(this->timing_last_interact, 750)));
       this->callback("finger-click", false);
       this->callback("finger-click-double", false);
@@ -327,35 +331,35 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->callback("finger-swipe-up", false);
       this->callback("finger-swipe-down", false);
 
-      this->interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
 
-      this->last_finger_interact.x = this->interact.x;
-      this->last_finger_interact.y = this->interact.y;
+      this->last_finger_interact.x = this->input.interact.x;
+      this->last_finger_interact.y = this->input.interact.y;
 
-      this->interact.z = 0.0f;
-      this->interact.w = 0.0f;
+      this->input.interact.z = 0.0f;
+      this->input.interact.w = 0.0f;
       break;
     }
 
     case ekg::platform_event_type::finger_motion: {
-      this->has_motion = true;
-      this->interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.has_motion = true;
+      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
 
-      this->interact.z = (io_event_serialized.finger_dx * (static_cast<float>(ekg::ui::width) / 9.0f));
-      this->interact.w = (io_event_serialized.finger_dy * static_cast<float>(ekg::ui::height) / 9.0f);
+      this->input.interact.z = (io_event_serialized.finger_dx * (static_cast<float>(ekg::ui::width) / 9.0f));
+      this->input.interact.w = (io_event_serialized.finger_dy * static_cast<float>(ekg::ui::height) / 9.0f);
 
       float swipe_factor = 0.01f;
 
       this->callback(
         "finger-swipe",
-        (this->interact.w > swipe_factor || this->interact.w < -swipe_factor) ||
-        (this->interact.z > swipe_factor || this->interact.z < -swipe_factor)
+        (this->input.interact.w > swipe_factor || this->input.interact.w < -swipe_factor) ||
+        (this->input.interact.z > swipe_factor || this->input.interact.z < -swipe_factor)
       );
 
-      this->callback("finger-swipe-up", this->interact.w > swipe_factor);
-      this->callback("finger-swipe-down", this->interact.w < -swipe_factor);
+      this->callback("finger-swipe-up", this->input.interact.w > swipe_factor);
+      this->callback("finger-swipe-down", this->input.interact.w < -swipe_factor);
 
       this->finger_swipe_event = true;
       ekg::reset(this->timing_last_interact);
@@ -363,7 +367,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
     }
   }
 
-  if (this->has_motion && !this->double_click_mouse_buttons_pressed.empty()) {
+  if (this->input.has_motion && !this->double_click_mouse_buttons_pressed.empty()) {
     for (const std::string &button: this->double_click_mouse_buttons_pressed) {
       this->callback(button, false);
     }
@@ -373,11 +377,11 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
 }
 
 void ekg::service::input::on_update() {
-  if (this->was_wheel) {
+  if (this->input.was_wheel) {
     this->callback("mouse-wheel", false);
     this->callback("mouse-wheel-up", false);
     this->callback("mouse-wheel-down", false);
-    this->was_wheel = false;
+    this->input.was_wheel = false;
   }
 
   if (this->finger_swipe_event) {

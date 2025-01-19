@@ -31,7 +31,7 @@ namespace ekg::io {
   template<typename t>
   t *new_widget_instance() {
     return dynamic_cast<t*>(
-      ekg::core->push_back_widget_safety(
+      ekg::core->emplace_back_new_widget_safety(
         dynamic_cast<abstract*>(new t {})
       ).get()
     );
