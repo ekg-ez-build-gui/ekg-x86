@@ -31,9 +31,9 @@
 #include <SDL2/SDL.h>
 #endif
 
-#include "platform.hpp"
+#include "ekg/os/platform.hpp"
 
-namespace ekg::os {
+namespace ekg {
   class sdl : public ekg::os::platform {
   protected:
     SDL_Cursor *loaded_system_cursor_list[12] {};
@@ -44,9 +44,9 @@ namespace ekg::os {
     void init() override;
     void quit() override;
     void update_monitor_resolution() override;
-    void update_cursor(ekg::system_cursor system_cursor) override;
-    void get_key_name(io_key &key, std::string &name) override;
-    void get_special_key(io_key &key, ekg::special_key &special_key) override;
+    void update_cursor(ekg::system_cursor_type system_cursor) override;
+    void get_key_name(ekg::io::input_key_t &key, std::string &name) override;
+    void get_special_key(ekg::io::input_key_t &key, ekg::special_key_type &special_key) override;
     const char *get_clipboard_text() override;
     void set_clipboard_text(const char *p_text) override;
     bool has_clipboard_text() override;

@@ -25,96 +25,20 @@
 #ifndef EKG_OS_PLATFORM_H
 #define EKG_OS_PLATFORM_H
 
-#include <cstdint>
-#include <string_view>
-
-#include "ekg/util/io.hpp"
-
-namespace ekg {
-  enum class system_cursor {
-    arrow,
-    ibeam,
-    wait,
-    crosshair,
-    wait_arrow,
-    size_nwse,
-    size_nesw,
-    size_we,
-    size_ns,
-    size_all,
-    no,
-    hand
-  };
-
-  enum class special_key {
-    left_shift,
-    right_shift,
-    left_ctrl,
-    right_ctrl,
-    left_alt,
-    right_alt,
-    tab,
-    unknown
-  };
-
-  enum class platform_event_type {
-    none,
-    text_input,
-    mouse_button_up,
-    mouse_button_down,
-    mouse_motion,
-    mouse_wheel,
-    finger_up,
-    finger_down,
-    finger_motion,
-    key_down,
-    key_up
-  };
-
-  extern ekg::system_cursor cursor;
-}
+#include "ekg/io/input.hpp"
+#include "ekg/math/geometry.hpp"
 
 namespace ekg::os {
-  struct io_key {
-  public:
-    int32_t key {};
-    int32_t scancode {};
-  };
-
-  struct io_event_serial {
-  public:
-    ekg::platform_event_type event_type {};
-    std::string_view text_input {};
-    uint8_t mouse_button {};
-
-    int32_t mouse_motion_x {};
-    int32_t mouse_motion_y {};
-
-    int32_t mouse_wheel_x {};
-    int32_t mouse_wheel_y {};
-
-    float mouse_wheel_precise_x {};
-    float mouse_wheel_precise_y {};
-
-    io_key key {};
-
-    float finger_x {};
-    float finger_y {};
-
-    float finger_dx {};
-    float finger_dy {};
-  };
-
   class platform {
   public:
-    int32_t monitor_resolution[2] {};
+    ekg::vec2<int32_t> display_resolution {};
   public:
     virtual void init() {}
     virtual void quit() {}
     virtual void update_monitor_resolution() {}
-    virtual void update_cursor(ekg::system_cursor system_cursor) {}
-    virtual void get_key_name(io_key &key, std::string &name) {}
-    virtual void get_special_key(io_key &key, ekg::special_key &special_key) {}
+    virtual void update_cursor(ekg::system_cursor_type system_cursor) {}
+    virtual void get_key_name(ekg::io::input_key_t &key, std::string &name) {}
+    virtual void get_special_key(ekg::io::input_key_t &key, ekg::special_key_type special_key) {}
     virtual const char *get_clipboard_text() { return nullptr; };
     virtual void set_clipboard_text(const char *p_text) {};
     virtual bool has_clipboard_text() { return false; }

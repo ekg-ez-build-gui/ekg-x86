@@ -23,5 +23,3 @@
  */
 
 #include "ekg/os/platform.hpp"
-
-ekg::system_cursor ekg::cursor {};
