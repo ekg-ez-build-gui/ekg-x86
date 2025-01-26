@@ -9,7 +9,7 @@ ekg::flags_t ekg::add_child_to_parent(
 ) {
   if (p_children == nullptr || p_properties == nullptr) {
     ekg::log() << "Failed to add child to parent, `null`, `null`";
-    return ekg::result::failed;
+    return ekg::result_type::failed;
   }
 
   if (
@@ -17,14 +17,14 @@ ekg::flags_t ekg::add_child_to_parent(
     &&
     p_child_properties->p_parent->unique_id == p_parent_properties->unique_id
   ) {
-    return ekg::result::success;
+    return ekg::result_type::success;
   }
 
   p_child_properties->p_parent = p_parent_properties;
   p_child_properties->p_abs_parent = p_parent_properties->p_abs_parent;
   p_parent_properties->children.push_back(p_properties);
 
-  return ekg::result::success;
+  return ekg::result_type::success;
 }
 
 ekg::properties_t *ekg::find(
@@ -51,12 +51,12 @@ ekg::flags_t ekg::destroy(
 ) {
   if (p_stack == nullptr) {
     ekg::log() << "Failed to destroy widget, `null` p_stack";
-    return ekg::result::failed;
+    return ekg::result_type::failed;
   }
 
   if (p_destroy_widget_properties == nullptr) {
     ekg::log() << "Failed to destroy widget, `null` p_destroy_widget_properties";
-    return ekg::result::failed;
+    return ekg::result_type::failed;
   }
 
   uint64_t counter {
@@ -89,7 +89,7 @@ ekg::flags_t ekg::destroy(
     }
   }
 
-  return ekg::result::success;
+  return ekg::result_type::success;
 }
 
 ekg::flags_t ekg::find_and_destroy(
@@ -98,7 +98,7 @@ ekg::flags_t ekg::find_and_destroy(
 ) {
   if (p_stack == nullptr) {
     ekg::log() << "Failed to destroy widget, `null` stack";
-    return ekg::result::failed;
+    return ekg::result_type::failed;
   }
 
   return ekg::destroy(p_stack, ekg::find(p_stack, widget_tag));
@@ -110,7 +110,7 @@ ekg::flags_t ekg::io::push_back_widget_tree_recursively(
 ) {
   if (p_widget == nullptr || p_target_collector == nullptr) {
     ekg::log() << "Failed to push back widget tree, may `null` p_widget, may `null` p_target_collector";
-    return ekg::result::failed;
+    return ekg::result_type::failed;
   }
 
   if (
@@ -135,5 +135,5 @@ ekg::flags_t ekg::io::push_back_widget_tree_recursively(
     );
   }
 
-  return ekg::result::success;
+  return ekg::result_type::success;
 }

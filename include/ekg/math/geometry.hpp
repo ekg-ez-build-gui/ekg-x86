@@ -59,21 +59,21 @@ namespace ekg {
     }
   };
 
+  template<typename t>
   struct rect {
-  // idk i feel brain dead by having this pointless duplicate `vec4<float>`
   public: 
     union {
       struct {
-        float x {};
-        float y {};
-        float w {};
-        float h {};
+        t x {};
+        t y {};
+        t w {};
+        t h {};
       };
     };
   public:
     inline rect() = default;
 
-    inline rect(float _x, float _y, float _w, float _h) {
+    inline rect(t _x, t _y, t _w, t _h) {
       this->x = _x;
       this->y = _y;
       this->w = _w;

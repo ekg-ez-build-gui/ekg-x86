@@ -1627,6 +1627,31 @@ int32_t laboratory_testing() {
   ekg::label("meow", ekg::dock::fill | ekg::dock::next)->set_scaled_height(6);
   ekg::textbox("oi", "idk", ekg::dock::fill | ekg::dock::next);
 
+  ekg::stack_t stack {
+    .tag = "idk",
+    .children = {
+      ekg::make<ekg::frame_t>(
+        {
+          .tag = "meow",
+          .rect = {.x = 20.0f, .y = 20.0f, .w = 700.0f, .h = 1000.0f},
+        },
+      ),
+      ekg::make<ekg::label_t>(
+        {
+          .tag = "oi",
+          .dock = ekg::dock::fill | ekg::dock::next,
+          .text = "meow",
+        }
+      ),
+      ekg::make<ekg::textbox_t>(
+        {
+          .tag = "oi",
+          .dock = ekg::dock::fill | ekg::dock::next,
+        }
+      )
+    }
+  };
+
   /*
   ekg::gpu::sampler_t meow_sampler {};
   load_ttf_emoji(&meow_sampler);

@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.10)
-set(EKG_VERSION 1.2.0)
+set(EKG_VERSION 2.0.0)
 
 project(
   ekg

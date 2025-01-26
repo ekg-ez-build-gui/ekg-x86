@@ -46,7 +46,7 @@
 #include "ekg/ui/listbox/ui_listbox.hpp"
 #include "ekg/ui/scrollbar/ui_scrollbar.hpp"
 
-#define EKG_VERSION_ID "1.2.0"
+#define EKG_VERSION_ID "2.0.0"
 #define EKG_VERSION_STATE "ALPHA"
 
 #define EKG_FONT_SMALL_SIZE(font_size) (ekg_min(font_size - 4, 4))

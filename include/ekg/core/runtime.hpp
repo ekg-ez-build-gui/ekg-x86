@@ -47,8 +47,7 @@ namespace ekg {
     std::vector<ekg::ui::abstract*> high_frequency_widget_list {};
     ekg::ui::abstract *p_abs_activity_widget {};
 
-    ekg::io::target_collector_t swap_gtarget_collector {};
-    ekg::io::serialized_input_event_t serialized_input_event {};
+    ekg::io::target_collector_t swap_target_collector {};
   public:
     ekg::timing_t ui_timeout_timing {};
     ekg::timing_t ui_scrolling_timing {};
@@ -76,6 +75,7 @@ namespace ekg {
     void quit();
     void update();
     void render();
+    void poll_events();
   };
 }
 

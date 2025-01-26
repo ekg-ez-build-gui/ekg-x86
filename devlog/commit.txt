@@ -233,3 +233,9 @@
 -- Fixed a glitch where dragging and swap was not working out of header(s)-rect boudings.
 -- Added WASM build-type compatibility.
 -- Fixed GLES3 font format, GLES3 is stricly about image format, so now for GLES3 (applies: Android, Emscripten, and desktop GLES3), texture is swizzle by CPU-side and not in the driver (like desktop OpenGL core-profile does).
+
+2.0.0 25/01/25
+
+-- Added properties, stack, and new IO features.
+-- Added bitwise op on `io/memory.hpp` template.
+-- Added properties overload operator for casting widget and descriptor.

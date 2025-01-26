@@ -40,6 +40,16 @@ namespace ekg {
     ekg::properties_t *p_parent {};
     std::vector<ekg::properties_t*> children {};
     bool is_parentable {};
+  public:
+    template<typename t>
+    operator t&() {
+      return *static_cast<t*>(this->p_descriptor);
+    }
+
+    template<typename t>
+    operator t*() {
+      return static_cast<t*>(this->p_widget);
+    }
   };
 }
 

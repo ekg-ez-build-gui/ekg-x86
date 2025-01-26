@@ -107,15 +107,18 @@ void ekg::service::input::init() {
   this->special_keys[6][7] = '\0';
 }
 
-void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized) {
+void ekg::service::input::on_event() {
   this->input.was_pressed = false;
   this->input.was_released = false;
   this->input.has_motion = false;
   this->input.was_typed = false;
 
   float wheel_precise_interval {};
+  ekg::io::serialized_input_event_t &serialized_input_event {
+    ekg::core->p_os_platform->serialized_input_event
+  };
 
-  switch (io_event_serialized.event_type) {
+  switch (serialized_input_event.event_type) {
     case ekg::platform_event_type::text_input: {
       this->input.was_pressed = true;
       this->input.was_typed = true;
@@ -129,14 +132,14 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       std::string string_builder {};
 
       ekg::core->p_os_platform->get_key_name(
-        io_event_serialized.key,
+        serialized_input_event.key,
         key_name
       );
 
-      ekg::special_key special_key {ekg::special_key::unknown};
-      ekg::core->p_os_platform->get_special_key(io_event_serialized.key, special_key);
+      ekg::special_key_type special_key {ekg::special_key_type::unknown};
+      ekg::core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
 
-      if (special_key != ekg::special_key::unknown) {
+      if (special_key != ekg::special_key_type::unknown) {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = key_name[0];
         string_builder += key_name;
 
@@ -169,14 +172,14 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       std::string string_builder {};
 
       ekg::core->p_os_platform->get_key_name(
-        io_event_serialized.key,
+        serialized_input_event.key,
         key_name
       );
 
-      ekg::special_key special_key {ekg::special_key::unknown};
-      ekg::core->p_os_platform->get_special_key(io_event_serialized.key, special_key);
+      ekg::special_key_type special_key {ekg::special_key_type::unknown};
+      ekg::core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
 
-      if (special_key != ekg::special_key::unknown) {
+      if (special_key != ekg::special_key_type::unknown) {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = '\0';
         string_builder += key_name;
 
@@ -213,7 +216,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->input_released_list.push_back(key_name);
 
       key_name = "mouse-";
-      key_name += std::to_string(io_event_serialized.mouse_button);
+      key_name += std::to_string(serialized_input_event.mouse_button);
 
       this->input.was_pressed = true;
       this->complete_with_units(string_builder, key_name);
@@ -245,7 +248,7 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->input_released_list.push_back(key_name);
 
       key_name = "mouse-";
-      key_name += std::to_string(io_event_serialized.mouse_button);
+      key_name += std::to_string(serialized_input_event.mouse_button);
 
       this->complete_with_units(string_builder, key_name);
       string_builder += "-up";
@@ -257,8 +260,8 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
 
     case ekg::platform_event_type::mouse_motion: {
       this->input.has_motion = true;
-      this->input.interact.x = static_cast<float>(io_event_serialized.mouse_motion_x);
-      this->input.interact.y = static_cast<float>(io_event_serialized.mouse_motion_y);
+      this->input.interact.x = static_cast<float>(serialized_input_event.mouse_motion_x);
+      this->input.interact.y = static_cast<float>(serialized_input_event.mouse_motion_y);
       break;
     }
 
@@ -269,10 +272,10 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->input_released_list.push_back(string_builder);
       this->input.was_wheel = true;
 
-      this->callback("mouse-wheel-up", io_event_serialized.mouse_wheel_y > 0);
-      this->callback("mouse-wheel-down", io_event_serialized.mouse_wheel_y < 0);
-      this->callback("mouse-wheel-right", io_event_serialized.mouse_wheel_x > 0);
-      this->callback("mouse-wheel-left", io_event_serialized.mouse_wheel_x < 0);
+      this->callback("mouse-wheel-up", serialized_input_event.mouse_wheel_y > 0);
+      this->callback("mouse-wheel-down", serialized_input_event.mouse_wheel_y < 0);
+      this->callback("mouse-wheel-right", serialized_input_event.mouse_wheel_x > 0);
+      this->callback("mouse-wheel-left", serialized_input_event.mouse_wheel_x < 0);
 
       /**
        * I do not know how actually implement smooth scroll,
@@ -290,8 +293,8 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       wheel_precise_interval = wheel_precise_interval + (static_cast<float>(wheel_precise_interval > 0.99) * 0.5f);
       wheel_precise_interval = ekg_min(wheel_precise_interval, 0.2f);
 
-      this->input.interact.z = io_event_serialized.mouse_wheel_precise_x * wheel_precise_interval;
-      this->input.interact.w = io_event_serialized.mouse_wheel_precise_y * wheel_precise_interval;
+      this->input.interact.z = serialized_input_event.mouse_wheel_precise_x * wheel_precise_interval;
+      this->input.interact.w = serialized_input_event.mouse_wheel_precise_y * wheel_precise_interval;
       
       ekg::reset(this->last_time_wheel_was_fired);
       break;
@@ -302,8 +305,8 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       ekg::reset(this->timing_last_interact);
       bool reach_double_interact {ekg::reach(this->double_interact, 500)};
 
-      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
 
       this->last_finger_interact.x = this->input.interact.x;
       this->last_finger_interact.y = this->input.interact.y;
@@ -331,8 +334,8 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
       this->callback("finger-swipe-up", false);
       this->callback("finger-swipe-down", false);
 
-      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
 
       this->last_finger_interact.x = this->input.interact.x;
       this->last_finger_interact.y = this->input.interact.y;
@@ -344,11 +347,11 @@ void ekg::service::input::on_event(ekg::os::io_event_serial &io_event_serialized
 
     case ekg::platform_event_type::finger_motion: {
       this->input.has_motion = true;
-      this->input.interact.x = io_event_serialized.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = io_event_serialized.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
 
-      this->input.interact.z = (io_event_serialized.finger_dx * (static_cast<float>(ekg::ui::width) / 9.0f));
-      this->input.interact.w = (io_event_serialized.finger_dy * static_cast<float>(ekg::ui::height) / 9.0f);
+      this->input.interact.z = (serialized_input_event.finger_dx * (static_cast<float>(ekg::ui::width) / 9.0f));
+      this->input.interact.w = (serialized_input_event.finger_dy * static_cast<float>(ekg::ui::height) / 9.0f);
 
       float swipe_factor = 0.01f;
 
@@ -461,13 +464,13 @@ void ekg::service::input::callback(std::string_view key, bool callback) {
 }
 
 void ekg::service::input::complete_with_units(std::string &string_builder, std::string_view key_name) {
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::left_ctrl)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::right_ctrl)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::left_shift)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::right_shift)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::left_alt)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::right_alt)];
-  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key::tab)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::left_ctrl)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::right_ctrl)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::left_shift)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::right_shift)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::left_alt)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::right_alt)];
+  string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::tab)];
   string_builder += key_name;
 }
 

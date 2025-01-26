@@ -34,15 +34,20 @@ namespace ekg {
   typedef uint64_t id_t;
   typedef uint64_t flags_t;
 
-  enum result {
-    success,
-    failed,
-    widget_not_found
+  enum result_type {
+    success           = 2 << 1,
+    failed            = 2 << 2,
+    widget_not_found  = 2 << 3
   };
 }
 
-enum ekg::memory {
+enum ekg::io {
   constexpr uint64_t invalid_unique_id {UINT64_MAX};
+
+  template<typename t>
+  constexpr bool has(ekg::flags_t bits, t bit) {
+    return bits & bit;
+  }
 }
 
 #endif

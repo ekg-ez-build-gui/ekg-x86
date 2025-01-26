@@ -39,7 +39,12 @@ namespace ekg {
     SDL_Cursor *loaded_system_cursor_list[12] {};
     SDL_Window *p_sdl_win {};
   public:
-    explicit sdl(SDL_Window *p_sdl_win);
+    ekg::flags modes {};
+  public:
+    explicit sdl(
+      SDL_Window *p_sdl_win,
+      ekg::flags modes = static_cast<ekg::flags>(0)
+    );
   public:
     void init() override;
     void quit() override;

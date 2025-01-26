@@ -3,7 +3,7 @@
 void ekg::runtime::init() {
   ekg::log() << "Initializing task-handler service...";
 
-  this->swap_target_collector->unique_id = ekg::memory::invalid_unique_id;
+  this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
   this->handler.allocate() = new ekg::task_t {
     .info = ekg::info_t {
       .tag = "swap",
@@ -11,7 +11,7 @@ void ekg::runtime::init() {
       .p_data = nullptr
     },
     .function = [this](ekg::info_t &info) {
-      if (this->swap_target_collector->unique_id == ekg::memory::invalid_unique_id) {
+      if (this->swap_target_collector->unique_id == ekg::io::invalid_unique_id) {
         return;
       }
 
@@ -62,7 +62,7 @@ void ekg::runtime::init() {
     );
 
     this->swap_target_collector.storage.clear();
-    this->swap_target_collector->unique_id = ekg::memory::invalid_unique_id;
+    this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
   };
 }
 

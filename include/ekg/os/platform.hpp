@@ -31,12 +31,14 @@
 namespace ekg::os {
   class platform {
   public:
-    ekg::vec2<int32_t> display_resolution {};
+    ekg::rect<int32_t> display_size {};
+    ekg::system_cursor_type system_cursor {};
+    ekg::io::serialized_input_event_t serialized_input_event {};
   public:
     virtual void init() {}
     virtual void quit() {}
     virtual void update_monitor_resolution() {}
-    virtual void update_cursor(ekg::system_cursor_type system_cursor) {}
+    virtual void update_cursor() {}
     virtual void get_key_name(ekg::io::input_key_t &key, std::string &name) {}
     virtual void get_special_key(ekg::io::input_key_t &key, ekg::special_key_type special_key) {}
     virtual const char *get_clipboard_text() { return nullptr; };

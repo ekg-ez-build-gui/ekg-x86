@@ -30,6 +30,10 @@ namespace ekg {
     tab,
     unknown
   };
+
+  enum internal_behavior {
+    no_auto_set_viewport_when_resize = 2 << 1
+  };
 }
 
 namespace ekg::io {
