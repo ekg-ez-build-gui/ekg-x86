@@ -380,6 +380,12 @@ void ekg::service::input::on_event() {
 }
 
 void ekg::service::input::on_update() {
+  (
+    ekg::reach(this->input.ui_timing, 1000)
+    &&
+    ekg::reset(this->input.ui_timing)
+  );
+
   if (this->input.was_wheel) {
     this->callback("mouse-wheel", false);
     this->callback("mouse-wheel-up", false);

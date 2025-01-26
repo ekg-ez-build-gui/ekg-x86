@@ -43,6 +43,9 @@ namespace ekg::service {
 
     void dispatch_pre_allocated_task(uint64_t index);
     void dispatch(ekg::task_t *p_task);
+
+    void init();
+    void quit();
     void do_update();
   };
 }

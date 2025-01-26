@@ -1,6 +1,8 @@
 #ifndef EKG_IO_INPUT_HPP
 #define EKG_IO_INPUT_HPP
 
+#include 
+
 #include <cstdint>
 #include <string_view>
 
@@ -34,6 +36,11 @@ namespace ekg {
   enum internal_behavior {
     no_auto_set_viewport_when_resize = 2 << 1
   };
+
+  bool fire();
+  bool input(std::string_view input);
+  void bind(std::string_view tag, std::string_view input);
+  void bind(std::string_view tag, std::vector<std::string_view> inputs);
 }
 
 namespace ekg::io {
@@ -79,7 +86,12 @@ namespace ekg::io {
 
     float finger_dx {};
     float finger_dy {};
+
+    ekg::timing_t ui_timeout_timing {};
+    ekg::timing_t ui_scrolling_timing {};
   };
+
+  void register_standard_action_input_bindings();
 }
 
 #endif

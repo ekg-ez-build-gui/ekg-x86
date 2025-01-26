@@ -33,12 +33,17 @@ namespace ekg {
     std::string_view tag {};
     ekg::type type {};
     ekg::id unique_id {};
+
     void *p_descriptor {};
     void *p_widget {};
     void *p_stack {};
+
     ekg::properties_t *p_abs_parent {};
     ekg::properties_t *p_parent {};
     std::vector<ekg::properties_t*> children {};
+
+    bool is_alive {};
+    bool is_visible {};
     bool is_parentable {};
   public:
     template<typename t>

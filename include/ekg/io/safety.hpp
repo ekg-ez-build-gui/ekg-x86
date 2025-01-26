@@ -56,6 +56,7 @@ namespace ekg::io {
       .tag = descriptor.tag,
       .type = descriptor.type,
       .unique_id = ekg::core->generate_unique_id()
+      .is_alive = true
     };
 
     switch (descriptor.type) {

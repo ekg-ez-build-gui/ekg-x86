@@ -79,6 +79,7 @@ namespace ekg::service {
     bool is_special_key(int32_t sdl_key_code);
   public:
     void init();
+    void quit();
 
     void bind(std::string_view input_tag, std::string_view key);
 

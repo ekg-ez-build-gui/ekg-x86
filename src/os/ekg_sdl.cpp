@@ -179,7 +179,7 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
     break;
   case SDL_WINDOWEVENT:
     if (
-        ekg::io::has(
+        ekg::has(
           this->modes,
           ekg::internal_behavior::no_auto_set_viewport_when_resize
         )

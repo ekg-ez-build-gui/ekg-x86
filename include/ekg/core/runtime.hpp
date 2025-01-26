@@ -49,9 +49,6 @@ namespace ekg {
 
     ekg::io::target_collector_t swap_target_collector {};
   public:
-    ekg::timing_t ui_timeout_timing {};
-    ekg::timing_t ui_scrolling_timing {};
-  public:
     ekg::service::handler service_handler {};
     ekg::service::theme service_theme {};
     ekg::service::input service_input {};
@@ -64,6 +61,7 @@ namespace ekg {
     ekg::draw::font_renderer draw_font_renderer_big {};
 
     ekg::layout::mask layout_mask {};
+    bool must_redraw {};
   public:
     ekg::ui::abstract *emplace_back_new_widget_safety(
       ekg::ui::abstract *p_widget

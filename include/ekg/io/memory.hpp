@@ -39,15 +39,21 @@ namespace ekg {
     failed            = 2 << 2,
     widget_not_found  = 2 << 3
   };
-}
-
-enum ekg::io {
-  constexpr uint64_t invalid_unique_id {UINT64_MAX};
 
   template<typename t>
   constexpr bool has(ekg::flags_t bits, t bit) {
     return bits & bit;
   }
+
+  template<typename t>
+  constexpr bool strip(ekg::flags_t &bits, t bit) {
+    bits = bits & ~(bit);
+    return bits & bit;
+  }
+}
+
+enum ekg::io {
+  constexpr uint64_t invalid_unique_id {static_cast<uint64_t>(0)};
 }
 
 #endif

@@ -30,7 +30,10 @@ ekg::task_t *&ekg::service::handler::allocate() {
 }
 
 void ekg::service::handler::dispatch(ekg::task_t *p_task) {
-  this->task_queue.push(p_task);
+  if (!p_task->was_dispatched) {
+    p_task->was_dispatched = true;
+    this->task_queue.push(p_task);
+  }
 }
 
 void ekg::service::handler::dispatch_pre_allocated_task(uint64_t index) {
@@ -38,9 +41,9 @@ void ekg::service::handler::dispatch_pre_allocated_task(uint64_t index) {
     this->pre_allocated_task_list.at(index)
   };
 
-  if (!p_task->is_dispatched) {
+  if (!p_task->was_dispatched) {
     this->task_queue.push(p_task);
-    p_task->is_dispatched = true;
+    p_task->was_dispatched = true;
   }
 }
 
@@ -48,7 +51,7 @@ void ekg::service::handler::do_update() {
   while (!this->task_queue.empty()) {
     ekg::task_t *p_ekg_event {this->task_queue.front()};
     p_ekg_event->function(p_ekg_event->info);
-    p_ekg_event->is_dispatched = false;
+    p_ekg_event->was_dispatched = false;
     this->task_queue.pop();
   }
 }

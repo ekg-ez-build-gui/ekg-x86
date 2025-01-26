@@ -124,6 +124,8 @@ namespace ekg::service {
      **/
     void init();
 
+    void quit();
+
     /**
      * Returns all mapped schemes from theme service.
      * Note: Use property register/deregister methods; may be unsafe.

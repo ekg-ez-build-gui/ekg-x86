@@ -1,7 +1,22 @@
 #include "ekg/core/runtime.hpp"
 
 void ekg::runtime::init() {
-  ekg::log() << "Initializing task-handler service...";
+  this->service_handler.init();
+
+  /**
+   * Allocate order is important here, all pre-allocated tasks MUST follow
+   * the `ekg::io::runtime_task_operation` order.
+   * 
+   * Example:
+   * ```c++
+   * enum runtime_task_operation {
+   *   swap, // first
+   *   // etc
+   *   // etc
+   *   redraw // MUST BE the last one
+   * };
+   * ```
+   **/
 
   this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
   this->handler.allocate() = new ekg::task_t {
@@ -64,32 +79,60 @@ void ekg::runtime::init() {
     this->swap_target_collector.storage.clear();
     this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
   };
+
+  this->gpu_allocator.init();
+
+  ekg::log() << "Initializing theme service...";
+  this->service_theme.init();
+
+  ekg::log() << "Initializing input service...";
+  this->service_input.init();
+
+  ekg::log() << "Doing font-rendering tweaks, and pre-setting viewport scale...";
+  this->f_renderer_small.sampler_texture.gl_protected_active_index = true;
+  this->f_renderer_small.set_size(16);
+  this->f_renderer_small.bind_allocator(&this->gpu_allocator);
+
+  this->f_renderer_normal.sampler_texture.gl_protected_active_index = true;
+  this->f_renderer_normal.set_size(18);
+  this->f_renderer_normal.bind_allocator(&this->gpu_allocator);
+
+  this->f_renderer_big.sampler_texture.gl_protected_active_index = true;
+  this->f_renderer_big.set_size(24);
+  this->f_renderer_big.bind_allocator(&this->gpu_allocator);
+  this->update_size_changed();
+
+  ekg::log() << "Registering default user-input bindings";
+  ekg::io::register_standard_input_bindings();
 }
 
 void ekg::runtime::quit() {
-
+  this->service_handler.quit();
+  this->service_theme.quit();
+  this->service_input.quit();
+  this->gpu_allocator.quit();
 }
 
-void ekg::runtime::event() {
+void ekg::runtime::poll_events() {
   this->service_input.on_event();
 
   ekg::input_t &input {
     this->service_input.input
   };
 
-  bool is_on_scrolling_timeout {!ekg::reach(this->ui_scroll_timing, 250)};
-  ekg::hovered.id *= !(input.was_pressed || input.was_released || input.has_motion);
+  bool is_on_scrolling_timeout {!ekg::reach(input.ui_scroll_timing, 250)};
+  ekg::current.unique_id *= !(input.was_pressed || input.was_released || input.has_motion);
 
   if (
       this->p_abs_activity_widget != nullptr &&
-      (this->p_abs_activity_widget->flag.absolute || is_on_scrolling_timeout)
+      (this->p_abs_activity_widget->states.is_absolute || is_on_scrolling_timeout)
     ) {
 
     this->p_abs_activity_widget->on_pre_event();
     this->p_abs_activity_widget->on_event();
 
     if (this->p_abs_activity_widget->flag.scrolling) {
-      ekg::reset(this->ui_scroll_timing);
+      ekg::reset(input.ui_scroll_timing);
     }
 
     this->p_abs_activity_widget->on_post_event();
@@ -105,32 +148,36 @@ void ekg::runtime::event() {
   bool hovered {};
   bool first_absolute {};
 
-  ekg::ui::abstract_widget *p_widget_focused {};
+  ekg::ui::abstract *p_widget_focused {};
 
-  for (ekg::ui::abstract_widget *&p_widgets: this->loaded_widget_list) {
-    if (p_widgets == nullptr || !p_widgets->p_data->is_alive()) {
+  for (ekg::ui::abstract *&p_widgets: this->context_widget_list) {
+    if (p_widgets == nullptr || p_widgets->properties.was_destroy) {
       continue;
     }
 
     p_widgets->on_pre_event();
 
     /**
-     * Text input like textbox and keyboard events should not update stack, instead just mouse events.
+     * Text input like textbox and keyboard events should not update stack, only mouse events.
      **/
     hovered = (
       !(
-        .event_type == ekg::platform_event_type::key_down   ||
-        .event_type == ekg::platform_event_type::key_up     ||
-        .event_type == ekg::platform_event_type::text_input
-       )
-      && p_widgets->flag.hovered
-      && p_widgets->p_data->is_visible()
-      && p_widgets->p_data->get_state() != ekg::state::disable
+        input.event_type == ekg::input_event_type::key_down
+        ||
+        input.event_type == ekg::input_event_type::key_up
+        ||
+        input.event_type == ekg::input_event_type::text_input
+      )
+      &&
+      p_widgets->states.is_hover
+      &&
+      p_widgets->properties.is_visible
+      &&
+      ekg::has(p_widgets->properties.flags, ekg::mode::enabled)
     );
 
     if (hovered) {
-      p_widget_focused != nullptr && (p_widget_focused->flag.was_hovered = false);
-      ekg::hovered.id = p_widgets->p_data->get_id();
+      p_widget_focused && (p_widget_focused->states.is_hover = false);
       p_widget_focused = p_widgets;
       first_absolute = false;
     }
@@ -154,61 +201,91 @@ void ekg::runtime::event() {
      * scroll (frame 1)  // do not target this fired absolute widget.
      * end of e.g.
      **/
-    if (p_widgets->flag.absolute && !first_absolute) {
+    if (p_widgets->states.is_absolute && !first_absolute) {
       p_widget_focused = p_widgets;
       first_absolute = true;
     }
 
     p_widgets->on_post_event();
-    if (!hovered && !p_widgets->flag.absolute) {
-      p_widgets->flag.was_hovered = false;
+    if (!hovered && !p_widgets->states.is_absolute) {
+      p_widgets->states.is_hover = false;
       p_widgets->on_event();
     }
   }
 
-  ekg::hovered.type = ekg::type::abstract;
+  ekg::current.type = ekg::type::abstract;
 
-  if (p_widget_focused != nullptr) {
+  if (p_widget_focused) {
+    p_widget_focused->states.is_absolute && (this->p_abs_activity_widget = p_widget_focused);
+    ekg::current.type = p_widget_focused->p_data->get_type();
+
     p_widget_focused->on_pre_event();
     p_widget_focused->on_event();
     p_widget_focused->on_post_event();
-
-    if (p_widget_focused->flag.absolute) {
-      this->p_abs_activity_widget = p_widget_focused;
-    }
-
-    ekg::hovered.type = p_widget_focused->p_data->get_type();
   }
 
   if (input.was_pressed) {
-    ekg::hovered.down = ekg::hovered.id;
-    ekg::hovered.down_type = p_widget_focused != nullptr ? p_widget_focused->p_data->get_type() : ekg::type::abstract;
+    ekg::current.pressed = ekg::current.unique_id;
+    (
+      // if p_widget_focused != nullptr ? p_widget_focused->properties.type : ekg::type::abstract
+      (p_widget_focused && (ekg::current.pressed_type = p_widget_focused->properties.type))
+      ||
+      (ekg::current.pressed_type = ekg::type::abstract)
+    );
   } else if (input.was_released) {
-    ekg::hovered.up = ekg::hovered.id;
-    ekg::hovered.down_type = p_widget_focused != nullptr ? p_widget_focused->p_data->get_type() : ekg::type::abstract;
+    ekg::current.released = ekg::current.unique_id;
+    (
+      (p_widget_focused && (ekg::current.released_type = p_widget_focused->properties.type))
+      ||
+      (ekg::current.released_type = ekg::type::abstract)
+    );
   }
 
   if (
-      ekg::hovered.last != ekg::hovered.id &&
-      ekg::hovered.id != 0 &&
-      (input.was_pressed || input.was_released)
-    ) {
+      ekg::current.last != ekg::current.unique_id
+      &&
+      ekg::current.unique_id != ekg::io::invalid_unique_id
+      &&
+      (
+        input.was_pressed || input.was_released
+      )
+  ) {
+    this->target_collector.target_unique_id = ekg::current.unique_id;
+    ekg::current.last = ekg::current.unique_id;
 
-    ekg::hovered.swap = ekg::hovered.id;
-    ekg::hovered.last = ekg::hovered.id;
-
-    ekg::dispatch(ekg::env::swap);
-    ekg::dispatch(ekg::env::redraw);
+    ekg::io::dispatch(ekg::io::runtime_task_operation::swap);
+    ekg::io::dispatch(ekg::io::runtime_task_operation::redraw);
   }
 }
 
 void ekg::runtime::update() {
+  if (!this->high_frequency_widget_list.empty()) {
+    size_t size {};
+    for (size_t it {}; it < (size = this->high_frequency_widget_list.size()); it++) {
+      if (it >= size) {
+        break;
+      }
 
+      ekg::ui::abstract *&p_widget {this->high_frequency_widget_list.at(it)};
+      p_widget->on_update();
+
+      if (!p_widget->states.is_high_frequency) {
+        this->high_frequency_widget_list.erase(
+          this->high_frequency_widget_list.begin() + it
+        );
+      }
+    }
+  }
+
+  this->service_input.on_update();
+  this->service_handler.on_update();
+
+  ekg::log::flush();
 }
 
 void ekg::runtime::render() {
-  if (ekg::ui::redraw) {
-    ekg::ui::redraw = false;
+  if (this->must_redraw) {
+    this->must_redraw = false;
 
     /**
      * The allocator starts here, the GPU data instance

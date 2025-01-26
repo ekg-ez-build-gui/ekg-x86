@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2022-2024 Rina Wilk / vokegpu@gmail.com
+ * Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,17 @@
  * SOFTWARE.
  */
 
-#include "ekg/core/task.hpp"
+#include "ekg/io/task.hpp"
 
-bool ekg::poll_io_event {true};
-
+void ekg::io::dispatch(ekg::io::runtime_task_operation op) {
+  switch (op) {
+  case ekg::runtime_task_operation::redraw:
+    ekg::core->must_redraw = true;
+    break;
+  default:
+    ekg::core->service_handler.dispatch_pre_allocated_task(
+      static_cast<uint64_t>(op)
+    );
+    break;
+  }
+}
