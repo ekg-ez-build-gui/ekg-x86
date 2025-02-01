@@ -81,11 +81,7 @@ void ekg::runtime::init() {
   };
 
   this->gpu_allocator.init();
-
-  ekg::log() << "Initializing theme service...";
   this->service_theme.init();
-
-  ekg::log() << "Initializing input service...";
   this->service_input.init();
 
   ekg::log() << "Doing font-rendering tweaks, and pre-setting viewport scale...";
@@ -101,9 +97,6 @@ void ekg::runtime::init() {
   this->f_renderer_big.set_size(24);
   this->f_renderer_big.bind_allocator(&this->gpu_allocator);
   this->update_size_changed();
-
-  ekg::log() << "Registering default user-input bindings";
-  ekg::io::register_standard_input_bindings();
 }
 
 void ekg::runtime::quit() {

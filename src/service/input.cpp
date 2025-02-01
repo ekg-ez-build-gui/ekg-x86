@@ -32,7 +32,7 @@ ekg::input_t &ekg::input() {
 }
 
 void ekg::service::input::init() {
-  ekg::log() << "Initialising input-bind system!";
+  ekg::log() << "Initialising input-service binding system-based";
 
   /**
    * Forced null termination at end due the necessary optmization,
@@ -105,6 +105,91 @@ void ekg::service::input::init() {
   this->special_keys[6][5] = '\0';
   this->special_keys[6][6] = '\0';
   this->special_keys[6][7] = '\0';
+
+  ekg::log() << "Registering default user-input bindings";
+
+  this->register_input_bind("frame-drag-activity", "mouse-1");
+  this->register_input_bind("frame-drag-activity", "finger-click");
+  this->register_input_bind("frame-resize-activity", "mouse-1");
+  this->register_input_bind("frame-resize-activity", "finger-click");
+
+  this->register_input_bind("button-activity", "mouse-1");
+  this->register_input_bind("button-activity", "finger-click");
+
+  this->register_input_bind("checkbox-activity", "mouse-1");
+  this->register_input_bind("checkbox-activity", "finger-click");
+
+  this->register_input_bind("popup-activity", "mouse-1");
+  this->register_input_bind("popup-activity", "finger-click");
+
+  this->register_input_bind("textbox-activity", "mouse-1");
+  this->register_input_bind("textbox-activity", "finger-click");
+  this->register_input_bind("textbox-action-activity", "return");
+  this->register_input_bind("textbox-action-activity", "keypad enter");
+
+  this->register_input_bind("textbox-action-select-all", "lctrl+a");
+  this->register_input_bind("textbox-action-select-all", "rctrl+a");
+
+  this->register_input_bind("textbox-action-select-all-inline", "mouse-1");
+  this->register_input_bind("textbox-action-select", "lshift");
+  this->register_input_bind("textbox-action-select", "rshift");
+
+  this->register_input_bind("textbox-action-select-word", "mouse-1-double");
+  this->register_input_bind("textbox-action-select-word", "finger-hold");
+
+  this->register_input_bind("textbox-action-delete-left", "abs-backspace");
+  this->register_input_bind("textbox-action-delete-right", "abs-delete");
+  this->register_input_bind("textbox-action-break-line", "return");
+  this->register_input_bind("textbox-action-break-line", "keypad enter");
+  this->register_input_bind("textbox-action-break-line", "lshift+return");
+  this->register_input_bind("textbox-action-break-line", "rshift+return");
+  this->register_input_bind("textbox-action-tab", "tab");
+  this->register_input_bind("textbox-action-modifier", "lctrl");
+  this->register_input_bind("textbox-action-modifier", "rctrl");
+
+  this->register_input_bind("textbox-action-up", "abs-up");
+  this->register_input_bind("textbox-action-down", "abs-down");
+  this->register_input_bind("textbox-action-right", "abs-right");
+  this->register_input_bind("textbox-action-left", "abs-left");
+
+  this->register_input_bind("clipboard-copy", "lctrl+c");
+  this->register_input_bind("clipboard-copy", "rctrl+c");
+  this->register_input_bind("clipboard-copy", "copy");
+  this->register_input_bind("clipboard-paste", "lctrl+v");
+  this->register_input_bind("clipboard-paste", "rctrl+v");
+  this->register_input_bind("clipboard-paste", "paste");
+  this->register_input_bind("clipboard-cut", "lctrl+x");
+  this->register_input_bind("clipboard-cut", "rctrl+x");
+  this->register_input_bind("clipboard-cut", "cut");
+
+  this->register_input_bind("listbox-activity-open", "mouse-1-double");
+  this->register_input_bind("listbox-activity-open", "finger-hold");
+
+  this->register_input_bind("listbox-activity-select", "mouse-1");
+  this->register_input_bind("listbox-activity-select", "finger-click");
+  this->register_input_bind("listbox-activity-select-many", "lctrl+mouse-1");
+  this->register_input_bind("listbox-activity-select-many", "rctrl+mouse-1");
+
+  this->register_input_bind("slider-drag-activity", "mouse-1");
+  this->register_input_bind("slider-drag-activity", "finger-click");
+  this->register_input_bind("slider-bar-increase", "mouse-wheel-up");
+  this->register_input_bind("slider-bar-decrease", "mouse-wheel-down");
+  this->register_input_bind("slider-bar-modifier", "lctrl");
+  this->register_input_bind("slider-bar-modifier", "rctrl");
+
+  this->register_input_bind("scrollbar-drag", "mouse-1");
+  this->register_input_bind("scrollbar-drag", "finger-click");
+  this->register_input_bind("scrollbar-scroll", "mouse-wheel");
+  this->register_input_bind("scrollbar-scroll", "finger-swipe");
+
+  this->register_input_bind("scrollbar-scroll", "lshift+mouse-wheel");
+  this->register_input_bind("scrollbar-scroll", "rshift+mouse-wheel");
+  this->register_input_bind("scrollbar-horizontal-scroll", "lshift+mouse-wheel");
+  this->register_input_bind("scrollbar-horizontal-scroll", "rshift+mouse-wheel");
+}
+
+void ekg::service::input::quit() {
+  ekg::log() << "Quitting input-service"
 }
 
 void ekg::service::input::on_event() {
@@ -143,19 +228,19 @@ void ekg::service::input::on_event() {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = key_name[0];
         string_builder += key_name;
 
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
         this->is_special_keys_released = true;
       } else {
         std::transform(key_name.begin(), key_name.end(), key_name.begin(), ::tolower);
         string_builder += "abs-";
         string_builder += key_name;
 
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
         this->input_released_list.push_back(string_builder);
 
         string_builder.clear();
         this->complete_with_units(string_builder, key_name);
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
         this->input_released_list.push_back(string_builder);
 
         if (string_builder != key_name && !this->contains_unit(string_builder)) {
@@ -183,25 +268,25 @@ void ekg::service::input::on_event() {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = '\0';
         string_builder += key_name;
 
-        this->callback(string_builder, false);
+        this->set_input_state(string_builder, false);
         this->is_special_keys_released = true;
 
         string_builder += "-up";
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
       } else {
         std::transform(key_name.begin(), key_name.end(), key_name.begin(), ::tolower);
         string_builder += "abs-";
         string_builder += key_name;
         string_builder += "-up";
 
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
         this->input_released_list.push_back(string_builder);
 
         string_builder.clear();
         this->complete_with_units(string_builder, key_name);
         string_builder += "-up";
 
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
         this->input_released_list.push_back(string_builder);
       }
       
@@ -212,7 +297,7 @@ void ekg::service::input::on_event() {
       std::string string_builder {};
       std::string key_name {"mouse"};
 
-      this->callback(key_name, true);
+      this->set_input_state(key_name, true);
       this->input_released_list.push_back(key_name);
 
       key_name = "mouse-";
@@ -220,13 +305,13 @@ void ekg::service::input::on_event() {
 
       this->input.was_pressed = true;
       this->complete_with_units(string_builder, key_name);
-      this->callback(string_builder, true);
+      this->set_input_state(string_builder, true);
       this->input_released_list.push_back(string_builder);
 
       bool double_click_factor {ekg::reach(this->double_interact, 500)};
       if (!double_click_factor) {
         string_builder += "-double";
-        this->callback(string_builder, true);
+        this->set_input_state(string_builder, true);
 
         this->double_click_mouse_buttons_pressed.push_back(string_builder);
         this->input_released_list.push_back(string_builder);
@@ -244,7 +329,7 @@ void ekg::service::input::on_event() {
       std::string key_name {"mouse-up"};
 
       this->input.was_released = true;
-      this->callback(key_name, true);
+      this->set_input_state(key_name, true);
       this->input_released_list.push_back(key_name);
 
       key_name = "mouse-";
@@ -253,7 +338,7 @@ void ekg::service::input::on_event() {
       this->complete_with_units(string_builder, key_name);
       string_builder += "-up";
 
-      this->callback(string_builder, true);
+      this->set_input_state(string_builder, true);
       this->input_released_list.push_back(string_builder);
       break;
     }
@@ -268,14 +353,14 @@ void ekg::service::input::on_event() {
     case ekg::platform_event_type::mouse_wheel: {
       std::string string_builder {};
       this->complete_with_units(string_builder, "mouse-wheel");
-      this->callback(string_builder, true);
+      this->set_input_state(string_builder, true);
       this->input_released_list.push_back(string_builder);
       this->input.was_wheel = true;
 
-      this->callback("mouse-wheel-up", serialized_input_event.mouse_wheel_y > 0);
-      this->callback("mouse-wheel-down", serialized_input_event.mouse_wheel_y < 0);
-      this->callback("mouse-wheel-right", serialized_input_event.mouse_wheel_x > 0);
-      this->callback("mouse-wheel-left", serialized_input_event.mouse_wheel_x < 0);
+      this->set_input_state("mouse-wheel-up", serialized_input_event.mouse_wheel_y > 0);
+      this->set_input_state("mouse-wheel-down", serialized_input_event.mouse_wheel_y < 0);
+      this->set_input_state("mouse-wheel-right", serialized_input_event.mouse_wheel_x > 0);
+      this->set_input_state("mouse-wheel-left", serialized_input_event.mouse_wheel_x < 0);
 
       /**
        * I do not know how actually implement smooth scroll,
@@ -308,11 +393,8 @@ void ekg::service::input::on_event() {
       this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
       this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
 
-      this->last_finger_interact.x = this->input.interact.x;
-      this->last_finger_interact.y = this->input.interact.y;
-
-      this->callback("finger-click", true);
-      this->callback("finger-click-double", !reach_double_interact);
+      this->set_input_state("finger-click", true);
+      this->set_input_state("finger-click-double", !reach_double_interact);
 
       if (reach_double_interact) {
         ekg::reset(this->double_interact);
@@ -323,22 +405,19 @@ void ekg::service::input::on_event() {
 
     case ekg::platform_event_type::finger_up: {
       this->input.was_released = true;
-      this->callback("finger-hold", (this->finger_hold_event = ekg::reach(this->timing_last_interact, 750)));
-      this->callback("finger-click", false);
-      this->callback("finger-click-double", false);
+      this->set_input_state("finger-hold", (this->finger_hold_event = ekg::reach(this->timing_last_interact, 750)));
+      this->set_input_state("finger-click", false);
+      this->set_input_state("finger-click-double", false);
 
       /**
        * Should stop the swipe event when there is no finger touching on screen.
        **/
-      this->callback("finger-swipe", false);
-      this->callback("finger-swipe-up", false);
-      this->callback("finger-swipe-down", false);
+      this->set_input_state("finger-swipe", false);
+      this->set_input_state("finger-swipe-up", false);
+      this->set_input_state("finger-swipe-down", false);
 
       this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
       this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
-
-      this->last_finger_interact.x = this->input.interact.x;
-      this->last_finger_interact.y = this->input.interact.y;
 
       this->input.interact.z = 0.0f;
       this->input.interact.w = 0.0f;
@@ -355,14 +434,14 @@ void ekg::service::input::on_event() {
 
       float swipe_factor = 0.01f;
 
-      this->callback(
+      this->set_input_state(
         "finger-swipe",
         (this->input.interact.w > swipe_factor || this->input.interact.w < -swipe_factor) ||
         (this->input.interact.z > swipe_factor || this->input.interact.z < -swipe_factor)
       );
 
-      this->callback("finger-swipe-up", this->input.interact.w > swipe_factor);
-      this->callback("finger-swipe-down", this->input.interact.w < -swipe_factor);
+      this->set_input_state("finger-swipe-up", this->input.interact.w > swipe_factor);
+      this->set_input_state("finger-swipe-down", this->input.interact.w < -swipe_factor);
 
       this->finger_swipe_event = true;
       ekg::reset(this->timing_last_interact);
@@ -372,7 +451,7 @@ void ekg::service::input::on_event() {
 
   if (this->input.has_motion && !this->double_click_mouse_buttons_pressed.empty()) {
     for (const std::string &button: this->double_click_mouse_buttons_pressed) {
-      this->callback(button, false);
+      this->set_input_state(button, false);
     }
 
     this->double_click_mouse_buttons_pressed.clear();
@@ -387,16 +466,16 @@ void ekg::service::input::on_update() {
   );
 
   if (this->input.was_wheel) {
-    this->callback("mouse-wheel", false);
-    this->callback("mouse-wheel-up", false);
-    this->callback("mouse-wheel-down", false);
+    this->set_input_state("mouse-wheel", false);
+    this->set_input_state("mouse-wheel-up", false);
+    this->set_input_state("mouse-wheel-down", false);
     this->input.was_wheel = false;
   }
 
   if (this->finger_swipe_event) {
-    this->callback("finger-swipe", false);
-    this->callback("finger-swipe-up", false);
-    this->callback("finger-swipe-down", false);
+    this->set_input_state("finger-swipe", false);
+    this->set_input_state("finger-swipe-up", false);
+    this->set_input_state("finger-swipe-down", false);
     this->finger_swipe_event = false;
   }
 
@@ -404,7 +483,7 @@ void ekg::service::input::on_update() {
 
   if (this->is_special_keys_released) {
     for (std::string &units : this->special_keys_unit_pressed) {
-      this->callback(units, false);
+      this->set_input_state(units, false);
     }
 
     this->special_keys_unit_pressed.clear();
@@ -413,63 +492,121 @@ void ekg::service::input::on_update() {
 
   if (!this->input_released_list.empty()) {
     for (std::string &inputs: this->input_released_list) {
-      this->callback(inputs, false);
+      this->set_input_state(inputs, false);
     }
 
     this->input_released_list.clear();
   }
 
-  if (!this->immediate_register_list.empty()) {
-    for (std::string &inputs: this->immediate_register_list) {
-      this->input_register_map[inputs] = false;
+  if (!this->just_fired_input_bind.empty()) {
+    for (bool *p_input_bind_state_address : this->just_fired_input_bind) {
+      if (!p_input_bind_state_address) {
+        continue;
+      }
+
+      *p_input_bind_state_address = false;
     }
 
-    this->immediate_register_list.clear();
+    this->just_fired_input_bind.clear();
   }
 }
 
-void ekg::service::input::bind(std::string_view input_tag, std::string_view key) {
-  bool should_bind {true};
-  auto &bind_list = this->input_bind_map[key.data()];
+void ekg::service::input::insert_input_bind(
+  std::string_view tag,
+  std::string_view input
+) {
+  std::vector<bool*> &bind_list {this->input_bindings_map[input.data()]};
+  ekg::io::input_bind_t &input_bind {this->input_bind_map[tag.data()]};
 
-  for (std::string &inputs: bind_list) {
-    if (inputs == input_tag) {
-      should_bind = false;
+  bool *p_address {&input_bind.state};
+  bool must_bind {true};
+  
+  for (bool *p_binded_address : bind_list) {
+    if (p_binded_address == p_address) {
+      must_bind = false;
+      break;
     }
   }
 
-  if (should_bind) {
-    bind_list.emplace_back(input_tag.data());
+  if (must_bind) {
+    bind_list.emplace_back(p_address);
+    input_bind.registry.emplace_back(input.data());
   }
 }
 
-void ekg::service::input::unbind(std::string_view input_tag, std::string_view key) {
-  auto &bind_list = this->input_bind_map[key.data()];
-  for (uint64_t it {}; it < bind_list.size(); it++) {
-    if (bind_list[it] == input_tag) {
-      bind_list.erase(bind_list.cbegin() + it);
+void ekg::service::input::erase_input_bind(
+  std::string_view tag,
+  std::string_view input
+) {
+  std::vector<ekg::io::input_bind_t> &bind_list {this->input_bindings_map[input.data()]};
+  ekg::io::input_bind_t &input_bind {this->input_bind_map[tag.data()]};
+
+  bool *p_address {&input_bind.state};
+  bool was_erased {};
+
+  for (size_t it {}; it < bind_list.size(); it++) {
+    if (bind_list.at(it) == p_address) {
+      bind_list.erase(bind_list.begin() + it);
+      was_erased = true;
+      break;
+    }
+  }
+
+  if (!was_erased) {
+    return;
+  }
+
+  for (size_t it {}; it < input_bind.registry.size(); it++) {
+    if (input_bind.registry.at(it) == input) {
+      input_bind.registry.erase(input_bind.registry.begin() + it);
       break;
     }
   }
 }
 
-void ekg::service::input::callback(std::string_view key, bool callback) {
-  auto &bind_map {this->input_bind_map[key.data()]};
-  this->input_map[key.data()] = callback;
+void ekg::service::input::erase_input_bind(
+  std::string_view tag
+) {
+  ekg::io::input_bind_t &input_bind {this->input_bind_map[tag.data()]};
+  bool *p_address {&input_bind.state};
 
-  if (!this->input_register_map.empty()) {
-    this->input_register_callback.clear();
+  for (size_t it {}; it < input_bind.registry.size(); it++) {
+    std::string &input {input_bind.registry.at(it)};
+    std::vector<ekg::io::input_bind_t> &bind_list {
+      this->input_bindings_map[input]
+    };
+
+    for (size_t it_bind_list {}; it_bind_list < bind_list.size(); it_bind_list++) {
+      if (bind_list.at(it_bind_list) == p_address) {
+        bind_list.erase(bind_list.begin() + it_bind_list);
+        break;
+      }
+    }
   }
 
-  for (std::string &binds : bind_map) {
-    this->input_register_map[binds] = callback;
-    if (callback) {
-      this->input_register_callback.push_back(binds);
+  // input_bind.registry.clear();
+  this->input_bind_map.erase(tag.data());
+}
+
+void ekg::service::input::set_input_state(
+  std::string_view key,
+  bool state
+) {
+  this->input_map[key.data()] = state;
+
+  for (bool *p_address : this->input_bindings_map[key.data()]) {
+    if (!p_address) {
+      continue;
     }
+
+    *p_address = state;
   }
 }
 
-void ekg::service::input::complete_with_units(std::string &string_builder, std::string_view key_name) {
+void ekg::service::input::complete_with_units(
+  std::string &string_builder,
+  std::string_view key_name
+) {
   string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::left_ctrl)];
   string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::right_ctrl)];
   string_builder += this->special_keys[static_cast<uint64_t>(ekg::special_key_type::left_shift)];
@@ -480,12 +617,24 @@ void ekg::service::input::complete_with_units(std::string &string_builder, std::
   string_builder += key_name;
 }
 
-void ekg::service::input::fire(std::string_view key) {
-  this->input_register_map[key.data()] = true;
-  this->immediate_register_list.emplace_back(key);
+void ekg::service::input::fire(
+  std::string_view key
+) {
+  ekg::io::input_bind_t &input_bind {
+    this->input_bind_map[key.data()]
+  };
+
+  if (!input_bind.p_address) {
+    return;
+  }
+
+  *input_bind.p_address = true; 
+  this->just_fired_input_bind.emplace_back(input_bind.p_address);
 }
 
-bool ekg::service::input::contains_unit(std::string_view label) {
+bool ekg::service::input::contains_unit(
+  std::string_view label
+) {
   for (std::string &units : this->special_keys_unit_pressed) {
     if (units == label) {
       return true;
@@ -495,10 +644,14 @@ bool ekg::service::input::contains_unit(std::string_view label) {
   return false;
 }
 
-bool ekg::service::input::pressed(std::string_view key) {
-  return this->input_register_map[key.data()];
+bool ekg::service::input::get_input_state(
+  std::string_view input
+) {
+  return this->input_map[input.data()];
 }
 
-bool ekg::service::input::receive(std::string_view key) {
-  return this->input_map[key.data()];
+bool ekg::service::input::get_input_bind_state(
+  std::string_view tag
+) {
+  return this->input_bind_map[tag.data()].state;
 }

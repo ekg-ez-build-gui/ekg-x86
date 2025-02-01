@@ -25,6 +25,14 @@
 #include "ekg/service/handler.hpp"
 #include "ekg/util/io.hpp"
 
+void ekg::service::handler::init() {
+  ekg::log() << "Initialising handler-service task system-based";
+}
+
+void ekg::service::handler::quit() {
+  ekg::log() << "Quitting handler-service";
+}
+
 ekg::task_t *&ekg::service::handler::allocate() {
   return this->pre_allocated_task_list.emplace_back();
 }

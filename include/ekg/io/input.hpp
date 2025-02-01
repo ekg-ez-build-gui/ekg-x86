@@ -91,7 +91,11 @@ namespace ekg::io {
     ekg::timing_t ui_scrolling_timing {};
   };
 
-  void register_standard_action_input_bindings();
+  struct input_bind_t {
+  public:
+    std::vector<std::string> registry {};
+    bool state {};
+  };
 }
 
 #endif

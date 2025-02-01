@@ -52,7 +52,7 @@ ekg::service::theme_scheme_t &ekg::service::theme::get_current_theme_scheme() {
 }
 
 void ekg::service::theme::init() {
-  ekg::log() << "Initialising default themes!";
+  ekg::log() << "Initialising theme-service theme-scheme based!";
 
   ekg::service::theme_scheme_t dark_theme_scheme {
     .name = "dark",
@@ -326,4 +326,8 @@ void ekg::service::theme::init() {
   dark_pinky_theme_scheme.listbox_drag_background = ekg::color(85, 85, 85, 50);
 
   this->add(dark_pinky_theme_scheme);
+}
+
+void ekg::service::theme::quit() {
+  ekg::log() << "Quitting theme-service";
 }
