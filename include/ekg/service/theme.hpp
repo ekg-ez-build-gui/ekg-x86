@@ -29,10 +29,21 @@
 #include <vector>
 #include <string_view>
 #include <map>
-#include "ekg/util/geometry.hpp"
 
-namespace ekg::service {
-  struct theme_scheme_t {
+#include "ekg/ui/button/button.hpp"
+#include "ekg/ui/checkbox/checkbox.hpp"
+#include "ekg/ui/combobox/combobox.hpp"
+#include "ekg/ui/frame/frame.hpp"
+#include "ekg/ui/label/label.hpp"
+#include "ekg/ui/listbox/listbox.hpp"
+#include "ekg/ui/menu/menu.hpp"
+#include "ekg/ui/popup/popup.hpp"
+#include "ekg/ui/scrollbar/scrollbar.hpp"
+#include "ekg/ui/slider/slider.hpp"
+#include "ekg/ui/textbox/textbox.hpp"
+
+namespace ekg {
+  struct theme_t {
   public:
     std::string_view name {};
     std::string_view author {};
@@ -42,82 +53,25 @@ namespace ekg::service {
     bool symmetric_layout {};
     float min_widget_size {5};
 
-    ekg::vec4 frame_background {};
-    ekg::vec4 frame_border {};
-    ekg::vec4 frame_outline {};
-    int32_t frame_activity_offset {};
-
-    ekg::vec4 button_background {};
-    ekg::vec4 button_string {};
-    ekg::vec4 button_outline {};
-    ekg::vec4 button_activity {};
-    ekg::vec4 button_highlight {};
-
-    ekg::vec4 checkbox_background {};
-    ekg::vec4 checkbox_string {};
-    ekg::vec4 checkbox_outline {};
-    ekg::vec4 checkbox_activity {};
-    ekg::vec4 checkbox_highlight {};
-
-    ekg::vec4 slider_background {};
-    ekg::vec4 slider_bar_background {};
-    ekg::vec4 slider_string {};
-    ekg::vec4 slider_outline {};
-    ekg::vec4 slider_activity {};
-    ekg::vec4 slider_activity_bar {};
-    ekg::vec4 slider_bar_outline {};
-    ekg::vec4 slider_highlight {};
-    int32_t slider_bar_thickness {};
-    int32_t slider_target_thickness {};
-
-    ekg::vec4 label_string {};
-    ekg::vec4 label_outline {};
-    ekg::vec4 label_background {};
-
-    ekg::vec4 popup_background {};
-    ekg::vec4 popup_string {};
-    ekg::vec4 popup_outline {};
-    ekg::vec4 popup_highlight {};
-    ekg::vec4 popup_separator {};
-    int64_t popup_drop_animation_delay {};
-
-    ekg::vec4 textbox_string {};
-    ekg::vec4 textbox_background {};
-    ekg::vec4 textbox_outline {};
-    ekg::vec4 textbox_cursor {};
-    ekg::vec4 textbox_select {};
-
-    ekg::vec4 scrollbar_background {};
-    ekg::vec4 scrollbar_outline {};
-    ekg::vec4 scrollbar_activity {};
-    ekg::vec4 scrollbar_highlight {};
-    int32_t scrollbar_pixel_thickness {};
-    float scrollbar_min_bar_size {};
-
-    ekg::vec4 listbox_header_background {};
-    ekg::vec4 listbox_header_highlight_outline {};
-    ekg::vec4 listbox_header_highlight {};
-    ekg::vec4 listbox_header_outline {};
-    ekg::vec4 listbox_header_string {};
-    ekg::vec4 listbox_item_background {};
-    ekg::vec4 listbox_item_highlight_outline {};
-    ekg::vec4 listbox_item_highlight {};
-    ekg::vec4 listbox_item_focused {};
-    ekg::vec4 listbox_item_focused_outline {};
-    ekg::vec4 listbox_item_string {};
-    ekg::vec4 listbox_item_outline {};
-    ekg::vec4 listbox_outline {};
-    ekg::vec4 listbox_background {};
-    ekg::vec4 listbox_line_separator {};
-    ekg::vec4 listbox_drag_background {};
-    ekg::vec4 listbox_drag_outline {};
-    float listbox_subitem_offset_space {4.0f};
+    ekg::button_theme_t button {};
+    ekg::checkbox_theme_t checkbox {};
+    ekg::combobox_theme_t combobox {};
+    ekg::frame_theme_t frame {};
+    ekg::label_theme_t label {};
+    ekg::listbox_theme_t listbox {};
+    ekg::menu_theme_t menu {};
+    ekg::popup_theme_t popup {};
+    ekg::scrollbar_theme_t scrollbar {};
+    ekg::slider_theme_t slider {};
+    ekg::textbox_theme_t textbox {};
   };
+}
 
+namespace ekg::service {
   class theme {
   protected:
-    std::map<std::string_view, ekg::service::theme_scheme_t> theme_scheme_map {};
-    ekg::service::theme_scheme_t current_theme_scheme {};
+    std::map<std::string_view, ekg::theme_t> theme_map {};
+    ekg::theme_t current_theme {};
   public:
     /**
      * Initialize default themes (dark, light, pinky etc) and update global theme scheme.
@@ -130,7 +84,7 @@ namespace ekg::service {
      * Returns all mapped schemes from theme service.
      * Note: Use property register/deregister methods; may be unsafe.
      **/
-    std::map<std::string_view, ekg::service::theme_scheme_t> &get_theme_scheme_map();
+    std::map<std::string_view, ekg::theme_t> &get_theme_map();
 
     /**
      * Set the current theme global.
@@ -138,19 +92,19 @@ namespace ekg::service {
      * 
      * Returns true if exists, else false.
      **/
-    bool set_current_theme_scheme(std::string_view name);
+    bool set_current_theme(std::string_view name);
 
     /**
      * Returns the current theme scheme global loaded.
      **/
-    ekg::service::theme_scheme_t &get_current_theme_scheme();
+    ekg::theme_t &get_current_theme();
 
     /**
      * Dynamic registry one theme scheme on memory, you must not repeat themes name.
      * Note: May you want save theme scheme in a file, use `ekg::service::theme::save`
      * method to do that.
      **/
-    void add(ekg::service::theme_scheme_t theme_scheme);
+    void add(ekg::theme_t theme);
 
     /**
      * Local save one theme scheme to a file.
@@ -162,7 +116,7 @@ namespace ekg::service {
      * Read one theme scheme from a file and load it to memory; may replacing one
      * if already exists.
      **/
-    void read(std::string_view path, ekg::service::theme_scheme_t *p_theme_scheme);
+    void read(std::string_view path, ekg::theme_t *p_theme);
   };
 }
 

@@ -25,307 +25,307 @@
 #include "ekg/service/theme.hpp"
 #include "ekg/util/io.hpp"
 
-std::map<std::string_view, ekg::service::theme_scheme_t> &ekg::service::theme::get_theme_scheme_map() {
-  return this->theme_scheme_map;
+std::map<std::string_view, ekg::theme_t> &ekg::service::theme::get_theme_map() {
+  return this->theme_map;
 }
 
-void ekg::service::theme::add(ekg::service::theme_scheme_t theme) {
-  this->theme_scheme_map[theme.name] = theme;
+void ekg::service::theme::add(ekg::theme_t theme) {
+  this->theme_map[theme.name] = theme;
 }
 
-bool ekg::service::theme::set_current_theme_scheme(std::string_view name) {
-  if (this->current_theme_scheme.name == name) {
+bool ekg::service::theme::set_current_theme(std::string_view name) {
+  if (this->current_theme.name == name) {
     return true;
   }
 
-  if (!this->theme_scheme_map.count(name)) {
+  if (!this->theme_map.count(name)) {
     ekg::log() << "Failed to find theme '" << name << "' with this name!";
     return false;
   }
 
-  this->current_theme_scheme = this->theme_scheme_map[name];
+  this->current_theme = this->theme_map[name];
   return true;
 }
 
-ekg::service::theme_scheme_t &ekg::service::theme::get_current_theme_scheme() {
-  return this->current_theme_scheme;
+ekg::theme_t &ekg::service::theme::get_current_theme() {
+  return this->current_theme;
 }
 
 void ekg::service::theme::init() {
   ekg::log() << "Initialising theme-service theme-scheme based!";
 
-  ekg::service::theme_scheme_t dark_theme_scheme {
+  ekg::theme_t dark_theme {
     .name = "dark",
     .author = "Rina Wilk",
     .description = "Pasted dark-theme... mwm",
   };
 
-  dark_theme_scheme.symmetric_layout = true;
-  dark_theme_scheme.frame_background = ekg::color(43, 43, 43, 255);
-  dark_theme_scheme.frame_border = ekg::color(190, 190, 190, 0);
-  dark_theme_scheme.frame_outline = ekg::color(30, 40, 60, 100);
-  dark_theme_scheme.frame_activity_offset = 18;
-  dark_theme_scheme.button_background = ekg::color(85, 85, 85, 50);
-  dark_theme_scheme.button_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.button_outline = ekg::color(202, 207, 222, 0);
-  dark_theme_scheme.button_activity = ekg::color(44, 166, 255, 100);
-  dark_theme_scheme.button_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.checkbox_background = ekg::color(85, 85, 85, 0);
-  dark_theme_scheme.checkbox_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.checkbox_outline = ekg::color(202, 207, 222, 0);
-  dark_theme_scheme.checkbox_activity = ekg::color(44, 166, 255, 200);
-  dark_theme_scheme.checkbox_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.slider_background = ekg::color(85, 85, 85, 50);
-  dark_theme_scheme.slider_bar_background = ekg::color(85, 85, 85, 50);
-  dark_theme_scheme.slider_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.slider_outline = ekg::color(202, 207, 222, 0);
-  dark_theme_scheme.slider_activity = ekg::color(44, 166, 255, 200);
-  dark_theme_scheme.slider_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.slider_activity_bar = ekg::color(44, 166, 255, 200);
-  dark_theme_scheme.slider_bar_outline = ekg::color(202, 207, 222, 0);
-  dark_theme_scheme.slider_bar_thickness = 100;
-  dark_theme_scheme.slider_target_thickness = 0;
-  dark_theme_scheme.label_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.popup_background = ekg::color(43, 43, 43, 255);
-  dark_theme_scheme.popup_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.popup_outline = ekg::color(43, 43, 43, 0);
-  dark_theme_scheme.popup_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.popup_separator = ekg::color(141, 141, 141, 50);
-  dark_theme_scheme.popup_drop_animation_delay = 120;
-  dark_theme_scheme.textbox_background = ekg::color(242, 242, 242, 255);
-  dark_theme_scheme.textbox_string = ekg::color(141, 141, 141, 255);
-  dark_theme_scheme.textbox_outline = ekg::color(141, 141, 141, 50);
-  dark_theme_scheme.textbox_cursor = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.textbox_select = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.scrollbar_background = ekg::color(85, 85, 85, 255);
-  dark_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
-  dark_theme_scheme.scrollbar_activity = ekg::color(44, 166, 255, 200);
-  dark_theme_scheme.scrollbar_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.scrollbar_pixel_thickness = 4;
-  dark_theme_scheme.scrollbar_min_bar_size = 30.0f;
-  dark_theme_scheme.listbox_header_background = ekg::color(85, 85, 85, 255);
-  dark_theme_scheme.listbox_item_highlight_outline = ekg::color(141, 141, 141, 0);
-  dark_theme_scheme.listbox_header_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.listbox_header_outline = ekg::color(141, 141, 141, 100);
-  dark_theme_scheme.listbox_header_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.listbox_item_outline = ekg::color(141, 141, 141, 0);
-  dark_theme_scheme.listbox_item_background = ekg::color(85, 85, 85, 0);
-  dark_theme_scheme.listbox_item_string = ekg::color(202, 202, 202, 255);
-  dark_theme_scheme.listbox_item_highlight = ekg::color(44, 166, 255, 50);
-  dark_theme_scheme.listbox_item_focused_outline = ekg::color(141, 141, 141, 0);
-  dark_theme_scheme.listbox_item_focused = ekg::color(44, 166, 255, 100);
-  dark_theme_scheme.listbox_line_separator = ekg::color(141, 141, 141, 100);
-  dark_theme_scheme.listbox_outline = ekg::color(141, 141, 141, 100);
-  dark_theme_scheme.listbox_background = ekg::color(85, 85, 85, 50);
-  dark_theme_scheme.listbox_drag_outline = ekg::color(141, 141, 141, 100);
-  dark_theme_scheme.listbox_drag_background = ekg::color(85, 85, 85, 50);
+  dark_theme.symmetric_layout = true;
+  dark_theme.frame.background = ekg::color(43, 43, 43, 255);
+  dark_theme.frame.border = ekg::color(190, 190, 190, 0);
+  dark_theme.frame.outline = ekg::color(30, 40, 60, 100);
+  dark_theme.frame.activity_offset = 18;
+  dark_theme.button.background = ekg::color(85, 85, 85, 50);
+  dark_theme.button.string = ekg::color(202, 202, 202, 255);
+  dark_theme.button.outline = ekg::color(202, 207, 222, 0);
+  dark_theme.button.activity = ekg::color(44, 166, 255, 100);
+  dark_theme.button.highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.checkbox.background = ekg::color(85, 85, 85, 0);
+  dark_theme.checkbox.string = ekg::color(202, 202, 202, 255);
+  dark_theme.checkbox.outline = ekg::color(202, 207, 222, 0);
+  dark_theme.checkbox.activity = ekg::color(44, 166, 255, 200);
+  dark_theme.checkbox.highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.slider.background = ekg::color(85, 85, 85, 50);
+  dark_theme.slider.bar_background = ekg::color(85, 85, 85, 50);
+  dark_theme.slider.string = ekg::color(202, 202, 202, 255);
+  dark_theme.slider.outline = ekg::color(202, 207, 222, 0);
+  dark_theme.slider.activity = ekg::color(44, 166, 255, 200);
+  dark_theme.slider.highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.slider.activity_bar = ekg::color(44, 166, 255, 200);
+  dark_theme.slider.bar_outline = ekg::color(202, 207, 222, 0);
+  dark_theme.slider.bar_thickness = 100;
+  dark_theme.slider.target_thickness = 0;
+  dark_theme.label.string = ekg::color(202, 202, 202, 255);
+  dark_theme.popup.background = ekg::color(43, 43, 43, 255);
+  dark_theme.popup.string = ekg::color(202, 202, 202, 255);
+  dark_theme.popup.outline = ekg::color(43, 43, 43, 0);
+  dark_theme.popup.highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.popup.separator = ekg::color(141, 141, 141, 50);
+  dark_theme.popup.drop_animation_delay = 120;
+  dark_theme.textbox.background = ekg::color(242, 242, 242, 255);
+  dark_theme.textbox.string = ekg::color(141, 141, 141, 255);
+  dark_theme.textbox.outline = ekg::color(141, 141, 141, 50);
+  dark_theme.textbox.cursor = ekg::color(202, 202, 202, 255);
+  dark_theme.textbox.select = ekg::color(44, 166, 255, 50);
+  dark_theme.scrollbar.background = ekg::color(85, 85, 85, 255);
+  dark_theme.scrollbar.outline = ekg::color(202, 207, 222, 150);
+  dark_theme.scrollbar.activity = ekg::color(44, 166, 255, 200);
+  dark_theme.scrollbar.highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.scrollbar.pixel_thickness = 4;
+  dark_theme.scrollbar.min_bar_size = 30.0f;
+  dark_theme.listbox.header_background = ekg::color(85, 85, 85, 255);
+  dark_theme.listbox.item_highlight_outline = ekg::color(141, 141, 141, 0);
+  dark_theme.listbox.header_highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.listbox.header_outline = ekg::color(141, 141, 141, 100);
+  dark_theme.listbox.header_string = ekg::color(202, 202, 202, 255);
+  dark_theme.listbox.item_outline = ekg::color(141, 141, 141, 0);
+  dark_theme.listbox.item_background = ekg::color(85, 85, 85, 0);
+  dark_theme.listbox.item_string = ekg::color(202, 202, 202, 255);
+  dark_theme.listbox.item_highlight = ekg::color(44, 166, 255, 50);
+  dark_theme.listbox.item_focused_outline = ekg::color(141, 141, 141, 0);
+  dark_theme.listbox.item_focused = ekg::color(44, 166, 255, 100);
+  dark_theme.listbox.line_separator = ekg::color(141, 141, 141, 100);
+  dark_theme.listbox.outline = ekg::color(141, 141, 141, 100);
+  dark_theme.listbox.background = ekg::color(85, 85, 85, 50);
+  dark_theme.listbox.drag_outline = ekg::color(141, 141, 141, 100);
+  dark_theme.listbox.drag_background = ekg::color(85, 85, 85, 50);
 
-  this->add(dark_theme_scheme);
+  this->add(dark_theme);
 
-  ekg::service::theme_scheme_t light_theme_scheme {
+  ekg::theme_t light_theme {
     .name = "light",
     .author = "Rina Wilk",
     .description = "Pasted light-theme... moow",
   };
 
-  light_theme_scheme.symmetric_layout = true;
-  light_theme_scheme.frame_background = ekg::color(242, 242, 242, 255);
-  light_theme_scheme.frame_border = ekg::color(190, 190, 190, 0);
-  light_theme_scheme.frame_outline = ekg::color(202, 207, 222, 150);
-  light_theme_scheme.frame_activity_offset = 18;
-  light_theme_scheme.button_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.button_background = ekg::color(204, 204, 204, 50);
-  light_theme_scheme.button_activity = ekg::color(44, 166, 255, 100);
-  light_theme_scheme.button_outline = ekg::color(202, 207, 222, 0);
-  light_theme_scheme.button_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.checkbox_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.checkbox_background = ekg::color(204, 204, 204, 0);
-  light_theme_scheme.checkbox_activity = ekg::color(44, 166, 255, 200);
-  light_theme_scheme.checkbox_outline = ekg::color(202, 207, 222, 0);
-  light_theme_scheme.checkbox_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.slider_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.slider_background = ekg::color(204, 204, 204, 50);
-  light_theme_scheme.slider_bar_background = ekg::color(204, 204, 204, 50);
-  light_theme_scheme.slider_activity = ekg::color(44, 166, 255, 200);
-  light_theme_scheme.slider_outline = ekg::color(202, 207, 222, 0);
-  light_theme_scheme.slider_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.slider_activity_bar = ekg::color(44, 166, 255, 200);
-  light_theme_scheme.slider_bar_outline = ekg::color(44, 166, 255, 200);
-  light_theme_scheme.slider_bar_thickness = 16;
-  light_theme_scheme.slider_target_thickness = 0;
-  light_theme_scheme.label_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.popup_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.popup_background = ekg::color(242, 242, 242, 255);
-  light_theme_scheme.popup_outline = ekg::color(30, 40, 60, 0);
-  light_theme_scheme.popup_highlight = ekg::color(206, 225, 239, 255);
-  light_theme_scheme.popup_separator = ekg::color(202, 207, 222, 150);
-  light_theme_scheme.popup_drop_animation_delay = 120,
-  light_theme_scheme.textbox_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.textbox_background = ekg::color(242, 242, 242, 255);
-  light_theme_scheme.textbox_outline = ekg::color(202, 207, 222, 150);
-  light_theme_scheme.textbox_select = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.textbox_cursor = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.scrollbar_background = ekg::color(202, 202, 202, 255);
-  light_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
-  light_theme_scheme.scrollbar_activity = ekg::color(44, 166, 255, 200);
-  light_theme_scheme.scrollbar_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.scrollbar_pixel_thickness = 4;
-  light_theme_scheme.scrollbar_min_bar_size = 30.0f;
-  light_theme_scheme.listbox_header_background = ekg::color(204, 204, 204, 255);
-  light_theme_scheme.listbox_header_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.listbox_header_outline = ekg::color(202, 207, 222, 50);
-  light_theme_scheme.listbox_header_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.listbox_item_background = ekg::color(204, 204, 204, 0);
-  light_theme_scheme.listbox_item_string = ekg::color(141, 141, 141, 255);
-  light_theme_scheme.listbox_item_outline = ekg::color(202, 207, 222, 50);
-  light_theme_scheme.listbox_item_highlight_outline = ekg::color(202, 207, 222, 0);
-  light_theme_scheme.listbox_item_focused_outline = ekg::color(202, 207, 222, 0);
-  light_theme_scheme.listbox_item_focused = ekg::color(44, 166, 255, 100);
-  light_theme_scheme.listbox_item_highlight = ekg::color(44, 166, 255, 50);
-  light_theme_scheme.listbox_line_separator = ekg::color(202, 207, 222, 100);
-  light_theme_scheme.listbox_background = ekg::color(204, 204, 204, 50);
-  light_theme_scheme.listbox_drag_background = ekg::color(204, 204, 204, 50);
-  light_theme_scheme.listbox_drag_outline = ekg::color(202, 207, 222, 100);
-  light_theme_scheme.listbox_outline = ekg::color(202, 207, 222, 100);
+  light_theme.symmetric_layout = true;
+  light_theme.frame.background = ekg::color(242, 242, 242, 255);
+  light_theme.frame.border = ekg::color(190, 190, 190, 0);
+  light_theme.frame.outline = ekg::color(202, 207, 222, 150);
+  light_theme.frame.activity_offset = 18;
+  light_theme.button.string = ekg::color(141, 141, 141, 255);
+  light_theme.button.background = ekg::color(204, 204, 204, 50);
+  light_theme.button.activity = ekg::color(44, 166, 255, 100);
+  light_theme.button.outline = ekg::color(202, 207, 222, 0);
+  light_theme.button.highlight = ekg::color(44, 166, 255, 50);
+  light_theme.checkbox.string = ekg::color(141, 141, 141, 255);
+  light_theme.checkbox.background = ekg::color(204, 204, 204, 0);
+  light_theme.checkbox.activity = ekg::color(44, 166, 255, 200);
+  light_theme.checkbox.outline = ekg::color(202, 207, 222, 0);
+  light_theme.checkbox.highlight = ekg::color(44, 166, 255, 50);
+  light_theme.slider.string = ekg::color(141, 141, 141, 255);
+  light_theme.slider.background = ekg::color(204, 204, 204, 50);
+  light_theme.slider.bar_background = ekg::color(204, 204, 204, 50);
+  light_theme.slider.activity = ekg::color(44, 166, 255, 200);
+  light_theme.slider.outline = ekg::color(202, 207, 222, 0);
+  light_theme.slider.highlight = ekg::color(44, 166, 255, 50);
+  light_theme.slider.activity_bar = ekg::color(44, 166, 255, 200);
+  light_theme.slider.bar_outline = ekg::color(44, 166, 255, 200);
+  light_theme.slider.bar_thickness = 16;
+  light_theme.slider.target_thickness = 0;
+  light_theme.label.string = ekg::color(141, 141, 141, 255);
+  light_theme.popup.string = ekg::color(141, 141, 141, 255);
+  light_theme.popup.background = ekg::color(242, 242, 242, 255);
+  light_theme.popup.outline = ekg::color(30, 40, 60, 0);
+  light_theme.popup.highlight = ekg::color(206, 225, 239, 255);
+  light_theme.popup.separator = ekg::color(202, 207, 222, 150);
+  light_theme.popup.drop_animation_delay = 120,
+  light_theme.textbox.string = ekg::color(141, 141, 141, 255);
+  light_theme.textbox.background = ekg::color(242, 242, 242, 255);
+  light_theme.textbox.outline = ekg::color(202, 207, 222, 150);
+  light_theme.textbox.select = ekg::color(44, 166, 255, 50);
+  light_theme.textbox.cursor = ekg::color(141, 141, 141, 255);
+  light_theme.scrollbar.background = ekg::color(202, 202, 202, 255);
+  light_theme.scrollbar.outline = ekg::color(202, 207, 222, 150);
+  light_theme.scrollbar.activity = ekg::color(44, 166, 255, 200);
+  light_theme.scrollbar.highlight = ekg::color(44, 166, 255, 50);
+  light_theme.scrollbar.pixel_thickness = 4;
+  light_theme.scrollbar.min_bar_size = 30.0f;
+  light_theme.listbox.header_background = ekg::color(204, 204, 204, 255);
+  light_theme.listbox.header_highlight = ekg::color(44, 166, 255, 50);
+  light_theme.listbox.header_outline = ekg::color(202, 207, 222, 50);
+  light_theme.listbox.header_string = ekg::color(141, 141, 141, 255);
+  light_theme.listbox.item_background = ekg::color(204, 204, 204, 0);
+  light_theme.listbox.item_string = ekg::color(141, 141, 141, 255);
+  light_theme.listbox.item_outline = ekg::color(202, 207, 222, 50);
+  light_theme.listbox.item_highlight_outline = ekg::color(202, 207, 222, 0);
+  light_theme.listbox.item_focused_outline = ekg::color(202, 207, 222, 0);
+  light_theme.listbox.item_focused = ekg::color(44, 166, 255, 100);
+  light_theme.listbox.item_highlight = ekg::color(44, 166, 255, 50);
+  light_theme.listbox.line_separator = ekg::color(202, 207, 222, 100);
+  light_theme.listbox.background = ekg::color(204, 204, 204, 50);
+  light_theme.listbox.drag_background = ekg::color(204, 204, 204, 50);
+  light_theme.listbox.drag_outline = ekg::color(202, 207, 222, 100);
+  light_theme.listbox.outline = ekg::color(202, 207, 222, 100);
 
-  this->add(light_theme_scheme);
-  this->set_current_theme_scheme("dark");
+  this->add(light_theme);
+  this->set_current_theme("dark");
 
-  ekg::service::theme_scheme_t light_pinky_theme_scheme {
+  ekg::theme_t light_pinky_theme {
     .name = "light-pinky",
     .author = "Rina Wilk",
     .description = "Pasted light-theme... moow",
   };
 
-  light_pinky_theme_scheme.symmetric_layout = true;
-  light_pinky_theme_scheme.frame_background = ekg::color(242, 242, 242, 255);
-  light_pinky_theme_scheme.frame_border = ekg::color(190, 190, 190, 0);
-  light_pinky_theme_scheme.frame_outline = ekg::color(202, 207, 222, 150);
-  light_pinky_theme_scheme.frame_activity_offset = 18;
-  light_pinky_theme_scheme.button_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.button_background = ekg::color(204, 204, 204, 50);
-  light_pinky_theme_scheme.button_activity = ekg::color(245, 169, 184, 100);
-  light_pinky_theme_scheme.button_outline = ekg::color(202, 207, 222, 0);
-  light_pinky_theme_scheme.button_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.checkbox_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.checkbox_background = ekg::color(204, 204, 204, 0);
-  light_pinky_theme_scheme.checkbox_activity = ekg::color(245, 169, 184, 200);
-  light_pinky_theme_scheme.checkbox_outline = ekg::color(202, 207, 222, 0);
-  light_pinky_theme_scheme.checkbox_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.slider_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.slider_background = ekg::color(204, 204, 204, 50);
-  light_pinky_theme_scheme.slider_bar_background = ekg::color(204, 204, 204, 50);
-  light_pinky_theme_scheme.slider_activity = ekg::color(245, 169, 184, 200);
-  light_pinky_theme_scheme.slider_outline = ekg::color(202, 207, 222, 0);
-  light_pinky_theme_scheme.slider_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.slider_activity_bar = ekg::color(245, 169, 184, 200);
-  light_pinky_theme_scheme.slider_bar_outline = ekg::color(245, 169, 184, 200);
-  light_pinky_theme_scheme.slider_bar_thickness = 16;
-  light_pinky_theme_scheme.slider_target_thickness = 0;
-  light_pinky_theme_scheme.label_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.popup_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.popup_background = ekg::color(242, 242, 242, 255);
-  light_pinky_theme_scheme.popup_outline = ekg::color(30, 40, 60, 0);
-  light_pinky_theme_scheme.popup_highlight = ekg::color(206, 225, 239, 255);
-  light_pinky_theme_scheme.popup_separator = ekg::color(202, 207, 222, 150);
-  light_pinky_theme_scheme.popup_drop_animation_delay = 120,
-  light_pinky_theme_scheme.textbox_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.textbox_background = ekg::color(242, 242, 242, 255);
-  light_pinky_theme_scheme.textbox_outline = ekg::color(202, 207, 222, 150);
-  light_pinky_theme_scheme.textbox_select = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.textbox_cursor = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.scrollbar_background = ekg::color(202, 202, 202, 255);
-  light_pinky_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
-  light_pinky_theme_scheme.scrollbar_activity = ekg::color(245, 169, 184, 200);
-  light_pinky_theme_scheme.scrollbar_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.scrollbar_pixel_thickness = 4;
-  light_pinky_theme_scheme.scrollbar_min_bar_size = 30.0f;
-  light_pinky_theme_scheme.listbox_header_background = ekg::color(204, 204, 204, 255);
-  light_pinky_theme_scheme.listbox_header_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.listbox_header_outline = ekg::color(202, 207, 222, 50);
-  light_pinky_theme_scheme.listbox_header_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.listbox_item_background = ekg::color(204, 204, 204, 0);
-  light_pinky_theme_scheme.listbox_item_string = ekg::color(141, 141, 141, 255);
-  light_pinky_theme_scheme.listbox_item_outline = ekg::color(202, 207, 222, 50);
-  light_pinky_theme_scheme.listbox_item_highlight_outline = ekg::color(202, 207, 222, 0);
-  light_pinky_theme_scheme.listbox_item_focused_outline = ekg::color(202, 207, 222, 0);
-  light_pinky_theme_scheme.listbox_item_focused = ekg::color(245, 169, 184, 100);
-  light_pinky_theme_scheme.listbox_item_highlight = ekg::color(245, 169, 184, 50);
-  light_pinky_theme_scheme.listbox_line_separator = ekg::color(202, 207, 222, 100);
-  light_pinky_theme_scheme.listbox_background = ekg::color(204, 204, 204, 50);
-  light_pinky_theme_scheme.listbox_drag_background = ekg::color(204, 204, 204, 50);
-  light_pinky_theme_scheme.listbox_drag_outline = ekg::color(202, 207, 222, 100);
-  light_pinky_theme_scheme.listbox_outline = ekg::color(202, 207, 222, 100);
+  light_pinky_theme.symmetric_layout = true;
+  light_pinky_theme.frame.background = ekg::color(242, 242, 242, 255);
+  light_pinky_theme.frame.border = ekg::color(190, 190, 190, 0);
+  light_pinky_theme.frame.outline = ekg::color(202, 207, 222, 150);
+  light_pinky_theme.frame.activity_offset = 18;
+  light_pinky_theme.button.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.button.background = ekg::color(204, 204, 204, 50);
+  light_pinky_theme.button.activity = ekg::color(245, 169, 184, 100);
+  light_pinky_theme.button.outline = ekg::color(202, 207, 222, 0);
+  light_pinky_theme.button.highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.checkbox.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.checkbox.background = ekg::color(204, 204, 204, 0);
+  light_pinky_theme.checkbox.activity = ekg::color(245, 169, 184, 200);
+  light_pinky_theme.checkbox.outline = ekg::color(202, 207, 222, 0);
+  light_pinky_theme.checkbox.highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.slider.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.slider.background = ekg::color(204, 204, 204, 50);
+  light_pinky_theme.slider.bar_background = ekg::color(204, 204, 204, 50);
+  light_pinky_theme.slider.activity = ekg::color(245, 169, 184, 200);
+  light_pinky_theme.slider.outline = ekg::color(202, 207, 222, 0);
+  light_pinky_theme.slider.highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.slider.activity_bar = ekg::color(245, 169, 184, 200);
+  light_pinky_theme.slider.bar_outline = ekg::color(245, 169, 184, 200);
+  light_pinky_theme.slider.bar_thickness = 16;
+  light_pinky_theme.slider.target_thickness = 0;
+  light_pinky_theme.label.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.popup.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.popup.background = ekg::color(242, 242, 242, 255);
+  light_pinky_theme.popup.outline = ekg::color(30, 40, 60, 0);
+  light_pinky_theme.popup.highlight = ekg::color(206, 225, 239, 255);
+  light_pinky_theme.popup.separator = ekg::color(202, 207, 222, 150);
+  light_pinky_theme.popup.drop_animation_delay = 120,
+  light_pinky_theme.textbox.string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.textbox.background = ekg::color(242, 242, 242, 255);
+  light_pinky_theme.textbox.outline = ekg::color(202, 207, 222, 150);
+  light_pinky_theme.textbox.select = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.textbox.cursor = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.scrollbar.background = ekg::color(202, 202, 202, 255);
+  light_pinky_theme.scrollbar.outline = ekg::color(202, 207, 222, 150);
+  light_pinky_theme.scrollbar.activity = ekg::color(245, 169, 184, 200);
+  light_pinky_theme.scrollbar.highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.scrollbar.pixel_thickness = 4;
+  light_pinky_theme.scrollbar.min_bar_size = 30.0f;
+  light_pinky_theme.listbox.header_background = ekg::color(204, 204, 204, 255);
+  light_pinky_theme.listbox.header_highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.listbox.header_outline = ekg::color(202, 207, 222, 50);
+  light_pinky_theme.listbox.header_string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.listbox.item_background = ekg::color(204, 204, 204, 0);
+  light_pinky_theme.listbox.item_string = ekg::color(141, 141, 141, 255);
+  light_pinky_theme.listbox.item_outline = ekg::color(202, 207, 222, 50);
+  light_pinky_theme.listbox.item_highlight_outline = ekg::color(202, 207, 222, 0);
+  light_pinky_theme.listbox.item_focused_outline = ekg::color(202, 207, 222, 0);
+  light_pinky_theme.listbox.item_focused = ekg::color(245, 169, 184, 100);
+  light_pinky_theme.listbox.item_highlight = ekg::color(245, 169, 184, 50);
+  light_pinky_theme.listbox.line_separator = ekg::color(202, 207, 222, 100);
+  light_pinky_theme.listbox.background = ekg::color(204, 204, 204, 50);
+  light_pinky_theme.listbox.drag_background = ekg::color(204, 204, 204, 50);
+  light_pinky_theme.listbox.drag_outline = ekg::color(202, 207, 222, 100);
+  light_pinky_theme.listbox.outline = ekg::color(202, 207, 222, 100);
 
-  this->add(light_pinky_theme_scheme);
+  this->add(light_pinky_theme);
 
-  ekg::service::theme_scheme_t dark_pinky_theme_scheme {
+  ekg::theme_t dark_pinky_theme {
     .name = "dark-pinky",
     .author = "Rina Wilk",
     .description = "Pasted dark-theme... mooo mwm",
   };
 
-  dark_pinky_theme_scheme.symmetric_layout = true;
-  dark_pinky_theme_scheme.frame_background = ekg::color(43, 43, 43, 255);
-  dark_pinky_theme_scheme.frame_border = ekg::color(190, 190, 190, 0);
-  dark_pinky_theme_scheme.frame_outline = ekg::color(30, 40, 60, 100);
-  dark_pinky_theme_scheme.frame_activity_offset = 18;
-  dark_pinky_theme_scheme.button_background = ekg::color(85, 85, 85, 50);
-  dark_pinky_theme_scheme.button_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.button_outline = ekg::color(202, 207, 222, 0);
-  dark_pinky_theme_scheme.button_activity = ekg::color(245, 169, 184, 100);
-  dark_pinky_theme_scheme.button_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.checkbox_background = ekg::color(85, 85, 85, 0);
-  dark_pinky_theme_scheme.checkbox_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.checkbox_outline = ekg::color(202, 207, 222, 0);
-  dark_pinky_theme_scheme.checkbox_activity = ekg::color(245, 169, 184, 200);
-  dark_pinky_theme_scheme.checkbox_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.slider_background = ekg::color(85, 85, 85, 50);
-  dark_pinky_theme_scheme.slider_bar_background = ekg::color(85, 85, 85, 50);
-  dark_pinky_theme_scheme.slider_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.slider_outline = ekg::color(202, 207, 222, 0);
-  dark_pinky_theme_scheme.slider_activity = ekg::color(245, 169, 184, 200);
-  dark_pinky_theme_scheme.slider_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.slider_activity_bar = ekg::color(245, 169, 184, 200);
-  dark_pinky_theme_scheme.slider_bar_outline = ekg::color(202, 207, 222, 0);
-  dark_pinky_theme_scheme.slider_bar_thickness = 100;
-  dark_pinky_theme_scheme.slider_target_thickness = 0;
-  dark_pinky_theme_scheme.label_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.popup_background = ekg::color(43, 43, 43, 255);
-  dark_pinky_theme_scheme.popup_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.popup_outline = ekg::color(43, 43, 43, 0);
-  dark_pinky_theme_scheme.popup_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.popup_separator = ekg::color(141, 141, 141, 50);
-  dark_pinky_theme_scheme.popup_drop_animation_delay = 120;
-  dark_pinky_theme_scheme.textbox_background = ekg::color(242, 242, 242, 255);
-  dark_pinky_theme_scheme.textbox_string = ekg::color(141, 141, 141, 255);
-  dark_pinky_theme_scheme.textbox_outline = ekg::color(141, 141, 141, 50);
-  dark_pinky_theme_scheme.textbox_cursor = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.textbox_select = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.scrollbar_background = ekg::color(85, 85, 85, 255);
-  dark_pinky_theme_scheme.scrollbar_outline = ekg::color(202, 207, 222, 150);
-  dark_pinky_theme_scheme.scrollbar_activity = ekg::color(245, 169, 184, 200);
-  dark_pinky_theme_scheme.scrollbar_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.scrollbar_pixel_thickness = 4;
-  dark_pinky_theme_scheme.scrollbar_min_bar_size = 30.0f;
-  dark_pinky_theme_scheme.listbox_header_background = ekg::color(85, 85, 85, 255);
-  dark_pinky_theme_scheme.listbox_item_highlight_outline = ekg::color(141, 141, 141, 0);
-  dark_pinky_theme_scheme.listbox_header_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.listbox_header_outline = ekg::color(141, 141, 141, 100);
-  dark_pinky_theme_scheme.listbox_header_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.listbox_item_outline = ekg::color(141, 141, 141, 0);
-  dark_pinky_theme_scheme.listbox_item_background = ekg::color(85, 85, 85, 0);
-  dark_pinky_theme_scheme.listbox_item_string = ekg::color(202, 202, 202, 255);
-  dark_pinky_theme_scheme.listbox_item_highlight = ekg::color(245, 169, 184, 50);
-  dark_pinky_theme_scheme.listbox_item_focused_outline = ekg::color(141, 141, 141, 0);
-  dark_pinky_theme_scheme.listbox_item_focused = ekg::color(245, 169, 184, 100);
-  dark_pinky_theme_scheme.listbox_line_separator = ekg::color(141, 141, 141, 100);
-  dark_pinky_theme_scheme.listbox_outline = ekg::color(141, 141, 141, 100);
-  dark_pinky_theme_scheme.listbox_background = ekg::color(85, 85, 85, 50);
-  dark_pinky_theme_scheme.listbox_drag_outline = ekg::color(141, 141, 141, 100);
-  dark_pinky_theme_scheme.listbox_drag_background = ekg::color(85, 85, 85, 50);
+  dark_pinky_theme.symmetric_layout = true;
+  dark_pinky_theme.frame.background = ekg::color(43, 43, 43, 255);
+  dark_pinky_theme.frame.border = ekg::color(190, 190, 190, 0);
+  dark_pinky_theme.frame.outline = ekg::color(30, 40, 60, 100);
+  dark_pinky_theme.frame.activity_offset = 18;
+  dark_pinky_theme.button.background = ekg::color(85, 85, 85, 50);
+  dark_pinky_theme.button.string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.button.outline = ekg::color(202, 207, 222, 0);
+  dark_pinky_theme.button.activity = ekg::color(245, 169, 184, 100);
+  dark_pinky_theme.button.highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.checkbox.background = ekg::color(85, 85, 85, 0);
+  dark_pinky_theme.checkbox.string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.checkbox.outline = ekg::color(202, 207, 222, 0);
+  dark_pinky_theme.checkbox.activity = ekg::color(245, 169, 184, 200);
+  dark_pinky_theme.checkbox.highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.slider.background = ekg::color(85, 85, 85, 50);
+  dark_pinky_theme.slider.bar_background = ekg::color(85, 85, 85, 50);
+  dark_pinky_theme.slider.string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.slider.outline = ekg::color(202, 207, 222, 0);
+  dark_pinky_theme.slider.activity = ekg::color(245, 169, 184, 200);
+  dark_pinky_theme.slider.highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.slider.activity_bar = ekg::color(245, 169, 184, 200);
+  dark_pinky_theme.slider.bar_outline = ekg::color(202, 207, 222, 0);
+  dark_pinky_theme.slider.bar_thickness = 100;
+  dark_pinky_theme.slider.target_thickness = 0;
+  dark_pinky_theme.label.string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.popup.background = ekg::color(43, 43, 43, 255);
+  dark_pinky_theme.popup.string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.popup.outline = ekg::color(43, 43, 43, 0);
+  dark_pinky_theme.popup.highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.popup.separator = ekg::color(141, 141, 141, 50);
+  dark_pinky_theme.popup.drop_animation_delay = 120;
+  dark_pinky_theme.textbox.background = ekg::color(242, 242, 242, 255);
+  dark_pinky_theme.textbox.string = ekg::color(141, 141, 141, 255);
+  dark_pinky_theme.textbox.outline = ekg::color(141, 141, 141, 50);
+  dark_pinky_theme.textbox.cursor = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.textbox.select = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.scrollbar.background = ekg::color(85, 85, 85, 255);
+  dark_pinky_theme.scrollbar.outline = ekg::color(202, 207, 222, 150);
+  dark_pinky_theme.scrollbar.activity = ekg::color(245, 169, 184, 200);
+  dark_pinky_theme.scrollbar.highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.scrollbar.pixel_thickness = 4;
+  dark_pinky_theme.scrollbar.min_bar_size = 30.0f;
+  dark_pinky_theme.listbox.header_background = ekg::color(85, 85, 85, 255);
+  dark_pinky_theme.listbox.item_highlight_outline = ekg::color(141, 141, 141, 0);
+  dark_pinky_theme.listbox.header_highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.listbox.header_outline = ekg::color(141, 141, 141, 100);
+  dark_pinky_theme.listbox.header_string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.listbox.item_outline = ekg::color(141, 141, 141, 0);
+  dark_pinky_theme.listbox.item_background = ekg::color(85, 85, 85, 0);
+  dark_pinky_theme.listbox.item_string = ekg::color(202, 202, 202, 255);
+  dark_pinky_theme.listbox.item_highlight = ekg::color(245, 169, 184, 50);
+  dark_pinky_theme.listbox.item_focused_outline = ekg::color(141, 141, 141, 0);
+  dark_pinky_theme.listbox.item_focused = ekg::color(245, 169, 184, 100);
+  dark_pinky_theme.listbox.line_separator = ekg::color(141, 141, 141, 100);
+  dark_pinky_theme.listbox.outline = ekg::color(141, 141, 141, 100);
+  dark_pinky_theme.listbox.background = ekg::color(85, 85, 85, 50);
+  dark_pinky_theme.listbox.drag_outline = ekg::color(141, 141, 141, 100);
+  dark_pinky_theme.listbox.drag_background = ekg::color(85, 85, 85, 50);
 
-  this->add(dark_pinky_theme_scheme);
+  this->add(dark_pinky_theme);
 }
 
 void ekg::service::theme::quit() {

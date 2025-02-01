@@ -27,17 +27,17 @@
 
 #include "ekg/ui/properties.hpp"
 
-namespace ekg {
-  enum type {
-    abstract,
-    frame
-  };
-};
-
 namespace ekg::ui {
+  struct states_t {
+  public:
+    bool is_hover {};
+    bool is_absolute {};
+  };
+
   class abstract {
   public:
     ekg::properties_t properties {};
+    ekg::ui::states_t states {};
   public:
 
   };

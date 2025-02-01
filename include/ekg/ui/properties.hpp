@@ -25,12 +25,30 @@
 #ifndef EKG_UI_PROPERTIES_HPP
 #define EKG_UI_PROPERTIES_HPP
 
+#include "ekg/io/memory.hpp"
+
+#include <string>
 #include <vector>
 
 namespace ekg {
+  enum type {
+    abstract,
+    button,
+    checkbox,
+    combobox,
+    frame,
+    label,
+    listbox,
+    menu,
+    popup,
+    scrollbar,
+    slider,
+    textbox
+  };
+
   struct properties_t {
   public:
-    std::string_view tag {};
+    std::string tag {};
     ekg::type type {};
     ekg::id unique_id {};
 

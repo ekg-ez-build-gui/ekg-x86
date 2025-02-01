@@ -240,3 +240,4 @@
 -- Added bitwise op on `io/memory.hpp` template.
 -- Added properties overload operator for casting widget and descriptor.
 -- Refactored and optimized input-service with addressed input bind without useless hash queries.
+-- New individual-theme-scheme system for service theme.
