@@ -28,7 +28,7 @@
 #include <vector>
 #include <iostream>
 
-#include "ekg/util/geometry.hpp"
+#include "ekg/geometry/geometry.hpp"
 #include "ekg/gpu/api.hpp"
 
 #define ekg_draw_assert_scissor() if (ekg::gpu::allocator::is_out_of_scissor) { return;  }

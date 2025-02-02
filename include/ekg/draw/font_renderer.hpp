@@ -78,8 +78,7 @@ namespace ekg::draw {
     uint32_t font_size {};
     ekg::gpu::sampler_t sampler_texture {};
 
-    int32_t full_width {};
-    int32_t full_height {};
+    ekg::rect<int32_t> atlas_rect {};
 
     float offset_text_height {};
     float text_height {};

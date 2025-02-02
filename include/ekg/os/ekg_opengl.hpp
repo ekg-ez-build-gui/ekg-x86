@@ -45,7 +45,7 @@
 #define EKG_ENABLE_TEXTURE_PROTECTED 1
 #define EKG_ENABLE_TEXTURE 2
 
-namespace ekg::os {
+namespace ekg {
   enum class opengl_version {
     es,
     core_profile
@@ -95,39 +95,35 @@ namespace ekg::os {
     void re_alloc_geometry_resources(const float *p_data, uint64_t size) override;
     
     void draw(
-      ekg::gpu::data_t *p_gpu_data,
+      ekg::gpu_data_t *p_gpu_data,
       uint64_t loaded_gpu_data_size
     ) override;
 
-    uint64_t allocate_sampler(
-      const ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
+    ekg::flags_t allocate_sampler(
+      ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
       ekg::gpu::sampler_t *p_sampler
     ) override;
 
-    uint64_t fill_sampler(
-      const ekg::gpu::sampler_fill_info *sampler_fill_info,
+    ekg::flags_t fill_sampler(
+      ekg::gpu::sampler_fill_info *sampler_fill_info,
       ekg::gpu::sampler_t *p_sampler
     ) override;
 
-    uint64_t generate_font_atlas(
-      ekg::gpu::sampler_t *p_sampler,
+    ekg::flags_t generate_font_atlas(
+      ekg::sampler_t *p_sampler,
       ekg::draw::font_face_t *p_font_face_text,
       ekg::draw::font_face_t *p_font_face_emoji,
-      int32_t atlas_width,
-      int32_t atlas_height,
-      std::vector<char32_t> &loaded_sampler_generate_list,
-      std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_glyph_char_data,
+      ekg::draw::font_face_t *p_font_face_kanjis,
+      ekg::rect<int32_t> &atlas_rect,
+      std::vector<char32_t> &char_to_gen_sampler_list,
+      std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
       float &non_swizzlable_range
     ) override;
 
-    uint64_t bind_sampler(ekg::gpu::sampler_t *p_sampler) override;
+    ekg::flags_t bind_sampler(
+      ekg::gpu::sampler_t *p_sampler
+    ) override;
   };
-
-  /**
-   * Return the current GPU API used as OpenGL.\n
-   * Note: Using this function in incompatible rendering context causes problems.
-   **/
-  ekg::os::opengl *get_opengl();
 }
 
 #endif

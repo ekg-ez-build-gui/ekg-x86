@@ -22,22 +22,20 @@
  * SOFTWARE.
  */
 
-#ifndef UI_BUTTON_WIDGET_H
-#define UI_BUTTON_WIDGET_H
+#ifndef EKG_UI_BUTTON_WIDGET_H
+#define EKG_UI_BUTTON_WIDGET_H
 
-#include "ekg/ui/abstract/ui_abstract_widget.hpp"
+#include "ekg/ui/abstract.hpp"
 #include "ekg/ui/display.hpp"
 
 namespace ekg::ui {
-  class button_widget : public ekg::ui::abstract_widget {
+  class button : public ekg::ui::abstract {
   public:
-    ekg::rect rect_text {};
+    ekg::rect_t<float> text_rect {};
   public:
     void on_reload() override;
-
-    void on_event(ekg::os::io_event_serial &io_event_serial) override;
-
-    void on_draw_refresh() override;
+    void on_event() override;
+    void on_draw() override;
   };
 }
 

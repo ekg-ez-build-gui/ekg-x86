@@ -29,6 +29,8 @@
 #include FT_FREETYPE_H
 #include <cstdint>
 
+// TODO: ref all and make like a diff way
+
 namespace ekg::draw {
   struct glyph_char_t {
   public:
@@ -52,7 +54,7 @@ namespace ekg::draw {
     FT_Vector highest_glyph_size {};
   };
 
-  bool reload_font_face(
+  ekg::flags_t reload_font_face(
     ekg::draw::font_face_t *p_font_face,
     bool font_size_changed,
     uint32_t font_size

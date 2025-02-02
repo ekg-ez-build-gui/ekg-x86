@@ -32,7 +32,7 @@ namespace ekg::io {
   t *new_widget_instance() {
     return dynamic_cast<t*>(
       ekg::core->emplace_back_new_widget_safety(
-        dynamic_cast<abstract*>(new t {})
+        dynamic_cast<ekg::ui::abstract*>(new t {})
       ).get()
     );
   }

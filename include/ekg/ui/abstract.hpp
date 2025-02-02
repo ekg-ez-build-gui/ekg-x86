@@ -26,20 +26,51 @@
 #define EKG_UI_ABSTRACT_HPP
 
 #include "ekg/ui/properties.hpp"
+#include "ekg/math/geometry.hpp"
 
 namespace ekg::ui {
   struct states_t {
   public:
+    /**
+     * Generic use-case reserved
+     **/
+    bool is[4] {};
+
     bool is_hover {};
+    bool is_active {};
     bool is_absolute {};
+    bool is_highlighting {};
+    bool is_focusing {};
+    bool is_scrolling {};
+    bool is_high_frequency {};
+    bool is_targeting_absolute_parent {};
+    
+    bool was_reloaded {};
+    bool was_layout_docknized {};
+    bool was_just_created {};
   };
 
   class abstract {
   public:
     ekg::properties_t properties {};
     ekg::ui::states_t states {};
-  public:
 
+    ekg::rect_t<float> rect {};
+    ekg::vec4_t<float> *p_scroll_vec {};
+    ekg::rect_t<float> *p_parent_rect {};
+
+    ekg::vec2_t<float> min_size {};
+  public:
+    ekg::rect_t<float> &get_abs_rect();
+  public:
+    virtual void on_create();
+    virtual void on_destroy();
+    virtual void on_reload();
+    virtual void on_pre_event();
+    virtual void on_event();
+    virtual void on_post_event();
+    virtual void on_update();
+    virtual void on_draw();
   };
 }
 

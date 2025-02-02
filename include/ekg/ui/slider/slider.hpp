@@ -6,14 +6,14 @@
 namespace ekg {
   struct slider_theme_t {
   public:
-    ekg::vec4<float> background {};
-    ekg::vec4<float> bar_background {};
-    ekg::vec4<float> string {};
-    ekg::vec4<float> outline {};
-    ekg::vec4<float> activity {};
-    ekg::vec4<float> activity_bar {};
-    ekg::vec4<float> bar_outline {};
-    ekg::vec4<float> highlight {};
+    ekg::vec4_t<float> background {};
+    ekg::vec4_t<float> bar_background {};
+    ekg::vec4_t<float> string {};
+    ekg::vec4_t<float> outline {};
+    ekg::vec4_t<float> activity {};
+    ekg::vec4_t<float> activity_bar {};
+    ekg::vec4_t<float> bar_outline {};
+    ekg::vec4_t<float> highlight {};
     int32_t bar_thickness {};
     int32_t target_thickness {};
   };

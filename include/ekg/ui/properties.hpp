@@ -50,7 +50,7 @@ namespace ekg {
   public:
     std::string tag {};
     ekg::type type {};
-    ekg::id unique_id {};
+    ekg::id_t unique_id {};
 
     void *p_descriptor {};
     void *p_widget {};

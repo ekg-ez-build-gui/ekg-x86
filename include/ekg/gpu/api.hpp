@@ -31,115 +31,67 @@
 #include <vector>
 #include <unordered_map>
 
-#include "ekg/util/geometry.hpp"
+#include "ekg/math/geometry.hpp"
 #include "ekg/draw/typography.hpp"
+#include "ekg/io/gpu.hpp"
 
-#define ekg_ok 0
-#define ekg_failed 1
+namespace ekg::gpu {
+  class api {
+  protected:
+    std::string_view rendering_shader_fragment_source {};
+    float projection_matrix[16] {};
+  public:
+    ekg::rect_t<float> viewport {};
+  public:
+    void set_rendering_shader_fragment_source(std::string_view source);
+  public:
+    virtual void log_vendor_details() {};
+    virtual void init() {};
+    virtual void quit() {};
+    virtual void invoke_pipeline() {};
+    virtual void revoke_pipeline() {};
+    virtual void pre_re_alloc() {};
 
-namespace ekg {
-  enum class api {
-    vulkan, opengl
+    virtual void update_viewport(
+      int32_t w,
+      int32_t h
+    ) {};
+    
+    virtual void re_alloc_geometry_resources(
+      const float *p_data,
+      uint64_t size
+    ) {};
+
+    virtual void draw(
+      ekg::io::gpu_data_t *p_gpu_data,
+      uint64_t loaded_gpu_data_size
+    ) {};
+
+    virtual ekg::flags_t gen_font_atlas_and_map_glyph(
+      ekg::sampler_t *p_sampler,
+      ekg::draw::font_face_t *p_font_face_text,
+      ekg::draw::font_face_t *p_font_face_emoji,
+      ekg::draw::font_face_t *p_font_face_kanjis,
+      ekg::rect<int32_t> &atlas_rect,
+      std::vector<char32_t> &char_to_gen_sampler_list,
+      std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
+      float &non_swizzlable_range
+    ) { return ekg::result::not_implemented; };
+
+    virtual ekg::flags_t allocate_sampler(
+      ekg::sampler_allocate_info_t *p_sampler_allocate_info,
+      ekg::sampler_t *p_sampler
+    )  { return ekg::result::not_implemented; }
+
+    virtual ekg::flags_t fill_sampler(
+      ekg::sampler_fill_info_t *p_sampler_fill_info,
+      ekg::sampler_t *p_sampler
+    ) { return ekg::result::not_implemented; };
+
+    virtual ekg::flags_t bind_sampler(
+      ekg::sampler_t *p_sampler
+    ) { return ekg::result::not_implemented; };
   };
-  
-  namespace gpu {
-    struct sampler_info {
-    public:
-      const char *p_tag {};
-      int32_t offset[2] {};
-      int32_t w {};
-      int32_t h {};
-      int32_t gl_parameter_filter[2] {};
-      int32_t gl_wrap_modes[2] {};
-      int32_t gl_internal_format {};
-      uint32_t gl_format {};
-      uint32_t gl_type {};
-      bool gl_unpack_alignment {};
-      bool gl_generate_mipmap {};
-      void *p_data {};
-    };
-
-    typedef sampler_info sampler_allocate_info;
-    typedef sampler_info sampler_fill_info;
-
-    struct sampler_t {
-    public:
-      const char *p_tag {};
-      uint32_t w {};
-      uint32_t h {};
-      uint32_t channel {};
-      uint32_t gl_id {};
-      int8_t gl_protected_active_index {-1};
-    };
-
-    struct data_t {
-    public:
-      float buffer_content[12] {};
-      int32_t sampler_index {-1};
-      int8_t line_thickness {};
-      int32_t begin_stride {};
-      int32_t end_stride {};
-      int32_t factor {};
-      int32_t scissor_id {-1};
-    };
-
-    class api {
-    protected:
-      std::string_view rendering_shader_fragment_source {};
-    public:
-      static float projection[16];
-      static float viewport[4];
-    public:
-      void set_rendering_shader_fragment_source(std::string_view source);
-    public:
-      virtual void log_vendor_details() {};
-      virtual void init() {};
-      virtual void quit() {};
-      virtual void invoke_pipeline() {};
-      virtual void revoke_pipeline() {};
-      virtual void pre_re_alloc() {};
-      virtual void update_viewport(int32_t w, int32_t h) {};
-      virtual void re_alloc_geometry_resources(const float *p_data, uint64_t size) {};
-
-      virtual void draw(
-        ekg::gpu::data_t *p_gpu_data,
-        uint64_t loaded_gpu_data_size
-      ) {};
-
-      virtual uint64_t allocate_sampler(
-        const ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
-        ekg::gpu::sampler_t *p_sampler
-      )  { return ekg_ok; }
-
-      virtual uint64_t fill_sampler(
-        const ekg::gpu::sampler_fill_info *p_sampler_fill_info,
-        ekg::gpu::sampler_t *p_sampler
-      ) { return ekg_ok; };
-
-      virtual uint64_t generate_font_atlas(
-        ekg::gpu::sampler_t *p_sampler,
-        ekg::draw::font_face_t *p_font_face_text,
-        ekg::draw::font_face_t *p_font_face_emoji,
-        int32_t w,
-        int32_t h,
-        std::vector<char32_t> &loaded_sampler_generate_list,
-        std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_glyph_char_data,
-        float &non_swizzlable_range
-      ) { return ekg_ok; };
-
-      virtual uint64_t bind_sampler(ekg::gpu::sampler_t *p_sampler) { return ekg_ok; };
-    };
-  }
-
-  uint64_t allocate_sampler(
-    const ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
-    ekg::gpu::sampler_t *p_sampler
-  );
-
-  uint64_t fill_sampler(
-    const ekg::gpu::sampler_fill_info *p_sampler_fill_info,
-    ekg::gpu::sampler_t *p_sampler
-  );
 }
 
 #endif

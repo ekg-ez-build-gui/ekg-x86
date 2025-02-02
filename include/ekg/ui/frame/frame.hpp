@@ -6,9 +6,9 @@
 namespace ekg {
   struct frame_theme_t {
   public:
-    ekg::vec4<float> background {};
-    ekg::vec4<float> border {};
-    ekg::vec4<float> outline {};
+    ekg::vec4_t<float> background {};
+    ekg::vec4_t<float> border {};
+    ekg::vec4_t<float> outline {};
     int32_t activity_offset {};
   };
 

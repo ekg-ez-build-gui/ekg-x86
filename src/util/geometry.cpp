@@ -95,7 +95,13 @@ uint64_t ekg::get_index_by_normalized_scroll(float normalized, uint64_t size) {
   return static_cast<uint64_t>(normalized * size);
 }
 
-void ekg::ortho(float *p_matrix, float left, float right, float bottom, float top) {
+void ekg::ortho(
+  float *p_matrix,
+  float left,
+  float right,
+  float bottom,
+  float top
+) {
   const float depth_near = -1.0f;
   const float depth_far = 1.0f;
   const float depth_inv = 1.0f / (depth_far - depth_near);

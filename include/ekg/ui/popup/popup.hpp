@@ -6,11 +6,11 @@
 namespace ekg {
   struct popup_theme_t {
   public:
-    ekg::vec4<float> background {};
-    ekg::vec4<float> string {};
-    ekg::vec4<float> outline {};
-    ekg::vec4<float> highlight {};
-    ekg::vec4<float> separator {};
+    ekg::vec4_t<float> background {};
+    ekg::vec4_t<float> string {};
+    ekg::vec4_t<float> outline {};
+    ekg::vec4_t<float> highlight {};
+    ekg::vec4_t<float> separator {};
     int64_t drop_animation_delay {};
   };
 

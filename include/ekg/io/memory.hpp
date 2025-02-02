@@ -30,14 +30,17 @@
 
 #define ekg_static_cast_to_any_as_ptr(t, any) static_cast<t*>((void*)&any)
 
+#include <cstdint>
+
 namespace ekg {
   typedef uint64_t id_t;
   typedef uint64_t flags_t;
 
-  enum result_type {
+  enum result {
     success           = 2 << 1,
     failed            = 2 << 2,
-    widget_not_found  = 2 << 3
+    widget_not_found  = 2 << 3,
+    not_implemented   = 2 << 4
   };
 
   template<typename t>
@@ -50,6 +53,46 @@ namespace ekg {
     bits = bits & ~(bit);
     return bits & bit;
   }
+
+  template<typename t>
+  class value {
+  protected:
+    t cache {};
+    t *p_address {};
+  public:
+    value(t *p_address) {
+      this->p_address = p_address;
+    }
+
+    value(t value) {
+      this->p_address = nullptr;
+      this->cache = value;
+    }
+
+    void move(t *p_address) {
+      this->p_address = p_address;
+    }
+
+    t &get_value() {
+      return (
+        this->p_address
+        ? 
+        /**
+         *
+         * idk idc i want
+         * todo: add useless comment soon
+         *
+         **/
+        *this->p_address
+        :
+        this->cache;
+      );
+    }
+
+    operator t() {
+      return this->get_value();
+    }
+  };
 }
 
 enum ekg::io {

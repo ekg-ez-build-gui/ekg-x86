@@ -9,7 +9,7 @@
 #include <iostream>
 #include <regex>
 
-ekg::os::opengl::opengl(std::string_view set_glsl_version) {
+ekg::opengl::opengl(std::string_view set_glsl_version) {
   if (set_glsl_version.empty()) {
     ekg::log() << "[GPU][API] not viable glsl version, empty, must: 330 higher for core-profile or 300 higher for ES";
     return;
@@ -47,11 +47,11 @@ ekg::os::opengl::opengl(std::string_view set_glsl_version) {
   this->glsl_version = set_glsl_version;
 }
 
-void ekg::os::opengl::log_vendor_details() {
+void ekg::opengl::log_vendor_details() {
   ekg::log() << glGetString(GL_VENDOR);
 }
 
-void ekg::os::opengl::init() {
+void ekg::opengl::init() {
   std::string no_view_glsl_version {
     this->glsl_version
   };
@@ -123,40 +123,35 @@ void ekg::os::opengl::init() {
   ekg::log() << "GPU shaders, pipeline program, and uniforms done";
 }
 
-void ekg::os::opengl::quit() {
+void ekg::opengl::quit() {
 
 }
 
-void ekg::os::opengl::pre_re_alloc() {
+void ekg::opengl::pre_re_alloc() {
   this->protected_texture_active_index = 0;
 }
 
-void ekg::os::opengl::update_viewport(int32_t w, int32_t h) {
-  ekg::gpu::api::viewport[0] = 0.0f;
-  ekg::gpu::api::viewport[1] = 0.0f;
-  ekg::gpu::api::viewport[2] = static_cast<float>(w);
-  ekg::gpu::api::viewport[3] = static_cast<float>(h);
-
-  ekg::ui::viewport.x = ekg::gpu::api::viewport[0];
-  ekg::ui::viewport.y = ekg::gpu::api::viewport[1];
-  ekg::ui::viewport.w = ekg::gpu::api::viewport[2];
-  ekg::ui::viewport.h = ekg::gpu::api::viewport[3];
+void ekg::opengl::update_viewport(int32_t w, int32_t h) {
+  this->viewport.x = 0.0f;
+  this->viewport.y = 0.0f;
+  this->viewport.w = static_cast<float>(w);
+  this->viewport.h = static_cast<float>(h);
 
   ekg::ortho(
-    ekg::gpu::api::projection,
+    this->projection_matrix,
     0,
-    ekg::gpu::api::viewport[2],
-    ekg::gpu::api::viewport[3],
+    this->viewport.w,
+    this->viewport.h,
     0
   );
 
   glUseProgram(this->pipeline_program);
-  glUniformMatrix4fv(this->uniform_projection, GL_TRUE, 0, ekg::gpu::api::projection);
-  glUniform1f(this->uniform_viewport_height, ekg::gpu::api::viewport[3]);
+  glUniformMatrix4fv(this->uniform_projection, GL_TRUE, 0, this->projection_matrix);
+  glUniform1f(this->uniform_viewport_height, this->viewport.h);
   glUseProgram(0);
 }
 
-bool ekg::os::opengl::create_pipeline_program(uint32_t &program, const std::unordered_map<std::string_view, uint32_t> &resources) {
+bool ekg::opengl::create_pipeline_program(uint32_t &program, const std::unordered_map<std::string_view, uint32_t> &resources) {
   if (resources.empty()) {
     ekg::log() << "Error: Invalid shader, empty resources";
     return true;
@@ -211,7 +206,7 @@ bool ekg::os::opengl::create_pipeline_program(uint32_t &program, const std::unor
   return false;
 }
 
-void ekg::os::opengl::re_alloc_geometry_resources(
+void ekg::opengl::re_alloc_geometry_resources(
   const float *p_data,
   uint64_t size
 ) {
@@ -228,12 +223,12 @@ void ekg::os::opengl::re_alloc_geometry_resources(
   glBindVertexArray(0);
 }
 
-uint64_t ekg::os::opengl::allocate_sampler(
-  const ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
-  ekg::gpu::sampler_t *p_sampler
+ekg::flags_t ekg::opengl::allocate_sampler(
+  ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
+  ekg::sampler_t *p_sampler
 ) {
   if (p_sampler == nullptr) {
-    return ekg_failed;
+    return ekg::result::failed;
   }
 
   if (!p_sampler->gl_id) {
@@ -287,15 +282,15 @@ uint64_t ekg::os::opengl::allocate_sampler(
   glBindTexture(GL_TEXTURE_2D, 0);
 
   p_sampler->p_tag = p_sampler_allocate_info->p_tag;
-  return ekg_ok;
+  return ekg::result::success;
 }
 
-uint64_t ekg::os::opengl::fill_sampler(
-  const ekg::gpu::sampler_fill_info *p_sampler_fill_info,
-  ekg::gpu::sampler_t *p_sampler
+ekg::flags_t ekg::opengl::fill_sampler(
+  ekg::gpu::sampler_fill_info *p_sampler_fill_info,
+  ekg::sampler_t *p_sampler
 ) {
   if (p_sampler == nullptr || !p_sampler->gl_id) {
-    return ekg_failed;
+    return ekg::result::failed;
   }
 
   glBindTexture(
@@ -316,17 +311,17 @@ uint64_t ekg::os::opengl::fill_sampler(
   );
 
   glBindTexture(GL_TEXTURE_2D, 0);
-  return ekg_ok;
+  return ekg::result::success;
 }
 
-uint64_t ekg::os::opengl::generate_font_atlas(
-  ekg::gpu::sampler_t *p_sampler,
+ekg::flags_t ekg::opengl::generate_font_atlas(
+  ekg::sampler_t *p_sampler,
   ekg::draw::font_face_t *p_font_face_text,
   ekg::draw::font_face_t *p_font_face_emoji,
-  int32_t atlas_width,
-  int32_t atlas_height,
-  std::vector<char32_t> &loaded_sampler_generate_list,
-  std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_glyph_char_data,
+  ekg::draw::font_face_t *p_font_face_kanjis,
+  ekg::rect<int32_t> &atlas_rect,
+  std::vector<char32_t> &char_to_gen_sampler_list,
+  std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
   float &non_swizzlable_range
 ) {
   FT_Vector highest_glyph_size {
@@ -349,7 +344,7 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   };
 
   bool is_current_opengl_version_gl_es {
-    this->opengl_version == ekg::os::opengl_version::es
+    this->opengl_version == ekg::opengl_version::es
   };
 
   std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
@@ -384,8 +379,8 @@ uint64_t ekg::os::opengl::generate_font_atlas(
     GL_TEXTURE_2D,
     0,
     GL_RGBA,
-    atlas_width,
-    atlas_height,
+    atlas_rect.w,
+    atlas_rect.h,
     0,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
@@ -396,10 +391,10 @@ uint64_t ekg::os::opengl::generate_font_atlas(
   FT_Face ft_face {};
   FT_Vector char_size {};
 
-  ekg::flags flags {};
+  ekg::flags_t flags {};
   float offset {};
 
-  for (char32_t &char32 : loaded_sampler_generate_list) {
+  for (char32_t &char32 : p_loaded_sampler_generate_list) {
     switch (char32 < 256 || !p_font_face_emoji->font_face_loaded) {
       case true: {
         ft_face = p_font_face_text->ft_face;
@@ -429,7 +424,7 @@ uint64_t ekg::os::opengl::generate_font_atlas(
     if (
         is_current_opengl_version_gl_es
         &&
-        !ekg_bitwise_contains(flags, FT_LOAD_COLOR)
+        !ekg::has(flags, FT_LOAD_COLOR)
       ) {
 
       const unsigned char *p_src_copy {
@@ -462,7 +457,7 @@ uint64_t ekg::os::opengl::generate_font_atlas(
       static_cast<GLsizei>(char_data.w),
       static_cast<GLsizei>(char_data.h),
       (
-        ekg_bitwise_contains(flags, FT_LOAD_COLOR) ? GL_BGRA : sub_image_format
+        ekg::has(flags, FT_LOAD_COLOR) ? GL_BGRA : sub_image_format
       ),
       GL_UNSIGNED_BYTE,
       p_current_image_buffer
@@ -478,13 +473,13 @@ uint64_t ekg::os::opengl::generate_font_atlas(
     non_swizzlable_range / static_cast<float>(atlas_width)
   );
 
-  return ekg_ok;
+  return ekg::result::success;
 }
 
-uint64_t ekg::os::opengl::bind_sampler(ekg::gpu::sampler_t *p_sampler) {
+ekg::flags_t ekg::opengl::bind_sampler(ekg::sampler_t *p_sampler) {
   uint64_t size {this->bound_sampler_list.size()};
   for (uint64_t it {}; it < this->bound_sampler_list.size(); it++) {
-    ekg::gpu::sampler_t *p_in_list_sampler {this->bound_sampler_list.at(it)};
+    ekg::sampler_t *p_in_list_sampler {this->bound_sampler_list.at(it)};
     if (p_in_list_sampler->gl_id == p_sampler->gl_id) {
       return it;
     }
@@ -498,7 +493,7 @@ uint64_t ekg::os::opengl::bind_sampler(ekg::gpu::sampler_t *p_sampler) {
   return size;
 }
 
-void ekg::os::opengl::draw(
+void ekg::opengl::draw(
   ekg::gpu::data_t *p_gpu_data,
   uint64_t loaded_gpu_data_size
 ) {
@@ -515,7 +510,7 @@ void ekg::os::opengl::draw(
    * this reason the active index only increase
    * when THIS is a protected sampler.
    **/
-  for (ekg::gpu::sampler_t *&p_sampler : this->bound_sampler_list) {
+  for (ekg::sampler_t *&p_sampler : this->bound_sampler_list) {
     if (p_sampler->gl_protected_active_index == -1) continue;
 
     glActiveTexture(
@@ -534,14 +529,17 @@ void ekg::os::opengl::draw(
     ekg::gpu::data_t &data {p_gpu_data[it]};
     sampler_going_on = data.sampler_index > -1;
 
-    if (sampler_going_on &&
+    if (
+        sampler_going_on
+        &&
         (
-          previous_sampler_bound != data.sampler_index ||
+          previous_sampler_bound != data.sampler_index
+          ||
           !ekg_is_sampler_protected(this->bound_sampler_list.at(data.sampler_index)->gl_protected_active_index)
         )
       ) {
 
-      ekg::gpu::sampler_t *&p_sampler {
+      ekg::sampler_t *&p_sampler {
         this->bound_sampler_list.at(data.sampler_index)
       };
 
@@ -594,6 +592,6 @@ void ekg::os::opengl::draw(
   glUseProgram(0);
 }
 
-ekg::os::opengl *ekg::os::get_opengl() {
-  return static_cast<ekg::os::opengl*>(ekg::core->p_gpu_api);
+ekg::opengl *ekg::os::get_opengl() {
+  return static_cast<ekg::opengl*>(ekg::core->p_gpu_api);
 }
