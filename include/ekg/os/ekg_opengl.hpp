@@ -109,7 +109,7 @@ namespace ekg {
       ekg::gpu::sampler_t *p_sampler
     ) override;
 
-    ekg::flags_t generate_font_atlas(
+    ekg::flags_t gen_font_atlas_and_map_glyph(
       ekg::sampler_t *p_sampler,
       ekg::draw::font_face_t *p_font_face_text,
       ekg::draw::font_face_t *p_font_face_emoji,

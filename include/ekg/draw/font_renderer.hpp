@@ -64,41 +64,39 @@ if (!char_data.was_sampled) { \
 #define ekg_generate_factor_hash(axis, c32, char_data_x) static_cast<int32_t>(axis + c32 + char_data_x * 100)
 
 namespace ekg::draw {
+  enum font_face_type {
+    text,
+    emojis,
+    kanjis
+  };
+
   class font_renderer {
   public:
     static FT_Library ft_library;
   public:
-    ekg::draw::font_face_t font_face_text {};
-    ekg::draw::font_face_t font_face_emoji {};
+    std::vector<char32_t> loaded_sampler_generate_list {};
+    uint64_t last_sampler_generate_list_size {};
 
-    FT_Bool ft_bool_kerning {};
-    FT_UInt ft_uint_previous {};
+    std::unordered_map<char32_t, ekg::draw::glyph_char_t> mapped_glyph_char_data {};
+    std::array<ekg::draw::font_face_t, 3> faces {};
 
-    std::string_view font_path {};
+    ekg::sampler_t atlas_texture_sampler {};
+    ekg::rect_t<int32_t> atlas_rect {};
+
     uint32_t font_size {};
-    ekg::gpu::sampler_t sampler_texture {};
-
-    ekg::rect<int32_t> atlas_rect {};
-
-    float offset_text_height {};
     float text_height {};
     float non_swizzlable_range {};
+    FT_Bool ft_bool_kerning {};
 
-    bool flag_unloaded {};
-    bool flag_first_time {true};
-    bool font_face_changed {};
     bool font_size_changed {};
     bool was_initialized {};
 
     ekg::gpu::allocator *p_allocator {};
-    std::unordered_map<char32_t, ekg::draw::glyph_char_t> mapped_glyph_char_data {};
-    std::vector<char32_t> loaded_sampler_generate_list {};
-    uint64_t last_sampler_generate_list_size {};
   public:
     /**
-     * Return the sampler atlas font.
+     * Return the sampler atlas with all font(s) combined.
      */
-    ekg::gpu::sampler_t *get_sampler_texture();
+    ekg::sampler_t *get_atlas_texture_sampler();
 
     /**
      * Return the text width.

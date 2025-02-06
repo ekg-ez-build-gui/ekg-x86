@@ -1615,7 +1615,7 @@ int32_t laboratory_testing() {
       ekg::action::activity
     );
 
-  ekg::scrollbar("shout fofo maravilhoso");
+  ekg::scrollbar("fofo maravilhoso");
   ekg::pop_group();
 
   */

@@ -314,30 +314,43 @@ ekg::flags_t ekg::opengl::fill_sampler(
   return ekg::result::success;
 }
 
-ekg::flags_t ekg::opengl::generate_font_atlas(
+ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   ekg::sampler_t *p_sampler,
   ekg::draw::font_face_t *p_font_face_text,
   ekg::draw::font_face_t *p_font_face_emoji,
   ekg::draw::font_face_t *p_font_face_kanjis,
-  ekg::rect<int32_t> &atlas_rect,
+  ekg::rect_t<int32_t> &atlas_rect,
   std::vector<char32_t> &char_to_gen_sampler_list,
   std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
   float &non_swizzlable_range
 ) {
-  FT_Vector highest_glyph_size {
-    (
-      p_font_face_text->highest_glyph_size.x
-      *
-      p_font_face_text->highest_glyph_size.y
-    )
-    >
-    (
-      p_font_face_emoji->highest_glyph_size.x
-      *
-      p_font_face_emoji->highest_glyph_size.y
-    )
-    ? (p_font_face_text->highest_glyph_size) : (p_font_face_emoji->highest_glyph_size)
+  constexpr enum_count_font_face_type {3};
+  ekg::draw::font_face_t *faces[3] {
+    p_font_face_text,
+    p_font_face_emoji,
+    p_font_face_kanjis
   };
+
+  float highest_square {};
+  float square {};
+  FT_Vector highest_glyph_size {};
+
+  for (size_t it {}; it < 3; it++) {
+    ekg::draw::font_face_t *&p_font_face {
+      faces[it]
+    };
+
+    square = (
+      p_font_face->highest_glyph_size.x
+      *
+      p_font_face->highest_glyph_size.y
+    );
+    
+    if (square > highest_square) {
+      highest_square = square;
+      highest_glyph_size = p_font_face_emoji->highest_glyph_size;
+    } 
+  }
 
   GLint sub_image_format {
     GL_RED

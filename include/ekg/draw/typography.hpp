@@ -49,14 +49,14 @@ namespace ekg::draw {
     FT_Face ft_face {};
     FT_GlyphSlot ft_glyph_slot {};
     std::string font_path {};
-    bool font_face_changed {};
-    bool font_face_loaded {};
+    bool was_changed {};
+    bool was_loaded {};
     FT_Vector highest_glyph_size {};
   };
 
   ekg::flags_t reload_font_face(
     ekg::draw::font_face_t *p_font_face,
-    bool font_size_changed,
+    bool was_size_changed,
     uint32_t font_size
   );
 }

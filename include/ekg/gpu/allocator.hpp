@@ -59,7 +59,7 @@ namespace ekg::gpu {
     bool factor_changed {};
     bool simple_shape {};
     bool out_of_scissor_rect {};
-    ekg::rect scissor_instance {};
+    ekg::rect_t<float> scissor_instance {};
   public:
     /*
      * Init gpu allocator.
@@ -94,7 +94,7 @@ namespace ekg::gpu {
     /*
      * Bind texture for send in data.
      */
-    void bind_texture(ekg::gpu::sampler_t *p_sampler);
+    void bind_texture(ekg::sampler_t *p_sampler);
 
     /*
      * Insert geometry positions here:

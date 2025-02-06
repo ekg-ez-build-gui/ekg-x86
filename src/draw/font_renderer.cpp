@@ -29,12 +29,12 @@
 
 FT_Library ekg::draw::font_renderer::ft_library {};
 
-ekg::gpu::sampler_t *ekg::draw::font_renderer::get_sampler_texture() {
+ekg::gpu::sampler_t *ekg::draw::font_renderer::get_atlas_texture_sampler() {
   return &this->sampler_texture;
 }
 
 float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &lines) {
-  if (text.empty() || (!this->font_face_text.font_face_loaded && !this->font_face_emoji.font_face_loaded)) {
+  if (text.empty() || (!this->faces[ekg::draw::font_face_type::text].was_loaded && !this->faces[ekg::draw::font_face_type::emojis].was_loaded)) {
     return 0.0f;
   }
 
@@ -68,16 +68,16 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
       continue;
     }
 
-    switch (char32 < 256 || !this->font_face_emoji.font_face_loaded) {
+    switch (char32 < 256 || !this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
       case true: {
-        ft_face = this->font_face_text.ft_face;
-        ft_glyph_slot = this->font_face_text.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::text].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::text].ft_face->glyph;
         break;
       }
 
       default: {
-        ft_face = this->font_face_emoji.ft_face;
-        ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::emojis].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::emojis].ft_face->glyph;
         break;
       }
     }
@@ -101,7 +101,7 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text, int32_t &l
 }
 
 float ekg::draw::font_renderer::get_text_width(std::string_view text) {
-  if (text.empty() || (!this->font_face_text.font_face_loaded && !this->font_face_emoji.font_face_loaded)) {
+  if (text.empty() || (!this->faces[ekg::draw::font_face_type::text].was_loaded && !this->faces[ekg::draw::font_face_type::emojis].was_loaded)) {
     return 0.0f;
   }
 
@@ -133,16 +133,16 @@ float ekg::draw::font_renderer::get_text_width(std::string_view text) {
       continue;
     }
 
-    switch (char32 < 256 || !this->font_face_emoji.font_face_loaded) {
+    switch (char32 < 256 || !this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
       case true: {
-        ft_face = this->font_face_text.ft_face;
-        ft_glyph_slot = this->font_face_text.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::text].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::text].ft_face->glyph;
         break;
       }
 
       default: {
-        ft_face = this->font_face_emoji.ft_face;
-        ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::emojis].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::emojis].ft_face->glyph;
         break;
       }
     }
@@ -168,17 +168,17 @@ float ekg::draw::font_renderer::get_text_height() {
 }
 
 void ekg::draw::font_renderer::set_font(std::string_view path) {
-  if (!path.empty() && this->font_face_text.font_path != path) {
-    this->font_face_text.font_path = path;
-    this->font_face_text.font_face_changed = true;
+  if (!path.empty() && this->faces[ekg::draw::font_face_type::text].font_path != path) {
+    this->faces[ekg::draw::font_face_type::text].font_path = path;
+    this->faces[ekg::draw::font_face_type::text].was_changed = true;
     this->reload();
   }
 }
 
 void ekg::draw::font_renderer::set_font_emoji(std::string_view path) {
-  if (!path.empty() && this->font_face_emoji.font_path != path) {
-    this->font_face_emoji.font_path = path;
-    this->font_face_emoji.font_face_changed = true;
+  if (!path.empty() && this->faces[ekg::draw::font_face_type::emojis].font_path != path) {
+    this->faces[ekg::draw::font_face_type::emojis].font_path = path;
+    this->faces[ekg::draw::font_face_type::emojis].was_changed = true;
     this->reload();
   }
 }
@@ -192,40 +192,40 @@ void ekg::draw::font_renderer::set_size(uint32_t size) {
 }
 
 void ekg::draw::font_renderer::reload() {
-  if (this->font_size == 0 || (this->font_face_text.font_path.empty() && this->font_face_emoji.font_path.empty())) {
+  if (this->font_size == 0 || (this->faces[ekg::draw::font_face_type::text].font_path.empty() && this->faces[ekg::draw::font_face_type::emojis].font_path.empty())) {
     return;
   }
 
   if (
       (
-        !this->font_face_text.font_path.empty()
+        !this->faces[ekg::draw::font_face_type::text].font_path.empty()
         &&
-        ekg::draw::reload_font_face(&this->font_face_text, this->font_size_changed, this->font_size)
+        ekg::draw::reload_font_face(&this->faces[ekg::draw::font_face_type::text], this->font_size_changed, this->font_size)
       )
       ||
       (
-        !this->font_face_emoji.font_path.empty()
+        !this->faces[ekg::draw::font_face_type::emojis].font_path.empty()
         &&
-        ekg::draw::reload_font_face(&this->font_face_emoji, this->font_size_changed, this->font_size)
+        ekg::draw::reload_font_face(&this->faces[ekg::draw::font_face_type::emojis], this->font_size_changed, this->font_size)
       )
     ) {
-    ekg::log() << "Failed to load font face, text: " << this->font_face_text.font_face_loaded << " , emoji: " << this->font_face_emoji.font_face_loaded;
+    ekg::log() << "Failed to load font face, text: " << this->faces[ekg::draw::font_face_type::text].was_loaded << " , emoji: " << this->faces[ekg::draw::font_face_type::emojis].was_loaded;
     return;
   }
 
   this->font_size_changed = false;
 
-  this->full_width = 0;
-  this->full_height = 0;
+  this->atlas_rect.w = 0;
+  this->atlas_rect.h = 0;
 
-  this->font_face_text.highest_glyph_size = FT_Vector {};
-  this->font_face_emoji.highest_glyph_size = FT_Vector {};
+  this->faces[ekg::draw::font_face_type::text].highest_glyph_size = FT_Vector {};
+  this->faces[ekg::draw::font_face_type::emojis].highest_glyph_size = FT_Vector {};
 
-  this->ft_bool_kerning = FT_HAS_KERNING(this->font_face_text.ft_face);
-  this->font_face_text.ft_glyph_slot = this->font_face_text.ft_face->glyph;
+  this->ft_bool_kerning = FT_HAS_KERNING(this->faces[ekg::draw::font_face_type::text].ft_face);
+  this->faces[ekg::draw::font_face_type::text].ft_glyph_slot = this->faces[ekg::draw::font_face_type::text].ft_face->glyph;
 
-  if (this->font_face_emoji.font_face_loaded) {
-    this->font_face_emoji.ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
+  if (this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
+    this->faces[ekg::draw::font_face_type::emojis].ft_glyph_slot = this->faces[ekg::draw::font_face_type::emojis].ft_face->glyph;
   }
 
   FT_GlyphSlot ft_glyph_slot {};
@@ -235,20 +235,20 @@ void ekg::draw::font_renderer::reload() {
   ekg::draw::font_face_t *p_font_face_picked {};
 
   for (char32_t &char32 : this->loaded_sampler_generate_list) {
-    switch (char32 < 256 || !this->font_face_emoji.font_face_loaded) {
+    switch (char32 < 256 || !this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
       case true: {
-        ft_face = this->font_face_text.ft_face;
-        ft_glyph_slot = this->font_face_text.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::text].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::text].ft_face->glyph;
         flags = FT_LOAD_RENDER;
-        p_font_face_picked = &this->font_face_text;
+        p_font_face_picked = &this->faces[ekg::draw::font_face_type::text];
         break;
       }
 
       default: {
-        ft_face = this->font_face_emoji.ft_face;
-        ft_glyph_slot = this->font_face_emoji.ft_face->glyph;
+        ft_face = this->faces[ekg::draw::font_face_type::emojis].ft_face;
+        ft_glyph_slot = this->faces[ekg::draw::font_face_type::emojis].ft_face->glyph;
         flags = FT_LOAD_RENDER | FT_LOAD_COLOR;
-        p_font_face_picked = &this->font_face_emoji;
+        p_font_face_picked = &this->faces[ekg::draw::font_face_type::emojis];
         break;
       }
     }
@@ -257,7 +257,9 @@ void ekg::draw::font_renderer::reload() {
       continue;
     }
 
-    ekg::draw::glyph_char_t &char_data {this->mapped_glyph_char_data[char32]};
+    ekg::draw::glyph_char_t &char_data {
+      this->mapped_glyph_char_data[char32]
+    };
 
     char_data.w = static_cast<float>(ft_glyph_slot->bitmap.width);
     char_data.h = static_cast<float>(ft_glyph_slot->bitmap.rows);
@@ -266,8 +268,8 @@ void ekg::draw::font_renderer::reload() {
     char_data.top = static_cast<float>(ft_glyph_slot->bitmap_top);
     char_data.wsize = static_cast<float>(static_cast<int32_t>(ft_glyph_slot->advance.x >> 6));
 
-    this->full_width += static_cast<int32_t>(char_data.w);
-    this->full_height = ekg_min(this->full_height, static_cast<int32_t>(char_data.h));
+    this->atlas_rect.w += static_cast<int32_t>(char_data.w);
+    this->atlas_rect.h = ekg_min(this->atlas_rect.h, static_cast<int32_t>(char_data.h));
 
     p_font_face_picked->highest_glyph_size.x = ekg_min(
       p_font_face_picked->highest_glyph_size.x,
@@ -283,12 +285,12 @@ void ekg::draw::font_renderer::reload() {
   this->text_height = static_cast<float>(this->font_size);
   this->offset_text_height = static_cast<int32_t>(this->text_height / 6) / 2;
 
-  ekg::core->p_gpu_api->generate_font_atlas(
+  ekg::core->p_gpu_api->gen_font_atlas_and_map_glyph(
     &this->sampler_texture,
-    &this->font_face_text,
-    &this->font_face_emoji,
-    this->full_width,
-    this->full_height,
+    &this->faces[ekg::draw::font_face_type::text],
+    &this->faces[ekg::draw::font_face_type::emojis],
+    nullptr, // must impl kanjis
+    this->atlas_rect,
     this->loaded_sampler_generate_list,
     this->mapped_glyph_char_data,
     this->non_swizzlable_range
@@ -299,8 +301,13 @@ void ekg::draw::font_renderer::bind_allocator(ekg::gpu::allocator *p_allocator_b
   this->p_allocator = p_allocator_bind;
 }
 
-void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, const ekg::vec4 &color) {
-  if (this->p_allocator == nullptr || this->flag_unloaded || color.w < 0.1f || text.empty()) {
+void ekg::draw::font_renderer::blit(
+  std::string_view text,
+  float x,
+  float y,
+  const ekg::vec4_t<float> &color
+) {
+  if (this->p_allocator == nullptr || color.w < 0.1f || text.empty()) {
     return;
   }
 
@@ -319,8 +326,8 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
   data.buffer_content[6] = color.z;
   data.buffer_content[7] = color.w;
 
-  ekg::rect vertices {};
-  ekg::rect coordinates {};
+  ekg::rect_t<float> vertices {};
+  ekg::rect_t<float> coordinates {};
 
   x = 0.0f;
   y = 0.0f;
@@ -343,7 +350,15 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
     it += ekg::utf_check_sequence(char8, char32, utf_string, text, it);
 
     break_text = char8 == '\n';
-    if (break_text || (r_n_break_text = (char8 == '\r' && it < text_size && text.at(it + 1) == '\n'))) {
+    if (
+        break_text
+        ||
+        (
+          r_n_break_text = (
+            char8 == '\r' && it < text_size && text.at(it + 1) == '\n'
+          )
+        )
+      ) {
       ekg::draw::glyph_char_t &char_data {this->mapped_glyph_char_data[char32]};
 
       it += static_cast<uint64_t>(r_n_break_text);
@@ -355,14 +370,14 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
     }
 
     if (this->ft_bool_kerning && ft_uint_previous) {
-      switch (char32 < 256 || !this->font_face_emoji.font_face_loaded) {
+      switch (char32 < 256 || !this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
         case true: {
-          ft_face = this->font_face_text.ft_face;
+          ft_face = this->faces[ekg::draw::font_face_type::text].ft_face;
           break;
         }
 
         default: {
-          ft_face = this->font_face_emoji.ft_face;
+          ft_face = this->faces[ekg::draw::font_face_type::emojis].ft_face;
           break;
         }
       }
@@ -379,14 +394,14 @@ void ekg::draw::font_renderer::blit(std::string_view text, float x, float y, con
     }
 
     vertices.x = x + char_data.left;
-    vertices.y = y + this->full_height - char_data.top;
+    vertices.y = y + this->atlas_rect.h - char_data.top;
 
     vertices.w = char_data.w;
     vertices.h = char_data.h;
 
     coordinates.x = char_data.x;
-    coordinates.w = vertices.w / this->full_width;
-    coordinates.h = vertices.h / this->full_height;
+    coordinates.w = vertices.w / this->atlas_rect.w;
+    coordinates.h = vertices.h / this->atlas_rect.h;
 
     this->p_allocator->push_back_geometry(
       vertices.x,
@@ -468,13 +483,13 @@ void ekg::draw::font_renderer::init() {
 }
 
 void ekg::draw::font_renderer::quit() {
-  if (this->font_face_text.font_face_loaded) {
-    FT_Done_Face(this->font_face_text.ft_face);
-    this->font_face_text.font_face_loaded = false;
+  if (this->faces[ekg::draw::font_face_type::text].was_loaded) {
+    FT_Done_Face(this->faces[ekg::draw::font_face_type::text].ft_face);
+    this->faces[ekg::draw::font_face_type::text].was_loaded = false;
   }
 
-  if (this->font_face_emoji.font_face_loaded) {
-    FT_Done_Face(this->font_face_emoji.ft_face);
-    this->font_face_emoji.font_face_loaded = false;
+  if (this->faces[ekg::draw::font_face_type::emojis].was_loaded) {
+    FT_Done_Face(this->faces[ekg::draw::font_face_type::emojis].ft_face);
+    this->faces[ekg::draw::font_face_type::emojis].was_loaded = false;
   }
 }

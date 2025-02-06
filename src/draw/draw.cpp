@@ -26,19 +26,19 @@
 #include "ekg/ekg.hpp"
 
 void ekg::draw::rect(
-  const ekg::rect &rect,
-  const ekg::vec4 &color,
+  const ekg::rect_t<float> &rect,
+  const ekg::vec4_t<float> &color,
   int32_t line_thickness,
-  ekg::gpu::sampler_t *p_sampler
+  ekg::sampler_t *p_sampler
 ) {
   ekg::draw::rect(rect.x, rect.y, rect.w, rect.h, color, line_thickness, p_sampler);
 }
 
 void ekg::draw::rect(
   float x, float y, float w, float h,
-  const ekg::vec4 &color,
+  const ekg::vec4_t<float> &color,
   int32_t line_thickness,
-  ekg::gpu::sampler_t *p_sampler
+  ekg::sampler_t *p_sampler
 ) {
   if (color.w < 0.1f) {
     return;
@@ -63,9 +63,9 @@ void ekg::draw::rect(
 }
 
 void ekg::draw::sync_scissor(
-  ekg::rect &scissor,
-  ekg::rect &rect_child,
-  ekg::rect *p_parent_scissor
+  ekg::rect_t<float> &scissor,
+  ekg::rect_t<float> &rect_child,
+  ekg::rect_t<float> *p_parent_scissor
 ) {
   ekg::core->gpu_allocator.sync_scissor(scissor, rect_child, p_parent_scissor);
 }

@@ -43,23 +43,23 @@ namespace ekg {
 
 namespace ekg::draw {
   void rect(
-    const ekg::rect &rect,
-    const ekg::vec4 &color,
+    const ekg::rect_t<float> &rect,
+    const ekg::vec4_t<float> &color,
     int32_t draw_mode,
-    ekg::gpu::sampler_t *p_sampler = nullptr
+    ekg::sampler_t *p_sampler = nullptr
   );
 
   void rect(
     float x, float y, float w, float h,
-    const ekg::vec4 &color,
+    const ekg::vec4_t<float> &color,
     int32_t draw_mode,
-    ekg::gpu::sampler_t *p_sampler = nullptr
+    ekg::sampler_t *p_sampler = nullptr
   );
 
   void sync_scissor(
-    ekg::rect &scissor,
-    ekg::rect &rect_child,
-    ekg::rect *p_parent_scissor
+    ekg::rect_t<float> &scissor,
+    ekg::rect_t<float> &rect_child,
+    ekg::rect_t<float> *p_parent_scissor
   );
 
   void scissor(
