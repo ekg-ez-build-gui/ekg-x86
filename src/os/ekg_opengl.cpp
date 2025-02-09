@@ -210,6 +210,9 @@ void ekg::opengl::re_alloc_geometry_resources(
   const float *p_data,
   uint64_t size
 ) {
+  // TODO: add capacity to gbuffers instead buffer data directly
+  // also use mapped buffers to get ptr directly.
+
   glBindVertexArray(this->vbo_array);
 
   glBindBuffer(GL_ARRAY_BUFFER, this->geometry_buffer);

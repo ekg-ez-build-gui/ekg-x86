@@ -1,6 +1,10 @@
 #include "ekg/io/input.hpp"
 #include "ekg/ekg.hpp"
 
+ekg::input_t &ekg::input() {
+  return ekg::core->service_input.input;
+}
+
 bool ekg::fire(std::string_view tag) {
   return ekg::core->service_input.get_input_bind_state(tag);
 }

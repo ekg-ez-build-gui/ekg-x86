@@ -109,6 +109,12 @@ namespace ekg {
     // TODO: add non-useless rect (aka vector 4 properties) operators
   };
 
+  struct rect_descriptor_t {
+  public:
+    ekg::rect_t<float> *p_rect {};
+    ekg::flags_t flags {};
+  };
+
   template<typename t>
   ekg::vec4_t<float> color(
     t r,

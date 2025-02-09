@@ -61,9 +61,8 @@ namespace ekg::io {
 
     switch (descriptor.type) {
       case ekg::type::frame: {
-        ekg::frame_t *p_descriptor {
-          ekg_static_cast_to_any_as_ptr(
-            ekg::frame_t,
+        ekg::frame_t &frame {
+          ekg::io::any_static_cast<ekg::frame_t>(
             descriptor
           )
         };
@@ -72,8 +71,8 @@ namespace ekg::io {
           ekg::io::new_widget_instance<ekg::ui::frame>()
         };
 
-        p_frame->descriptor = *p_descriptor;
-        properties.p_descriptor = &p_frame->descriptor;
+        p_frame->descriptor = frame;
+        properties.descriptor = &p_frame->descriptor;
         properties.p_widget = &p_frame;
 
         p_created_widget = p_frame;

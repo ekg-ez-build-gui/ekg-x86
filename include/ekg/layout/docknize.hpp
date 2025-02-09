@@ -61,105 +61,34 @@
   ) \
 
 namespace ekg::layout {
-  /**
-   * The between widgets offset: Auto-scaled & pixel-fixed.
-   **/
-  extern float offset;
-
-  /**
-   * Column and row store extent values, used to calculate
-   * the remains size for `ekg::dock::fill`.
-   **/
-  struct extent_t {
-  public:
-    int64_t end_index {};
-    int64_t begin_index {};
-    int64_t count {};
-    float extent {};
-  };
-
-  extern ekg::layout::extent_t h_extent;
-  extern ekg::layout::extent_t v_extent;
-
-  struct fill_align_t {
-  public:
-    bool was_last_fill_found {};
-    bool was_found {};
-    bool must_calculate_pixel_perfect {};
-    bool was_pixel_perfect_calculated {};
-
-    float align {static_cast<float>(UINT32_MAX)}; // idk may i duwmb
-    int64_t index {};
-    int64_t end_fill_index {};
-  };
-
-  /**
-   * The between rects from widgets can be docknized
-   * and return a rect mask (the bouding limits of docknization action).
-   * 
-   * The use is simple:
-   * set a preset,
-   * insert dock rects (rect with dock),
-   * docknize,
-   * get the rect mask.
-   **/
-  struct mask {
-  public:
-    struct rect {
-    public:
-      ekg::rect *p_rect {};
-      ekg::flags flags {};
-    };
+  class mask {
   protected:
-    std::vector<ekg::layout::mask::rect> dock_rect_list {};
+    std::vector<ekg::rect_descriptor_t> rect_descriptor_list {};
     float respective_all {};
     float respective_center {};
-    ekg::axis axis {};
-    ekg::vec3 offset {};
-    ekg::rect mask {};
-    ekg::layout::extent_t v_extent {};
-    ekg::layout::extent_t h_extent {};
-  protected:
-    void extentnize(
-      float &extent,
-      ekg::flags flag_ok,
-      ekg::flags flag_stop,
-      int64_t &begin_and_count,
-      ekg::axis axis
-    );
+    ekg::flags_t axis {};
+    ekg::vec3_t<float> offset {};
+    ekg::rect_t<float> mask {};
   public:
-    void preset(const ekg::vec3 &mask_offset, ekg::axis mask_axis, float initial_respective_size = 0.0f);
-    void insert(const ekg::layout::mask::rect &dock_rect);
-    void docknize();
-    ekg::rect &get_rect();
-  };
+    void preset(
+      ekg::vec3_t<float> offset,
+      ekg::flags_t axis,
+      float initial_respective_size = 0.0f
+    );
+    
+    void insert(
+      ekg::rect_descriptor_t rect_descriptor
+    );
 
-  /**
-   * Obtain the remain extent size, from the latest widget index.
-   **/
-  void extentnize(
-    float &extent,
-    fill_align_t *p_fill_align,
-    ekg::ui::abstract_widget *p_widget,
-    ekg::flags flag_ok,
-    ekg::flags flag_stop,
-    int64_t &begin_and_count,
-    ekg::axis axis
-  );
+    void docknize();
+    ekg::rect_t<float> &get_rect();
+  };
 
   /**
    * A mid-functional feature to process dock position from widgets.
    * Note: Recursive.
    **/
   void docknize(
-    ekg::ui::abstract_widget *p_parent_widget
-  );
-
-  /**
-   * Estimate height from a container children list.
-   * Note: Recursive.
-   **/
-  float height(
     ekg::ui::abstract_widget *p_parent_widget
   );
 }

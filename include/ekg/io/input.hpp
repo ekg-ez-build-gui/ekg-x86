@@ -37,10 +37,22 @@ namespace ekg {
     no_auto_set_viewport_when_resize = 2 << 1
   };
 
+  struct input_t {
+  public:
+    ekg::timing_t timing_last_interact {};
+    ekg::vec4_t<float> interact {};
+    bool was_pressed {};
+    bool was_released {};
+    bool has_motion {};
+    bool was_wheel {};
+    bool was_typed {};
+  };
+
   bool fire();
   bool input(std::string_view input);
   void bind(std::string_view tag, std::string_view input);
   void bind(std::string_view tag, std::vector<std::string_view> inputs);
+  ekg::input_t &input();
 }
 
 namespace ekg::io {

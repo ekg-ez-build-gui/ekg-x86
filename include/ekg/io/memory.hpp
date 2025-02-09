@@ -28,8 +28,6 @@
 #define EKG_MEMORY_MUST_FREE_TASKS_AUTOMATICALLY true
 #define EKG_MEMORY_ACTIONS_SIZE 7
 
-#define ekg_static_cast_to_any_as_ptr(t, any) static_cast<t*>((void*)&any)
-
 #include <cstdint>
 
 namespace ekg {
@@ -97,6 +95,11 @@ namespace ekg {
 
 enum ekg::io {
   constexpr uint64_t invalid_unique_id {static_cast<uint64_t>(0)};
+
+  template<typename t>
+  constexpr t &any_static_cast(void *p_any) {
+    return *static_cast<t*>(p_any);
+  }
 }
 
 #endif

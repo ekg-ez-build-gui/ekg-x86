@@ -39,10 +39,10 @@ namespace ekg::gpu {
     static bool high_priority;
     static uint64_t current_rendering_data_count;
   protected:
-    std::vector<ekg::gpu::data_t> data_list {};
+    std::vector<ekg::io::gpu_data_t> data_list {};
     std::vector<float> geometry_resource_list {};
 
-    std::vector<ekg::gpu::data_t> high_priority_data_list {};
+    std::vector<ekg::io::gpu_data_t> high_priority_data_list {};
     std::vector<float> high_priority_geometry_resource_list {};
 
     uint64_t high_priority_data_instance_index {};
@@ -74,7 +74,7 @@ namespace ekg::gpu {
     /*
      * Bind a new gpu data.
      */
-    ekg::gpu::data_t &bind_current_data();
+    ekg::io::gpu_data_t &bind_current_data();
 
     /*
      * Clear current gpu data active.
@@ -84,7 +84,7 @@ namespace ekg::gpu {
     /*
      * Find registered gpu data in allocator's batch.
      */
-    ekg::gpu::data_t *get_data_by_id(int32_t id);
+    ekg::io::gpu_data_t *get_data_by_id(int32_t id);
 
     /*
      * Get current gpu data.

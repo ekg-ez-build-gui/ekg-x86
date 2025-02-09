@@ -33,21 +33,6 @@
 #include "ekg/util/geometry.hpp"
 #include "ekg/os/platform.hpp"
 
-namespace ekg {
-  struct input_t {
-  public:
-    ekg::timing_t timing_last_interact {};
-    ekg::vec4 interact {};
-    bool was_pressed {};
-    bool was_released {};
-    bool has_motion {};
-    bool was_wheel {};
-    bool was_typed {};
-  };
-
-  ekg::input_t &input();
-};
-
 namespace ekg::service {
   class input {
   protected:

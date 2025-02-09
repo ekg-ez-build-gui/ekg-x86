@@ -39,8 +39,7 @@ void ekg::gpu::allocator::invoke() {
 
   /**
    * inserting a simple triangle mesh,
-   * is necessary to make work the simple-shape
-   * rendering.
+   * is necessary to make work the simple-shape rendering.
    **/
   this->push_back_geometry(0.0f, 0.0f, 0.0f, 0.0f);
   this->push_back_geometry(0.0f, 1.0f, 0.0f, 1.0f);
@@ -53,17 +52,17 @@ void ekg::gpu::allocator::invoke() {
   this->end_stride_count = 0;
 }
 
-void ekg::gpu::allocator::bind_texture(ekg::gpu::sampler_t *p_sampler) {
+void ekg::gpu::allocator::bind_texture(ekg::sampler_t *p_sampler) {
   if (p_sampler == nullptr) {
     return;
   }
 
-  ekg::gpu::data_t &data {this->data_list.at(this->data_instance_index)};
+  ekg::io::gpu_data_t &data {this->data_list.at(this->data_instance_index)};
   data.sampler_index = ekg::core->p_gpu_api->bind_sampler(p_sampler);
 }
 
 void ekg::gpu::allocator::dispatch() {
-  ekg::gpu::data_t *p_data {};
+  ekg::io::gpu_data_t *p_data {};
 
   if (ekg::gpu::allocator::high_priority) {
     if (this->high_priority_data_instance_index >= this->high_priority_data_list.size()) {
@@ -71,7 +70,9 @@ void ekg::gpu::allocator::dispatch() {
     }
 
     p_data = &(
-      this->high_priority_data_list.at(this->high_priority_data_instance_index++) = ekg::gpu::data_t {this->data_list.at(this->data_instance_index)}
+      this->high_priority_data_list.at(this->high_priority_data_instance_index++) = (
+        ekg::io::gpu_data_t {this->data_list.at(this->data_instance_index)}
+      )
     );
 
     this->data_instance_index -= this->data_instance_index > 0;
@@ -201,14 +202,14 @@ void ekg::gpu::allocator::clear_current_data() {
   }
 
   /* allocator handle automatically the size of data */
-  ekg::gpu::data_t &data {this->data_list.at(this->data_instance_index)};
+  ekg::io::gpu_data_t &data {this->data_list.at(this->data_instance_index)};
   data.line_thickness = 0;
   data.sampler_index = -1;
 
   this->previous_factor = data.factor;
 }
 
-ekg::gpu::data_t &ekg::gpu::allocator::bind_current_data() {
+ekg::io::gpu_data_t &ekg::gpu::allocator::bind_current_data() {
   return this->data_list.at(this->data_instance_index);
 }
 
@@ -216,7 +217,7 @@ uint32_t ekg::gpu::allocator::get_current_data_id() {
   return this->data_instance_index;
 }
 
-ekg::gpu::data_t *ekg::gpu::allocator::get_data_by_id(int32_t id) {
+ekg::io::gpu_data_t *ekg::gpu::allocator::get_data_by_id(int32_t id) {
   if (id < 0 || static_cast<uint64_t>(id) > this->data_instance_index) {
     return nullptr;
   }
@@ -229,9 +230,9 @@ void ekg::gpu::allocator::quit() {
 }
 
 void ekg::gpu::allocator::sync_scissor(
-  ekg::rect &scissor,
-  ekg::rect &rect_child,
-  ekg::rect *p_parent_scissor
+  ekg::rect_t<float> &scissor,
+  ekg::rect_t<float> &rect_child,
+  ekg::rect_t<float> *p_parent_scissor
 ) {
   scissor.x = rect_child.x;
   scissor.y = rect_child.y;
