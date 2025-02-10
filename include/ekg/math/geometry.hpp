@@ -1,7 +1,29 @@
 #ifndef EKG_MATH_GEOMETRY_HPP
 #define EKG_MATH_GEOMETRY_HPP
 
+#include <cstdint>
+
 namespace ekg {
+  enum dock {
+    none   = 2 << 1,
+    free   = 2 << 2,
+    top    = 2 << 3,
+    bottom = 2 << 4,
+    right  = 2 << 5,
+    left   = 2 << 6,
+    center = 2 << 7,
+    full   = 2 << 8,
+    next   = 2 << 9,
+    fill   = 2 << 10,
+    resize = 2 << 11,
+    bind   = 2 << 12
+  };
+
+  enum axis {
+    vertical   = 2 << 13,
+    horizontal = 2 << 14
+  };
+
   template<typename t>
   struct vec2_t {
     union {

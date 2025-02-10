@@ -60,6 +60,27 @@ namespace ekg::io {
     };
 
     switch (descriptor.type) {
+      case ekg::type::button: {
+        ekg::button_t &button {
+          ekg::io::any_static_cast<ekg::button_t>(
+            descriptor
+          )
+        };
+
+        ekg::ui::button *p_button {
+          ekg::io::new_widget_instance<ekg::ui::button>()
+        };
+
+        p_button->descriptor = button;
+        p_created_widget = p_button;
+
+        properties.descriptor = &p_button->descriptor;
+        properties.p_widget = &p_button;
+        properties.dock = button.dock; // i mean im dumb idk
+
+        break;
+      }
+
       case ekg::type::frame: {
         ekg::frame_t &frame {
           ekg::io::any_static_cast<ekg::frame_t>(
@@ -72,10 +93,12 @@ namespace ekg::io {
         };
 
         p_frame->descriptor = frame;
+        p_created_widget = p_frame;
+
         properties.descriptor = &p_frame->descriptor;
         properties.p_widget = &p_frame;
+        properties.dock = frame.dock;
 
-        p_created_widget = p_frame;
         break;
       }
     }

@@ -37,7 +37,7 @@ namespace ekg {
   enum result {
     success           = 2 << 1,
     failed            = 2 << 2,
-    widget_not_found  = 2 << 3,
+    could_not_find    = 2 << 3,
     not_implemented   = 2 << 4
   };
 
@@ -74,7 +74,7 @@ namespace ekg {
     t &get_value() {
       return (
         this->p_address
-        ? 
+        ?
         /**
          *
          * idk idc i want

@@ -228,8 +228,8 @@ ekg::rect_t<float> &ekg::layout::mask::get_rect() {
   return this->mask;
 }
 
-void ekg::layout::docknize(
-  ekg::ui::abstract_widget *p_widget_parent
+void ekg::layout::docknize_widget(
+  ekg::ui::abstract *p_widget_parent
 ) {
   if (p_widget_parent == nullptr || p_widget_parent->p_data == nullptr) {
     return;
@@ -306,7 +306,7 @@ void ekg::layout::docknize(
   bool should_estimated_extentinize {};
   float max_previous_height {};
 
-  ekg::layout::h_extent = {};
+  ekg::layout::extent_t::h_widget = {};
   ekg::layout::extent_t h_extent_backup {};
   ekg::layout::fill_align_t fill_align {};
 
@@ -521,12 +521,12 @@ void ekg::layout::docknize(
       p_widgets->on_reload();
     }
 
-    h_extent_backup = ekg::layout::h_extent;
+    h_extent_backup = ekg::layout::extent_t::h_widget;
     if (p_widgets->p_data->has_children()) {
       ekg::layout::docknize(p_widgets);
     }
 
-    ekg::layout::h_extent = h_extent_backup;
+    ekg::layout::extent_t::h_widget = h_extent_backup;
     prev_widget_layout = layout;
     it++;
   }

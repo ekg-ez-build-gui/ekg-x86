@@ -49,6 +49,7 @@ namespace ekg {
   struct properties_t {
   public:
     std::string tag {};
+    ekg::flags_t dock {};
     ekg::type type {};
     ekg::id_t unique_id {};
 

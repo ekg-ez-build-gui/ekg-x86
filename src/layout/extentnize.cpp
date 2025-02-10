@@ -1,4 +1,5 @@
 #include "ekg/layout/extentnize.hpp"
+#include "ekg/io/design.hpp"
 
 ekg::layout::extent_t ekg::layout::extent_t::v_widget {};
 ekg::layout::extent_t ekg::layout::extent_t::h_widget {};
@@ -7,63 +8,56 @@ ekg::layout::extent_t ekg::layout::extent_t::h_rect_descriptor {};
 
 void ekg::layout::extentnize_rect_descriptor(
   std::vector<ekg::rect_descriptor_t> &rect_descriptor_list,
+  ekg::flags_t flag_ok,
+  ekg::flags_t flag_stop,
+  ekg::flags_t flag_axis,
+  ekg::layout::fill_align_t &fill_align,
   float &extent,
-  ekg::flags flag_ok,
-  ekg::flags flag_stop,
-  int64_t &begin_and_count,
-  ekg::axis axis
+  int32_t &in_out_count
 ) {
   extent = 0.0f;
-  switch (axis) {
+  switch (flag_axis & ekg::axis::horizontal) {
     case ekg::axis::horizontal: {
-      int64_t flag_ok_count {};
-      int64_t it {begin_and_count};
+      int32_t it {in_out_count};
 
       if (
-          begin_and_count > this->h_extent.begin_index
+          it > ekg::layout::extent_t::h_rect_descriptor.begin_index
           &&
-          begin_and_count < this->h_extent.end_index
+          it < ekg::layout::extent_t::h_rect_descriptor.end_index
         ) {
-        begin_and_count = this->h_extent.count;
-        extent = this->h_extent.extent;
+        in_out_count = ekg::layout::extent_t::h_rect_descriptor.count;
+        extent = ekg::layout::extent_t::h_rect_descriptor.extent;
         return;
       }
 
-      ekg::layout::h_extent.begin_index = static_cast<float>(it);
-      int64_t size {static_cast<int64_t>(this->dock_rect_list.size())};
-      int64_t latest_index {static_cast<int64_t>(size - (!this->dock_rect_list.empty()))};
+      ekg::layout::extent_t::h_rect_descriptor.begin_index = static_cast<float>(it);
+
+      int32_t size {static_cast<int32_t>(rect_descriptor_list.size())};
+      int32_t latest_index {static_cast<int32_t>(size - (!rect_descriptor_list.empty()))};
       int32_t should_skip_next {};
+      int32_t flag_ok_count {};
 
       bool is_last_index {};
       bool is_ok_flag {};
  
       extent += this->offset.x;
 
-      /**
-       * The last index does not check if contains a next flag,
-       * so it is needed to brute-check to stop at end of index. 
-       *
-       * The extent data store the previous bounding indices,
-       * in simply words, prevent useless iteration.
-       *
-       * The min offset is added for extent, because we need count
-       * the offset position when split the fill width, but the
-       * last extent space is not necessary, so we need to subtract.
-       **/
       for (it = it; it < size; it++) {
-        ekg::layout::mask::rect &dock_rect {this->dock_rect_list.at(it)};
-        if (dock_rect.p_rect == nullptr) {
+        ekg::rect_descriptor_t &rect_descriptor {rect_descriptor_list.at(it)};
+        if (rect_descriptor.p_rect == nullptr) {
           continue;
         }
 
         is_last_index = it == latest_index;
 
         if (
-            (ekg_bitwise_contains(dock_rect.flags, flag_stop) && it != begin_and_count) || is_last_index
+            (ekg::has(rect_descriptor.flags, flag_stop) && it != in_out_count)
+            ||
+            is_last_index
           ) {
           extent -= this->offset.x;
           flag_ok_count += (
-            (is_ok_flag = (!ekg_bitwise_contains(dock_rect.flags, flag_stop) && (ekg_bitwise_contains(dock_rect.flags, flag_ok)) && is_last_index))
+            (is_ok_flag = (!ekg::has(rect_descriptor.flags, flag_stop) && (ekg::has(rect_descriptor.flags, flag_ok)) && is_last_index))
           );
 
           /**
@@ -73,32 +67,36 @@ void ekg::layout::extentnize_rect_descriptor(
            * :blush:
            **/
           extent += ( 
-            (dock_rect.p_rect->w + this->offset.x) * (is_last_index && (!ekg_bitwise_contains(dock_rect.flags, flag_ok) && should_skip_next == 0))
+            (rect_descriptor.p_rect->w + this->offset.x)
+            *
+            (is_last_index && (!ekg::has(rect_descriptor.flags, flag_ok) && should_skip_next == 0))
           );
 
-          this->h_extent.end_index = it + is_last_index;
-          this->h_extent.extent = extent;
-          this->h_extent.count = flag_ok_count + (flag_ok_count == 0);
+          ekg::layout::extent_t::h_rect_descriptor.end_index = it + is_last_index;
+          ekg::layout::extent_t::h_rect_descriptor.extent = extent;
+          ekg::layout::extent_t::h_rect_descriptor.count = flag_ok_count + (flag_ok_count == 0);
           break;
         }
 
-        should_skip_next += static_cast<bool>(ekg_bitwise_contains(dock_rect.flags, ekg::dock::bind));
+        should_skip_next += static_cast<bool>(
+          ekg::has(rect_descriptor.flags, ekg::dock::bind)
+        );
 
         if (should_skip_next > 0) {
           should_skip_next = (should_skip_next + 1) * (should_skip_next < 2);
-          flag_ok_count += static_cast<bool>(ekg_bitwise_contains(dock_rect.flags, flag_ok));
+          flag_ok_count += static_cast<bool>(ekg::has(rect_descriptor.flags, flag_ok));
           continue;
         }
 
-        if (ekg_bitwise_contains(dock_rect.flags, flag_ok)) {
+        if (ekg::has(rect_descriptor.flags, flag_ok)) {
           flag_ok_count++;
           continue;
         }
 
-        extent += dock_rect.p_rect->w + this->offset.x;
+        extent += rect_descriptor.p_rect->w + this->offset.x;
       }
 
-      begin_and_count = flag_ok_count + (flag_ok_count == 0);
+      in_out_count = flag_ok_count + (flag_ok_count == 0);
       break;
     }
 
@@ -109,43 +107,42 @@ void ekg::layout::extentnize_rect_descriptor(
 }
 
 void ekg::layout::extentnize_widget(
-  ekg::ui::abstract_widget *p_widget,
-  float &extent,
+  ekg::ui::abstract *p_widget,
+  ekg::flags_t flag_ok,
+  ekg::flags_t flag_stop,
+  ekg::flags_t flag_axis,
   ekg::layout::fill_align_t &fill_align,
-  ekg::flags flag_ok,
-  ekg::flags flag_stop,
-  int64_t &begin_and_count,
-  ekg::axis axis
+  float &extent,
+  int32_t &in_out_count
 ) {
   extent = 0.0f;
   if (p_widget == nullptr) {
     return;
   }
 
-  int64_t begin_index {begin_and_count};
-  switch (axis) {
+  int32_t begin_index {in_out_count};
+  switch (flag_axis & ekg::axis::horizontal) {
     case ekg::axis::horizontal: {
-      ekg::flags flags {};
-      int64_t flag_ok_count {};
       int64_t it {begin_index};
 
       if (
-          begin_and_count > static_cast<int64_t>(ekg::layout::h_extent.begin_index)
+          it > ekg::layout::extent_t::h_widget.begin_index
           &&
-          begin_and_count < static_cast<int64_t>(ekg::layout::h_extent.end_index)
+          it < ekg::layout::extent_t::h_widget.end_index
         ) {
 
-        begin_and_count = static_cast<int64_t>(ekg::layout::h_extent.count);
-        extent = ekg::layout::h_extent.extent;
+        in_out_count = static_cast<int32_t>(ekg::layout::extent_t::h_widget.count);
+        extent = ekg::layout::extent_t::h_widget.extent;
         break;
       }
 
-      ekg::layout::h_extent.begin_index = static_cast<float>(it);
+      ekg::layout::extent_t::h_widget.begin_index = static_cast<float>(it);
       ekg::ui::abstract_widget *p_widgets {};
-      std::vector<int32_t> &child_id_list {p_widget->p_data->get_child_id_list()};
+      ekg::theme_t &current_theme {ekg::theme()};
 
-      int64_t size {static_cast<int64_t>(child_id_list.size())};
-      int64_t latest_index {size - (!child_id_list.empty())};
+      int32_t size {static_cast<int32_t>(p_widget->properties.children.size())};
+      int32_t latest_index {size - (!p_widget->properties.children.empty())};
+      int32_t flag_ok_count {};
 
       bool is_scrollbar {};
       bool is_last_index {};
@@ -153,33 +150,29 @@ void ekg::layout::extentnize_widget(
       bool is_ok {};
       bool is_stop {};
 
-      /**
-       * The last index does not check if contains a next flag,
-       * so it is needed to brute-check to stop at end of index. 
-       *
-       * The extent data store the previous bounding indices,
-       * in simply words, prevent useless iteration.
-       *
-       * The min offset is added for extent, because we need count
-       * the offset position when split the fill width, but the
-       * last extent space is not necessary, so we need to subtract.
-       **/
       for (it = it; it < size; it++) {
-        if ((p_widgets = ekg::core->get_fast_widget_by_id(child_id_list.at(it))) == nullptr) {
+        ekg::properties_t *&p_properties {p_widget->properties.children.at(it)};
+        if (p_properties == nullptr) {
           continue;
         }
 
-        flags = p_widgets->p_data->get_place_dock();
-        is_scrollbar = p_widgets->p_data->get_type() == ekg::type::scrollbar;
+        p_widgets = static_cast<ekg::ui::abstract*>(p_properties);
+
+        is_scrollbar = p_properties->type == ekg::type::scrollbar;
         is_last_index = it == latest_index;
-        is_ok = ekg_bitwise_contains(flags, flag_ok);
-        is_stop = ekg_bitwise_contains(flags, flag_stop);
+
+        is_ok = ekg::has(p_properties->dock, flag_ok);
+        is_stop = ekg::has(p_properties->dock, flag_stop);
 
         if (
-            (is_stop && it != begin_and_count) || is_last_index || is_scrollbar
+            (is_stop && it != in_out_count)
+            ||
+            is_last_index
+            ||
+            is_scrollbar
           ) {
 
-          extent -= (ekg::layout::offset) * (extent > 0.0f);
+          extent -= (current_theme.layout_offset) * (extent > 0.0f);
 
           is_last_index_but = (
             is_ok && is_last_index
@@ -209,7 +202,7 @@ void ekg::layout::extentnize_widget(
            * :blush:
            **/
           extent += (
-            p_widgets->dimension.w
+            p_widgets->rect.w
             *
             is_last_index_but
           );
@@ -239,9 +232,9 @@ void ekg::layout::extentnize_widget(
 
           fill_align.index = is_last_index_but ? it - (it > 0) : -1;
 
-          ekg::layout::h_extent.end_index = it + (is_last_index * is_last_index_but);
-          ekg::layout::h_extent.extent = extent;
-          ekg::layout::h_extent.count = flag_ok_count + (flag_ok_count == 0);
+          ekg::layout::extent_t::h_widget.end_index = it + (is_last_index * is_last_index_but);
+          ekg::layout::extent_t::h_widget.extent = extent;
+          ekg::layout::extent_t::h_widget.count = flag_ok_count + (flag_ok_count == 0);
 
           break;
         }
@@ -251,10 +244,10 @@ void ekg::layout::extentnize_widget(
           continue;
         }
 
-        extent += p_widgets->dimension.w + ekg::layout::offset;
+        extent += p_widgets->rect.w + current_theme.layout_offset;
       }
 
-      begin_and_count = flag_ok_count + (flag_ok_count == 0);
+      in_out_count = flag_ok_count + (flag_ok_count == 0);
       if (!fill_align.was_found && is_stop) {
         fill_align.was_found = true;
       }

@@ -33,18 +33,18 @@ void ekg::service::theme::add(ekg::theme_t theme) {
   this->theme_map[theme.name] = theme;
 }
 
-bool ekg::service::theme::set_current_theme(std::string_view name) {
+ekg::flags_t ekg::service::theme::set_current_theme(std::string_view name) {
   if (this->current_theme.name == name) {
-    return true;
+    return ekg::result::success;
   }
 
   if (!this->theme_map.count(name)) {
-    ekg::log() << "Failed to find theme '" << name << "' with this name!";
-    return false;
+    ekg::log() << "Could not to find theme named '" << name << "'!";
+    return ekg::resukt::could_not_find;
   }
 
   this->current_theme = this->theme_map[name];
-  return true;
+  return ekg::result::success;
 }
 
 ekg::theme_t &ekg::service::theme::get_current_theme() {

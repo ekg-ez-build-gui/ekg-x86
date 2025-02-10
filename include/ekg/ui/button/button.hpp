@@ -18,6 +18,7 @@ namespace ekg {
   public:
     std::string tag {};
     ekg::value<bool> value {};
+    ekg::flags_t dock {};
     ekg::type type {ekg::type::button};
     std::string text {};
     ekg::flags_t text_dock {};
