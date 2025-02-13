@@ -64,6 +64,7 @@ namespace ekg {
     bool is_alive {};
     bool is_visible {};
     bool is_parentable {};
+    bool is_docknizable {};
   public:
     template<typename t>
     operator t&() {
