@@ -4,6 +4,7 @@
 #include "ekg/math/geometry.hpp"
 
 namespace ekg {
+  extern 
 }
 
 #endif

@@ -8,9 +8,9 @@ void ekg::layout::scale_calculate() {
   ekg::vec2 input_resolution {static_cast<float>(ekg::ui::width), static_cast<float>(ekg::ui::height)};
 
   if (ekg::ui::auto_scale) {
-    ekg::core->p_os_platform->update_monitor_resolution();
-    monitor_resolution.x = static_cast<float>(ekg::core->p_os_platform->monitor_resolution[0]);
-    monitor_resolution.y = static_cast<float>(ekg::core->p_os_platform->monitor_resolution[1]);
+    ekg::p_core->p_os_platform->update_monitor_resolution();
+    monitor_resolution.x = static_cast<float>(ekg::p_core->p_os_platform->monitor_resolution[0]);
+    monitor_resolution.y = static_cast<float>(ekg::p_core->p_os_platform->monitor_resolution[1]);
     ekg::ui::scale = {1920.0f, 1080.0f};
     input_resolution = monitor_resolution;
   }

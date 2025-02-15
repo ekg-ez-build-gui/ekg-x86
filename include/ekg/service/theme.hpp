@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_SERVICE_THEME_H
-#define EKG_SERVICE_THEME_H
+#ifndef EKG_SERVICE_THEME_HPP
+#define EKG_SERVICE_THEME_HPP
 
 #include <vector>
 #include <string_view>

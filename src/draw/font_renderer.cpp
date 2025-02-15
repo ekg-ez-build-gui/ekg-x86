@@ -285,7 +285,7 @@ void ekg::draw::font_renderer::reload() {
   this->text_height = static_cast<float>(this->font_size);
   this->offset_text_height = static_cast<int32_t>(this->text_height / 6) / 2;
 
-  ekg::core->p_gpu_api->gen_font_atlas_and_map_glyph(
+  ekg::p_core->p_gpu_api->gen_font_atlas_and_map_glyph(
     &this->sampler_texture,
     &this->faces[ekg::draw::font_face_type::text],
     &this->faces[ekg::draw::font_face_type::emojis],

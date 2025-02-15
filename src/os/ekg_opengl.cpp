@@ -609,5 +609,5 @@ void ekg::opengl::draw(
 }
 
 ekg::opengl *ekg::os::get_opengl() {
-  return static_cast<ekg::opengl*>(ekg::core->p_gpu_api);
+  return static_cast<ekg::opengl*>(ekg::p_core->p_gpu_api);
 }

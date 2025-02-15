@@ -29,8 +29,6 @@
 #include <string>
 #include <vector>
 
-#include "ekg/util/io.hpp"
-
 namespace ekg {
   /**
    * Returns a UTF string by `char32` converting
@@ -96,6 +94,14 @@ namespace ekg {
    * `p_string_split_list` ptr.
    */
   bool split(std::vector<std::string> *p_string_split_list, const std::string &string, char find_char);
+}
+
+namespace ekg::io {
+  enum font_face_type {
+    text,
+    emojis,
+    kanjis
+  };
 }
 
 #endif

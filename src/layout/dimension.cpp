@@ -13,7 +13,7 @@ float ekg::layout::estimate_height(
   float height {};
 
   for (int32_t &ids : p_parent_widget->p_data->get_child_id_list()) {
-    if (ids == 0 || (p_widgets = ekg::core->get_fast_widget_by_id(ids)) == nullptr) {
+    if (ids == 0 || (p_widgets = ekg::p_core->get_fast_widget_by_id(ids)) == nullptr) {
       continue;
     }
 

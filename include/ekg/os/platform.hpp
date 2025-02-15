@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_OS_PLATFORM_H
-#define EKG_OS_PLATFORM_H
+#ifndef EKG_OS_PLATFORM_HPP
+#define EKG_OS_PLATFORM_HPP
 
 #include "ekg/io/input.hpp"
 #include "ekg/math/geometry.hpp"

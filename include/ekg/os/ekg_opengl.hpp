@@ -26,8 +26,8 @@
 // TODO: remove useless macros
 // TODO: add some comments if necessary
 
-#ifndef EKG_OS_OPENGL_H
-#define EKG_OS_OPENGL_H
+#ifndef EKG_OS_OPENGL_HPP
+#define EKG_OS_OPENGL_HPP
 
 #if defined(__ANDROID__)
 #include <GLES3/gl3.h>

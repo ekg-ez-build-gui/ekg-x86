@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_DRAW_FONT_RENDERER_H
-#define EKG_DRAW_FONT_RENDERER_H
+#ifndef EKG_DRAW_FONT_RENDERER_HPP
+#define EKG_DRAW_FONT_RENDERER_HPP
 
 #include <unordered_map>
 
@@ -64,12 +64,6 @@ if (!char_data.was_sampled) { \
 #define ekg_generate_factor_hash(axis, c32, char_data_x) static_cast<int32_t>(axis + c32 + char_data_x * 100)
 
 namespace ekg::draw {
-  enum font_face_type {
-    text,
-    emojis,
-    kanjis
-  };
-
   class font_renderer {
   public:
     static FT_Library ft_library;
@@ -160,6 +154,8 @@ namespace ekg::draw {
      **/
     void flush();
   };
+
+  
 }
 
 #endif

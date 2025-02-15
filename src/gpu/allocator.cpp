@@ -58,7 +58,7 @@ void ekg::gpu::allocator::bind_texture(ekg::sampler_t *p_sampler) {
   }
 
   ekg::io::gpu_data_t &data {this->data_list.at(this->data_instance_index)};
-  data.sampler_index = ekg::core->p_gpu_api->bind_sampler(p_sampler);
+  data.sampler_index = ekg::p_core->p_gpu_api->bind_sampler(p_sampler);
 }
 
 void ekg::gpu::allocator::dispatch() {
@@ -163,7 +163,7 @@ void ekg::gpu::allocator::revoke() {
   }
 
   if (should_re_alloc_buffers || this->factor_changed) {
-    ekg::core->p_gpu_api->re_alloc_geometry_resources(
+    ekg::p_core->p_gpu_api->re_alloc_geometry_resources(
       this->geometry_resource_list.data(),
       this->geometry_resource_list.size()
     );
@@ -186,7 +186,7 @@ void ekg::gpu::allocator::on_update() {
 }
 
 void ekg::gpu::allocator::draw() {
-  ekg::core->p_gpu_api->draw(
+  ekg::p_core->p_gpu_api->draw(
     this->data_list.data(),
     this->data_list.size()
   );

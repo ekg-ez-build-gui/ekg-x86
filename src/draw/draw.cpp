@@ -44,7 +44,7 @@ void ekg::draw::rect(
     return;
   }
 
-  ekg::gpu::data_t &data {ekg::core->gpu_allocator.bind_current_data()};
+  ekg::gpu::data_t &data {ekg::p_core->gpu_allocator.bind_current_data()};
 
   data.buffer_content[0] = x;
   data.buffer_content[1] = y;
@@ -58,8 +58,8 @@ void ekg::draw::rect(
   data.line_thickness = static_cast<int8_t>(line_thickness);
   data.factor = 1;
 
-  ekg::core->gpu_allocator.bind_texture(p_sampler);
-  ekg::core->gpu_allocator.dispatch();
+  ekg::p_core->gpu_allocator.bind_texture(p_sampler);
+  ekg::p_core->gpu_allocator.dispatch();
 }
 
 void ekg::draw::sync_scissor(
@@ -67,7 +67,7 @@ void ekg::draw::sync_scissor(
   ekg::rect_t<float> &rect_child,
   ekg::rect_t<float> *p_parent_scissor
 ) {
-  ekg::core->gpu_allocator.sync_scissor(scissor, rect_child, p_parent_scissor);
+  ekg::p_core->gpu_allocator.sync_scissor(scissor, rect_child, p_parent_scissor);
 }
 
 void ekg::draw::scissor(
@@ -76,7 +76,7 @@ void ekg::draw::scissor(
   float w,
   float h
 ) {
-  ekg::core->gpu_allocator.unsafe_set_scissor_placement(
+  ekg::p_core->gpu_allocator.unsafe_set_scissor_placement(
     x, y, w, h
   );  
 }

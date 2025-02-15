@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_SERVICE_INPUT_H
-#define EKG_SERVICE_INPUT_H
+#ifndef EKG_SERVICE_INPUT_HPP
+#define EKG_SERVICE_INPUT_HPP
 
 #include <vector>
 #include <unordered_map>

@@ -1,5 +1,5 @@
-#ifndef EKG_LAYOUT_DOCKNIZE_H
-#define EKG_LAYOUT_DOCKNIZE_H
+#ifndef EKG_LAYOUT_DOCKNIZE_HPP
+#define EKG_LAYOUT_DOCKNIZE_HPP
 
 #include "ekg/ui/abstract.hpp"
 #include "ekg/math/geometry.hpp"

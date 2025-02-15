@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_GPU_ALLOCATOR_H
-#define EKG_GPU_ALLOCATOR_H
+#ifndef EKG_GPU_ALLOCATOR_HPP
+#define EKG_GPU_ALLOCATOR_HPP
 
 #include <array>
 #include <vector>

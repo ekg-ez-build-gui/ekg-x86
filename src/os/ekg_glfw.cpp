@@ -323,12 +323,12 @@ void ekg::os::glfw_window_size_callback(int32_t w, int32_t h) {
   ekg::ui::width = w;
   ekg::ui::height = h;
         
-  ekg::core->p_gpu_api->update_viewport(ekg::ui::width, ekg::ui::height);
-  ekg::core->update_size_changed();
+  ekg::p_core->p_gpu_api->update_viewport(ekg::ui::width, ekg::ui::height);
+  ekg::p_core->update_size_changed();
 }
 
 void ekg::os::glfw_scroll_callback(double dx, double dy) {
-  ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
+  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::mouse_wheel;
   serialized.mouse_wheel_x = static_cast<int32_t>(dx);
   serialized.mouse_wheel_y = static_cast<int32_t>(dy);
@@ -337,12 +337,12 @@ void ekg::os::glfw_scroll_callback(double dx, double dy) {
 
   ekg::poll_io_event = true;
   ekg::cursor = ekg::system_cursor::arrow;
-  ekg::core->process_event();
+  ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
 void ekg::os::glfw_char_callback(uint32_t codepoint) {
-  ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
+  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::text_input;
 
   // idk it seems pretty much a workaround, predictable crash if codepoint
@@ -352,12 +352,12 @@ void ekg::os::glfw_char_callback(uint32_t codepoint) {
 
   ekg::poll_io_event = true;
   ekg::cursor = ekg::system_cursor::arrow;
-  ekg::core->process_event();
+  ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
 void ekg::os::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, int32_t mods) {
-  ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
+  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   std::string a {};
 
   switch (action) {
@@ -384,12 +384,12 @@ void ekg::os::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, i
   }
 
   ekg::cursor = ekg::system_cursor::arrow;
-  ekg::core->process_event();
+  ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
 void ekg::os::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mods) {
-  ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
+  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
 
   /**
    * The mouse button number on GLFW is different from SDL2,
@@ -421,18 +421,18 @@ void ekg::os::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t
   }
 
   ekg::cursor = ekg::system_cursor::arrow;
-  ekg::core->process_event();
+  ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
 void ekg::os::glfw_cursor_pos_callback(double x, double y) {
-  ekg::os::io_event_serial &serialized {ekg::core->io_event_serial};
+  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::mouse_motion;
   serialized.mouse_motion_x = static_cast<float>(x);
   serialized.mouse_motion_y = static_cast<float>(y);
 
   ekg::poll_io_event = true;
   ekg::cursor = ekg::system_cursor::arrow;
-  ekg::core->process_event();
+  ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }

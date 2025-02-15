@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_SERVICE_HANDLER_H
-#define EKG_SERVICE_HANDLER_H
+#ifndef EKG_SERVICE_HANDLER_HPP
+#define EKG_SERVICE_HANDLER_HPP
 
 #include <iostream>
 #include <vector>

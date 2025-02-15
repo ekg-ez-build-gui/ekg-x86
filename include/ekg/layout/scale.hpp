@@ -1,5 +1,5 @@
-#ifndef EKG_LAYOUT_SCALE_H
-#define EKG_LAYOUT_SCALE_H
+#ifndef EKG_LAYOUT_SCALE_HPP
+#define EKG_LAYOUT_SCALE_HPP
 
 namespace ekg::layout {
   extern float scale_factor;

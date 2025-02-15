@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_H
-#define EKG_H
+#ifndef EKG_HPP
+#define EKG_HPP
 
 #pragma STDC FENV_ACCESS ON
 
@@ -57,18 +57,9 @@ namespace ekg {
   /**
    * The runtime core of ekg.
    */
-  extern ekg::runtime *core;
-  extern bool running;
+  extern ekg::runtime *p_core;
 
   /** The setup and handling functions of ekg **/
-
-  struct runtime_property {
-  public:
-    const char *p_font_path {""};
-    const char *p_font_path_emoji {""};
-    ekg::gpu::api *p_gpu_api {};
-    ekg::os::platform *p_os_platform {};
-  };
 
   /**
    * The initialization of EKG,

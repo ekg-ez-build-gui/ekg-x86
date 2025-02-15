@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_UI_DISPLAY_H
-#define EKG_UI_DISPLAY_H
+#ifndef EKG_UI_DISPLAY_HPP
+#define EKG_UI_DISPLAY_HPP
 
 #include "ekg/util/geometry.hpp"
 

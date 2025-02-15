@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_OS_SDL_H
-#define EKG_OS_SDL_H
+#ifndef EKG_OS_SDL_HPP
+#define EKG_OS_SDL_HPP
 
 #if defined(__ANDROID__)
 #include "SDL.h"

@@ -26,33 +26,32 @@
 #include "ekg/os/platform.hpp"
 #include "ekg/util/geometry.hpp"
 
-ekg::runtime *ekg::core {};
-bool ekg::running {};
+ekg::runtime *ekg::p_core {};
 
 ekg::service::theme_scheme_t &ekg::current_theme_scheme() {
-  return ekg::core->service_theme.get_current_theme_scheme();
+  return ekg::p_core->service_theme.get_current_theme_scheme();
 }
 
 ekg::service::theme &ekg::theme() {
-  return ekg::core->service_theme;
+  return ekg::p_core->service_theme;
 }
 
 ekg::draw::font_renderer &ekg::f_renderer(ekg::font font_size) {
   switch (font_size) {
     case ekg::font::big: {
-      return ekg::core->f_renderer_big;
+      return ekg::p_core->f_renderer_big;
     }
 
     case ekg::font::normal: {
-      return ekg::core->f_renderer_normal;
+      return ekg::p_core->f_renderer_normal;
     }
 
     case ekg::font::small: {
-      return ekg::core->f_renderer_small;
+      return ekg::p_core->f_renderer_small;
     }
   }
 
-  return ekg::core->f_renderer_normal;
+  return ekg::p_core->f_renderer_normal;
 }
 
 void ekg::init(
@@ -78,41 +77,41 @@ void ekg::init(
 
   ekg::log() << "Initializing EKG";
 
-  ekg::core = p_ekg_runtime;
+  ekg::p_core = p_ekg_runtime;
   ekg::running = true;
 
-  ekg::core->f_renderer_small.init();
-  ekg::core->f_renderer_small.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::core->f_renderer_small.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
+  ekg::p_core->f_renderer_small.init();
+  ekg::p_core->f_renderer_small.set_font(p_ekg_runtime_property->p_font_path);
+  ekg::p_core->f_renderer_small.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
 
-  ekg::core->f_renderer_normal.init();
-  ekg::core->f_renderer_normal.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::core->f_renderer_normal.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
+  ekg::p_core->f_renderer_normal.init();
+  ekg::p_core->f_renderer_normal.set_font(p_ekg_runtime_property->p_font_path);
+  ekg::p_core->f_renderer_normal.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
 
-  ekg::core->f_renderer_big.init();
-  ekg::core->f_renderer_big.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::core->f_renderer_big.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
+  ekg::p_core->f_renderer_big.init();
+  ekg::p_core->f_renderer_big.set_font(p_ekg_runtime_property->p_font_path);
+  ekg::p_core->f_renderer_big.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
 
-  ekg::core->init();
+  ekg::p_core->init();
 }
 
 void ekg::quit() {
-  ekg::core->p_os_platform->quit();
-  ekg::core->p_gpu_api->quit();
-  ekg::core->quit();
+  ekg::p_core->p_os_platform->quit();
+  ekg::p_core->p_gpu_api->quit();
+  ekg::p_core->quit();
   ekg::running = false;
 
   ekg::log() << "Shutdown complete - Thank you for using EKG ;) <3";
 }
 
 void ekg::update() {
-  ekg::core->update();
-  ekg::core->p_os_platform->update_cursor();
-  ekg::core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::none;
+  ekg::p_core->update();
+  ekg::p_core->p_os_platform->update_cursor();
+  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::none;
 }
 
 void ekg::render() {
-  ekg::core->render();
+  ekg::p_core->render();
 }
 
 ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect) {
@@ -125,7 +124,7 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect) {
   p_ui->set_tag(tag);
   p_ui->unsafe_set_type(ekg::type::frame);
   p_ui->set_place(ekg::dock::free);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->ui() = {
     rect.x,
@@ -153,14 +152,14 @@ ekg::ui::frame *ekg::frame(std::string_view tag, ekg::rect rect, ekg::flags dock
   bool is_w_set {!ekg_equals_float(rect.w, ekg_no_update_placement)};
   bool is_h_set {!ekg_equals_float(rect.h, ekg_no_update_placement)};
 
-  if (!ekg::core->has_bind_group_flag()) {
+  if (!ekg::p_core->has_bind_group_flag()) {
     dock = ekg::dock::free;
   }
 
   p_ui->set_tag(tag);
   p_ui->unsafe_set_type(ekg::type::frame);
   p_ui->set_place(dock);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->ui() = {
     rect.x,
@@ -185,7 +184,7 @@ ekg::ui::button *ekg::button(std::string_view text, ekg::flags dock) {
   p_ui->registry(p_ui);
   p_ui->reset_ownership();
   p_ui->unsafe_set_type(ekg::type::button);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->set_text(text);
   p_ui->set_place(dock);
@@ -202,7 +201,7 @@ ekg::ui::label *ekg::label(std::string_view text, ekg::flags dock) {
   p_ui->registry(p_ui);
   p_ui->reset_ownership();
   p_ui->unsafe_set_type(ekg::type::label);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->set_value(std::string(text));
   p_ui->set_place(dock);
@@ -219,7 +218,7 @@ ekg::ui::checkbox *ekg::checkbox(std::string_view text, bool value, ekg::flags d
   p_ui->registry(p_ui);
   p_ui->reset_ownership();
   p_ui->unsafe_set_type(ekg::type::checkbox);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->set_text(text);
   p_ui->set_place(dock);
@@ -241,7 +240,7 @@ ekg::popup(std::string_view tag, const std::vector<std::string> &component_list,
 
   ekg::ui::popup *p_ui {new ekg::ui::popup()};
   p_ui->unsafe_set_type(ekg::type::popup);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   if (interact_position) {
     ekg::vec4 &interact {ekg::input::interact()};
@@ -263,7 +262,7 @@ ekg::ui::textbox *ekg::textbox(std::string_view tag, std::string_view text, ekg:
   p_ui->registry(p_ui);
   p_ui->reset_ownership();
   p_ui->unsafe_set_type(ekg::type::textbox);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->set_tag(tag);
   p_ui->set_place(dock);
@@ -285,7 +284,7 @@ ekg::ui::listbox *ekg::listbox(
   p_ui->registry(p_ui);
   p_ui->reset_ownership();
   p_ui->unsafe_set_type(ekg::type::listbox);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
 
   p_ui->set_tag(tag);
   p_ui->set_place(dock);
@@ -301,20 +300,20 @@ ekg::ui::listbox *ekg::listbox(
 ekg::ui::scrollbar *ekg::scrollbar(std::string_view tag) {
   ekg::ui::scrollbar *p_ui {new ekg::ui::scrollbar()};
   p_ui->unsafe_set_type(ekg::type::scrollbar);
-  ekg::core->gen_widget(p_ui);
+  ekg::p_core->gen_widget(p_ui);
   p_ui->set_tag(tag);
 
   return p_ui;
 }
 
 bool ekg::has_bind_group_flag() {
-  return ekg::core->has_bind_group_flag();
+  return ekg::p_core->has_bind_group_flag();
 }
 
 void ekg::pop_group() {
-  ekg::core->end_group_flag();
+  ekg::p_core->end_group_flag();
 }
 
 void ekg::pop_group_parent() {
-  ekg::core->end_group_parent_flag();
+  ekg::p_core->end_group_parent_flag();
 }

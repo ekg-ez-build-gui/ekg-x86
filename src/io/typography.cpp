@@ -22,13 +22,44 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_OS_WAYLAND_SERVER_HPP
-#define EKG_OS_WAYLAND_SERVER_HPP
+#include "ekg/draw/font_renderer.hpp"
 
-#include "platform.hpp"
+ekg::flags_t ekg::draw::reload_font_face(
+  ekg::draw::font_face_t *p_font_face,
+  bool was_size_changed,
+  uint32_t font_size
+) {
+  if (p_font_face == nullptr) {
+    return ekg::result::failed;
+  }
 
-namespace ekg {
-  class wayland_server : public ekg::os::platform {};
+  if (p_font_face->was_changed) {
+    if (p_font_face->was_loaded) {
+      FT_Done_Face(p_font_face->ft_face);
+      p_font_face->was_loaded = false;
+    }
+
+    p_font_face->was_loaded = FT_New_Face(
+      ekg::draw::font_renderer::ft_library,
+      p_font_face->font_path.data(),
+      0,
+      &p_font_face->ft_face
+    );
+
+    if (p_font_face->was_loaded) {
+      ekg::log() << "Could not load font " << p_font_face->font_path;
+      return ekg::result::failed;
+    }
+
+    ekg::log() << "Font '" << p_font_face->font_path << "' loaded!"; 
+
+    p_font_face->was_loaded = true;
+    p_font_face->was_changed = false;
+  }
+
+  if (p_font_face->was_loaded && was_size_changed) {
+    FT_Set_Pixel_Sizes(p_font_face->ft_face, 0, font_size);
+  }
+
+  return ekg::result::success;
 }
-
-#endif

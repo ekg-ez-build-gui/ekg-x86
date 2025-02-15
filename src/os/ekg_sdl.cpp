@@ -192,8 +192,8 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
         ekg::viewport.w = sdl_event.window.data1;
         ekg::viewport.h = sdl_event.window.data2;
 
-        ekg::core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
-        ekg::core->update_size_changed();
+        ekg::p_core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
+        ekg::p_core->update_size_changed();
 
         break;
     }
@@ -261,7 +261,7 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
 
   if (must_poll_events) {
     this->system_cursor = ekg::system_cursor::arrow;
-    ekg::core->poll_events();
+    ekg::p_core->poll_events();
     must_poll_events = false;
   }
 }

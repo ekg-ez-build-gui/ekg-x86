@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_OS_VULKAN_H
-#define EKG_OS_VULKAN_H
+#ifndef EKG_OS_VULKAN_HPP
+#define EKG_OS_VULKAN_HPP
 
 #include "ekg/gpu/api.hpp"
 
-namespace ekg::os {
+namespace ekg {
   class vulkan : public ekg::gpu::api {
   protected:
     // VkDescriptorPool *p_descriptor_pool {};

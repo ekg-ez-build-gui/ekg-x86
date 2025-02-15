@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_GPU_BASE_IMPL_H
-#define EKG_GPU_BASE_IMPL_H
+#ifndef EKG_GPU_BASE_IMPL_HPP
+#define EKG_GPU_BASE_IMPL_HPP
 
 #include <iostream>
 #include <cstdint>

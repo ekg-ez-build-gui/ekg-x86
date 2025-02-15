@@ -75,6 +75,14 @@ namespace ekg {
     void render();
     void poll_events();
   };
+
+  struct runtime_property_t {
+  public:
+    std::string font_path {};
+    std::string font_path_emoji {};
+    ekg::gpu::api *p_gpu_api {};
+    ekg::os::platform *p_os_platform {};
+  };
 }
 
 #endif

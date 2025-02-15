@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_DRAW_TYPOGRAPHY_H
-#define EKG_DRAW_TYPOGRAPHY_H
+#ifndef EKG_IO_TYPOGRAPHY_HPP
+#define EKG_IO_TYPOGRAPHY_HPP
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -31,7 +31,7 @@
 
 // TODO: ref all and make like a diff way
 
-namespace ekg::draw {
+namespace ekg::io {
   struct glyph_char_t {
   public:
     float x {};
@@ -53,12 +53,6 @@ namespace ekg::draw {
     bool was_loaded {};
     FT_Vector highest_glyph_size {};
   };
-
-  ekg::flags_t reload_font_face(
-    ekg::draw::font_face_t *p_font_face,
-    bool was_size_changed,
-    uint32_t font_size
-  );
 }
 
 #endif

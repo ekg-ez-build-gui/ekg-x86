@@ -28,7 +28,7 @@
 #include "ekg/ekg.hpp"
 
 ekg::input_t &ekg::input() {
-  return ekg::core->service_input.input;
+  return ekg::p_core->service_input.input;
 }
 
 void ekg::service::input::init() {
@@ -200,7 +200,7 @@ void ekg::service::input::on_event() {
 
   float wheel_precise_interval {};
   ekg::io::serialized_input_event_t &serialized_input_event {
-    ekg::core->p_os_platform->serialized_input_event
+    ekg::p_core->p_os_platform->serialized_input_event
   };
 
   switch (serialized_input_event.event_type) {
@@ -216,13 +216,13 @@ void ekg::service::input::on_event() {
       std::string key_name {};
       std::string string_builder {};
 
-      ekg::core->p_os_platform->get_key_name(
+      ekg::p_core->p_os_platform->get_key_name(
         serialized_input_event.key,
         key_name
       );
 
       ekg::special_key_type special_key {ekg::special_key_type::unknown};
-      ekg::core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
+      ekg::p_core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
 
       if (special_key != ekg::special_key_type::unknown) {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = key_name[0];
@@ -256,13 +256,13 @@ void ekg::service::input::on_event() {
       std::string key_name {};
       std::string string_builder {};
 
-      ekg::core->p_os_platform->get_key_name(
+      ekg::p_core->p_os_platform->get_key_name(
         serialized_input_event.key,
         key_name
       );
 
       ekg::special_key_type special_key {ekg::special_key_type::unknown};
-      ekg::core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
+      ekg::p_core->p_os_platform->get_special_key(serialized_input_event.key, special_key);
 
       if (special_key != ekg::special_key_type::unknown) {
         this->special_keys[static_cast<uint64_t>(special_key)][0] = '\0';
