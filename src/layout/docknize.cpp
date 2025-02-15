@@ -7,12 +7,12 @@
 float ekg::layout::offset {2.0f};
 
 void ekg::layout::mask::preset(
-  ekg::vec3_t<float> mask_offset,
-  ekg::axis mask_axis,
+  ekg::vec3_t<float> offset,
+  ekg::flags_t axis,
   float initial_respective_size
 ) {
-  this->axis = mask_axis;
-  this->offset = mask_offset;
+  this->axis = axis;
+  this->offset = offset;
   this->respective_all = initial_respective_size;
 
   ekg::layout::extent_t::v_rect_descriptor = {};
@@ -32,7 +32,7 @@ void ekg::layout::mask::insert(
 }
 
 void ekg::layout::mask::docknize() {
-  int64_t count {};
+  int32_t count {};
   float dimensional_extent {};
   float rect_height {};
   float rect_width {};
@@ -94,7 +94,7 @@ void ekg::layout::mask::docknize() {
     center_right_corner.x = dimension_width / 2.0f;
     center_right_corner.w = this->offset.x;
 
-    for (uint64_t it {}; it < this->rect_descriptor_list.size(); it++) {
+    for (size_t it {}; it < this->rect_descriptor_list.size(); it++) {
       ekg::rect_descriptor_t &rect_descriptor {this->rect_descriptor_list.at(it)};
       if (rect_descriptor.p_rect == nullptr) {
         continue;
@@ -231,7 +231,7 @@ ekg::rect_t<float> &ekg::layout::mask::get_rect() {
 void ekg::layout::docknize_widget(
   ekg::ui::abstract *p_widget_parent
 ) {
-  if (p_widget_parent == nullptr) {
+  if (p_widget_parent == nullptr || !p_widget_parent->properties.is_docknizable) {
     return;
   }
 
@@ -247,42 +247,34 @@ void ekg::layout::docknize_widget(
     p_widget_parent->states.is_targeting_absolute_parent = false;
 
     if (p_widget_parent->properties.p_abs_parent) {
-      ekg::layout::docknize_widget(static_cast<ekg::ui::abstract*>(p_widget_parent->properties.p_abs_parent));
+      ekg::layout::docknize_widget(
+        static_cast<ekg::ui::abstract*>(p_widget_parent->properties.p_abs_parent)
+      );
       return;
     }
   }
 
-  float initial_offset {};
- 
-  bool has_scroll_embedded {};
-  bool is_vertical_enabled {};
-
   ekg::rect_t<float> container_rect {p_widget_parent->dimension};
+  ekg::theme_t &current_global_theme {ekg::theme()};
 
-  switch (type) {
-    case ekg::type::frame: {
-      ekg::service::theme_scheme_t &theme_scheme {ekg::current_theme_scheme()};
-      ekg::ui::frame_widget *p_frame {(ekg::ui::frame_widget *) p_widget_parent};
+  float initial_offset {static_cast<float>(theme.scrollbar.pixel_thickness)};
 
-      initial_offset = static_cast<float>(theme_scheme.scrollbar_pixel_thickness);
-      has_scroll_embedded = p_frame->p_scroll_embedded != nullptr;
+  if (
+    p_widget_parent->states.is_scrolling.x
+    ||
+    p_widget_parent->states.is_scrolling.y
+  ) {
+    ekg::theme_t &current_global_theme {ekg::current_theme()};
 
-      if (has_scroll_embedded) {
-        p_frame->p_scroll_embedded->check_axis_states();
-        is_vertical_enabled = p_frame->p_scroll_embedded->is_vertical_enabled;
-        initial_offset *= static_cast<float>(!theme_scheme.symmetric_layout);
+    initial_offset *= static_cast<float>(!current_global_theme.symmetric_layout);
+    container_rect.w -= initial_offset * static_cast<float>(p_widget_parent->states.is_scrolling.x);
+    container_rect.h -= initial_offset * static_cast<float>(p_widget_parent->states.is_scrolling.y);
 
-        container_rect.w -= initial_offset * static_cast<float>(is_vertical_enabled);
-        container_rect.h -= initial_offset * static_cast<float>(p_frame->p_scroll_embedded->is_horizontal_enabled);
-      }
-
-      initial_offset = static_cast<float>(theme_scheme.scrollbar_pixel_thickness) * static_cast<float>(theme_scheme.symmetric_layout);
-      break;
-    }
-
-    default: {
-      break;
-    }
+    initial_offset = (
+      static_cast<float>(current_global_theme.scrollbar.pixel_thickness)
+      *
+      static_cast<float>(current_global_theme.symmetric_layout)
+    );
   }
 
   float container_size_offset {(initial_offset + ekg::layout::offset) * 2.0f};
@@ -290,14 +282,19 @@ void ekg::layout::docknize_widget(
   container_rect.h -= container_size_offset;
 
   ekg::ui::abstract *p_widgets {};
-  ekg::flags flags {};
+  ekg::flags_t flags {};
 
-  int64_t it {};
   float dimensional_extent {};
-  int64_t count {};
+  int32_t it {};
+  int32_t count {};
 
-  ekg::rect_t<float> parent_offset {ekg::layout::offset + initial_offset, ekg::layout::offset + initial_offset, 0.0f, 0.0f};
   ekg::rect_t<float> prev_widget_layout {};
+  ekg::rect_t<float> parent_offset {
+    ekg::layout::offset + initial_offset,
+    ekg::layout::offset + initial_offset,
+    0.0f,
+    0.0f
+  };
 
   bool should_reload_widget {};
   bool should_estimate_extent {};
@@ -538,12 +535,5 @@ void ekg::layout::docknize_widget(
     it++;
   }
 
-  if (has_scroll_embedded && !is_vertical_enabled && type == ekg::type::frame) {
-    ekg::ui::frame_widget *p_frame {(ekg::ui::frame_widget *) p_widget_parent};
-    has_scroll_embedded = p_frame->p_scroll_embedded != nullptr;
-
-    if (has_scroll_embedded && !is_vertical_enabled && p_frame->p_scroll_embedded->is_vertical_enabled) {
-      ekg::layout::docknize_widget(p_widget_parent);
-    }
-  }
+  // TODO: may is necessary to re-docknize the parent widget if previous scroll is disabled but now enabled
 }

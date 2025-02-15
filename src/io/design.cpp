@@ -4,7 +4,7 @@ std::map<std::string_view, ekg::theme_t> &ekg::themes() {
   return ekg::core->service_theme.get_theme_map();
 }
 
-ekg::theme_t ekg::theme(std::string_view name) {
+ekg::theme_t &ekg::theme(std::string_view name) {
   if (name.empty()) {
     return ekg::core->service_theme.get_current_theme();
   }

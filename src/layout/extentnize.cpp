@@ -123,7 +123,7 @@ void ekg::layout::extentnize_widget(
   int32_t begin_index {in_out_count};
   switch (flag_axis & ekg::axis::horizontal) {
     case ekg::axis::horizontal: {
-      int64_t it {begin_index};
+      int32_t it {begin_index};
 
       if (
           it > ekg::layout::extent_t::h_widget.begin_index

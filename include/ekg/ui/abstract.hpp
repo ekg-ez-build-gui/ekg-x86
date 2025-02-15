@@ -41,10 +41,10 @@ namespace ekg::ui {
     bool is_absolute {};
     bool is_highlighting {};
     bool is_focusing {};
-    bool is_scrolling {};
+    ekg::vec2_t<bool> is_scrolling {};
     bool is_high_frequency {};
     bool is_targeting_absolute_parent {};
-    
+
     bool was_reloaded {};
     bool was_layout_docknized {};
     bool was_just_created {};
