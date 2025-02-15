@@ -34,8 +34,9 @@ void ekg::init(
 ) {
   ekg::log() << "Initializing FreeType library";
 
-  if (FT_Init_FreeType(&ekg::draw::font_renderer::ft_library)) {
+  if (FT_Init_FreeType(&ekg::freetype_library)) {
     ekg::log() << "Error: Failed to init FreeType library";
+    return;
   }
 
   ekg::log() << "Initializing built-in OS platform-interface";
@@ -49,23 +50,23 @@ void ekg::init(
   p_ekg_runtime->p_gpu_api->init();
   p_ekg_runtime->p_gpu_api->log_vendor_details();
 
+  ekg::log() << "Pre-Initializing EKG";
+
+  p_ekg_runtime->fr_small.init();
+  p_ekg_runtime->fr_small.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->fr_small.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+
+  p_ekg_runtime->fr_normal.init();
+  p_ekg_runtime->fr_normal.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->fr_normal.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+
+  p_ekg_runtime->fr_big.init();
+  p_ekg_runtime->fr_big.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->fr_big.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+
   ekg::log() << "Initializing EKG";
 
   ekg::p_core = p_ekg_runtime;
-  ekg::running = true;
-
-  ekg::p_core->f_renderer_small.init();
-  ekg::p_core->f_renderer_small.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::p_core->f_renderer_small.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
-
-  ekg::p_core->f_renderer_normal.init();
-  ekg::p_core->f_renderer_normal.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::p_core->f_renderer_normal.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
-
-  ekg::p_core->f_renderer_big.init();
-  ekg::p_core->f_renderer_big.set_font(p_ekg_runtime_property->p_font_path);
-  ekg::p_core->f_renderer_big.set_font_emoji(p_ekg_runtime_property->p_font_path_emoji);
-
   ekg::p_core->init();
 }
 
@@ -73,7 +74,6 @@ void ekg::quit() {
   ekg::p_core->p_os_platform->quit();
   ekg::p_core->p_gpu_api->quit();
   ekg::p_core->quit();
-  ekg::running = false;
 
   ekg::log() << "Shutdown complete - Thank you for using EKG ;) <3";
 }

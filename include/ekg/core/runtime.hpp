@@ -61,7 +61,6 @@ namespace ekg {
     ekg::draw::font_renderer draw_font_renderer_big {};
 
     ekg::layout::mask layout_mask {};
-    bool must_redraw {};
   public:
     ekg::ui::abstract *emplace_back_new_widget_safety(
       ekg::ui::abstract *p_widget
@@ -80,7 +79,6 @@ namespace ekg {
   public:
     std::string font_path {};
     std::string font_path_emoji {};
-    FT_Library *p_ft_library {};
     ekg::gpu::api *p_gpu_api {};
     ekg::os::platform *p_os_platform {};
   };

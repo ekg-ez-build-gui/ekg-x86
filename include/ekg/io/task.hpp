@@ -35,8 +35,7 @@ struct ekg::io {
   enum runtime_task_operation {
     swap,
     reload,
-    layout_docknize,
-    redraw
+    layout_docknize
   };
 
   void dispatch(ekg::io::runtime_task_operation op);

@@ -29,6 +29,8 @@
 #include FT_FREETYPE_H
 #include <cstdint>
 
+#include "memory.hpp"
+
 namespace ekg {
   // TODO: add no fixed font-rendering
   enum font {

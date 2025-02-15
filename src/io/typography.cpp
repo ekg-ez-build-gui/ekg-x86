@@ -38,7 +38,7 @@ ekg::flags_t ekg::io::refresh_font_face(
     }
 
     p_font_face->was_loaded = FT_New_Face(
-      ekg::draw::font_renderer::ft_library,
+      ekg::freetype_library,
       p_font_face->font_path.data(),
       0,
       &p_font_face->ft_face

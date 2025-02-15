@@ -463,8 +463,9 @@ int32_t showcase_useless_window() {
    */
 
   ekg::runtime_property ekg_runtime_property {
-    .p_font_path = "comic-mono.ttf",
-    .p_font_path_emoji = "twemoji.ttf",
+    .font_path = "comic-mono.ttf",
+    .font_path_emoji = "twemoji.ttf",
+    .p_ft_library = &ft_library, 
     //.p_gpu_api = new ekg::os::opengl("#version 300 es \nprecision highp float;"),
     .p_gpu_api = new ekg::os::opengl("#version 330"),
     .p_os_platform = new ekg::os::sdl(app.p_sdl_win)

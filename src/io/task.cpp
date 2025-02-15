@@ -25,14 +25,7 @@
 #include "ekg/io/task.hpp"
 
 void ekg::io::dispatch(ekg::io::runtime_task_operation op) {
-  switch (op) {
-  case ekg::runtime_task_operation::redraw:
-    ekg::p_core->must_redraw = true;
-    break;
-  default:
-    ekg::p_core->service_handler.dispatch_pre_allocated_task(
-      static_cast<uint64_t>(op)
-    );
-    break;
-  }
+  ekg::p_core->service_handler.dispatch_pre_allocated_task(
+    static_cast<uint64_t>(op)
+  );
 }

@@ -546,7 +546,8 @@ void ekg::draw::font_renderer::flush() {
 
     this->reload();
     this->last_sampler_generate_list_size = size;
-    ekg::ui::redraw = true;
+
+    ekg::redraw = true;
   }
 }
 
