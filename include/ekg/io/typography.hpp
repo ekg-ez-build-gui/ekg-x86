@@ -29,9 +29,24 @@
 #include FT_FREETYPE_H
 #include <cstdint>
 
-// TODO: ref all and make like a diff way
+namespace ekg {
+  // TODO: add no fixed font-rendering
+  enum font {
+    small,
+    normal,
+    big
+  };
+}
 
 namespace ekg::io {
+  constexpr size_t supported_faces_size {3};
+
+  enum font_face_type {
+    text,
+    emojis,
+    kanjis
+  };
+
   struct glyph_char_t {
   public:
     float x {};
@@ -48,11 +63,17 @@ namespace ekg::io {
   public:
     FT_Face ft_face {};
     FT_GlyphSlot ft_glyph_slot {};
-    std::string font_path {};
-    bool was_changed {};
+    std::string path {};
+    int32_t size {};
+    bool was_face_changed {};
+    bool was_size_changed {};
     bool was_loaded {};
     FT_Vector highest_glyph_size {};
   };
+
+  ekg::flags_t refresh_font_face(
+    ekg::io::font_face_t *p_font_face
+  );
 }
 
 #endif

@@ -80,6 +80,7 @@ namespace ekg {
   public:
     std::string font_path {};
     std::string font_path_emoji {};
+    FT_Library *p_ft_library {};
     ekg::gpu::api *p_gpu_api {};
     ekg::os::platform *p_os_platform {};
   };

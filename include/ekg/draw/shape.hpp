@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef EKG_DRAW_HPP
-#define EKG_DRAW_HPP
+#ifndef EKG_DRAW_SHAPE_HPP
+#define EKG_DRAW_SHAPE_HPP
 
 #include <vector>
 #include <iostream>

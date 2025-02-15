@@ -28,51 +28,37 @@
 #include <unordered_map>
 
 #include "ekg/gpu/allocator.hpp"
-#include "ekg/util/geometry.hpp"
+#include "ekg/math/geometry.hpp"
 #include "ekg/gpu/api.hpp"
 
 #define FT_CONFIG_OPTION_USE_PNG
 
-/**
- * EKG font-renderer may work ok to capture new glyph(s) on rendering,
- * but with some tests noticed zero wsize, which broken some widgets;
- * for solving it, easy validate the sample state and load once the char
- * when width is being calculated.
- * 
- * The point of making it a macro:
- * i wamt
- **/
-#define ekg_validate_sample_state_and_get_wsize() \
-if (!char_data.was_sampled) { \
-  if (FT_Load_Char(ft_face, char32, FT_LOAD_RENDER | FT_LOAD_DEFAULT | FT_LOAD_COLOR)) { \
-    continue; \
-  } \
-\
-  char_data.wsize = static_cast<float>(static_cast<int32_t>(ft_glyph_slot->advance.x >> 6)); \
-  this->loaded_sampler_generate_list.emplace_back(char32); \
-  char_data.was_sampled = true; \
-}
-
-/**
- * Normally an UV is normalized-clamped, so multiplying by 100
- * do the number be able to sum the factor and show some
- * effect on screen.
- * 
- * For example, a same number but UV was updated, no factor is changed
- * then the way to fix it is make UV noticable.
- **/
-#define ekg_generate_factor_hash(axis, c32, char_data_x) static_cast<int32_t>(axis + c32 + char_data_x * 100)
-
 namespace ekg::draw {
+  /**
+   * Normally an UV is normalized-clamped, so multiplying by 100
+   * do the number be able to sum the factor and show some
+   * effect on screen.
+   * 
+   * For example, a same number but UV was updated, no factor is changed
+   * then the way to fix it is make UV noticable.
+   **/
+  constexpr int32_t generate_factor_hash(
+    float axis,
+    char32_t char32,
+    float x
+  ) {
+    return static_cast<int32_t>(
+      axis + c32 + char_data_x * 100
+    )
+  }
+
   class font_renderer {
-  public:
-    static FT_Library ft_library;
   public:
     std::vector<char32_t> loaded_sampler_generate_list {};
     uint64_t last_sampler_generate_list_size {};
 
-    std::unordered_map<char32_t, ekg::draw::glyph_char_t> mapped_glyph_char_data {};
-    std::array<ekg::draw::font_face_t, 3> faces {};
+    std::unordered_map<char32_t, ekg::io::glyph_char_t> mapped_glyph_char_data {};
+    std::array<ekg::draw::font_face_t, ekg::io::supported_faces_size> faces {};
 
     ekg::sampler_t atlas_texture_sampler {};
     ekg::rect_t<int32_t> atlas_rect {};
@@ -154,8 +140,6 @@ namespace ekg::draw {
      **/
     void flush();
   };
-
-  
 }
 
 #endif

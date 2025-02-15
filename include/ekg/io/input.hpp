@@ -78,7 +78,7 @@ namespace ekg::io {
 
   struct serialized_input_event_t {
   public:
-    ekg::platform_event_type event_type {};
+    ekg::io::platform_event_type type {};
     std::string_view text_input {};
     uint8_t mouse_button {};
 

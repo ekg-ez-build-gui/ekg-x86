@@ -24,16 +24,14 @@
 
 #include "ekg/draw/font_renderer.hpp"
 
-ekg::flags_t ekg::draw::reload_font_face(
-  ekg::draw::font_face_t *p_font_face,
-  bool was_size_changed,
-  uint32_t font_size
+ekg::flags_t ekg::io::refresh_font_face(
+  ekg::io::font_face_t *p_font_face
 ) {
   if (p_font_face == nullptr) {
     return ekg::result::failed;
   }
 
-  if (p_font_face->was_changed) {
+  if (p_font_face->was_face_changed) {
     if (p_font_face->was_loaded) {
       FT_Done_Face(p_font_face->ft_face);
       p_font_face->was_loaded = false;
@@ -54,11 +52,12 @@ ekg::flags_t ekg::draw::reload_font_face(
     ekg::log() << "Font '" << p_font_face->font_path << "' loaded!"; 
 
     p_font_face->was_loaded = true;
-    p_font_face->was_changed = false;
+    p_font_face->was_face_changed = false;
   }
 
-  if (p_font_face->was_loaded && was_size_changed) {
-    FT_Set_Pixel_Sizes(p_font_face->ft_face, 0, font_size);
+  if (p_font_face->was_loaded && p_font_face->was_size_changed) {
+    FT_Set_Pixel_Sizes(p_font_face->ft_face, 0, p_font_face->size);
+    p_font_face->was_size_changed = false;
   }
 
   return ekg::result::success;

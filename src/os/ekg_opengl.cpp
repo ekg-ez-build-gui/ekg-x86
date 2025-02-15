@@ -319,16 +319,15 @@ ekg::flags_t ekg::opengl::fill_sampler(
 
 ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   ekg::sampler_t *p_sampler,
-  ekg::draw::font_face_t *p_font_face_text,
-  ekg::draw::font_face_t *p_font_face_emoji,
-  ekg::draw::font_face_t *p_font_face_kanjis,
+  ekg::io::font_face_t *p_font_face_text,
+  ekg::io::font_face_t *p_font_face_emoji,
+  ekg::io::font_face_t *p_font_face_kanjis,
   ekg::rect_t<int32_t> &atlas_rect,
   std::vector<char32_t> &char_to_gen_sampler_list,
-  std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
+  std::unordered_map<char32_t, ekg::io::glyph_char_t> &mapped_gpu_data_char_glyph,
   float &non_swizzlable_range
 ) {
-  constexpr enum_count_font_face_type {3};
-  ekg::draw::font_face_t *faces[3] {
+  ekg::io::font_face_t *faces[ekg::io::supported_faces_size] {
     p_font_face_text,
     p_font_face_emoji,
     p_font_face_kanjis
@@ -338,8 +337,8 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   float square {};
   FT_Vector highest_glyph_size {};
 
-  for (size_t it {}; it < 3; it++) {
-    ekg::draw::font_face_t *&p_font_face {
+  for (size_t it {}; it < ekg::io::supported_faces_size; it++) {
+    ekg::io::font_face_t *&p_font_face {
       faces[it]
     };
 
@@ -432,7 +431,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
       continue;
     }
 
-    ekg::draw::glyph_char_t &char_data {mapped_glyph_char_data[char32]};
+    ekg::io::glyph_char_t &char_data {mapped_glyph_char_data[char32]};
     char_data.x = offset / static_cast<float>(atlas_width);
 
     p_current_image_buffer = ft_glyph_slot->bitmap.buffer;

@@ -32,7 +32,7 @@
 #include <unordered_map>
 
 #include "ekg/math/geometry.hpp"
-#include "ekg/draw/typography.hpp"
+#include "ekg/io/typography.hpp"
 #include "ekg/io/gpu.hpp"
 
 namespace ekg::gpu {
@@ -69,12 +69,12 @@ namespace ekg::gpu {
 
     virtual ekg::flags_t gen_font_atlas_and_map_glyph(
       ekg::sampler_t *p_sampler,
-      ekg::draw::font_face_t *p_font_face_text,
-      ekg::draw::font_face_t *p_font_face_emoji,
-      ekg::draw::font_face_t *p_font_face_kanjis,
+      ekg::io::font_face_t *p_font_face_text,
+      ekg::io::font_face_t *p_font_face_emoji,
+      ekg::io::font_face_t *p_font_face_kanjis,
       ekg::rect_t<int32_t> &atlas_rect,
       std::vector<char32_t> &char_to_gen_sampler_list,
-      std::unordered_map<char32_t, ekg::draw::glyph_char_t> &mapped_gpu_data_char_glyph,
+      std::unordered_map<char32_t, ekg::io::glyph_char_t> &mapped_gpu_data_char_glyph,
       float &non_swizzlable_range
     ) { return ekg::result::not_implemented; };
 
