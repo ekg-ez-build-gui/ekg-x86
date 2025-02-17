@@ -59,7 +59,7 @@ namespace ekg {
    */
   void init(
     ekg::runtime *p_ekg_runtime,
-    ekg::runtime_property_t *p_ekg_runtime_property_t
+    ekg::runtime_property_t *p_ekg_runtime_property
   );
 
   /**
