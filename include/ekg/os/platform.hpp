@@ -37,7 +37,7 @@ namespace ekg::os {
   public:
     virtual void init() {}
     virtual void quit() {}
-    virtual void update_monitor_resolution() {}
+    virtual void update_display_size() {}
     virtual void update_cursor() {}
     virtual void get_key_name(ekg::io::input_key_t &key, std::string &name) {}
     virtual void get_special_key(ekg::io::input_key_t &key, ekg::special_key_type special_key) {}

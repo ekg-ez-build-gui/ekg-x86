@@ -1,48 +1,69 @@
 #include "ekg/layout/dimension.hpp"
+#include "ekg/ekg.hpp"
 
 float ekg::layout::estimate_height(
-  ekg::ui::abstract_widget *p_parent_widget
+  ekg::ui::abstract *p_parent_widget
 ) {
-  if (p_parent_widget == nullptr) {
+  if (
+      p_parent_widget == nullptr
+      ||
+      !p_parent_widget->properties.is_docknizable
+    ) {
     return 0.0f;
   }
 
-  ekg::ui::abstract_widget *p_widgets {};
-  ekg::flags flags {};
+  ekg::theme_t &current_global_theme {ekg::p_core->service_theme.get_current_theme()};
+  ekg::ui::abstract *p_widgets {};
+  ekg::flags_t flags {};
+
   float total_height {};
   float height {};
 
-  for (int32_t &ids : p_parent_widget->p_data->get_child_id_list()) {
-    if (ids == 0 || (p_widgets = ekg::p_core->get_fast_widget_by_id(ids)) == nullptr) {
+  for (ekg::properites_t *&p_properties : p_widget_parent->properties.children) {
+    if (
+        p_properties == nullptr
+        ||
+        p_properties->p_widget == nullptr
+      ) {
       continue;
     }
 
+    p_widgets = static_cast<ekg::ui::abstract*>(p_properties);
     p_widgets->on_reload();
 
-    flags = p_widgets->p_data->get_place_dock();
-    height = p_widgets->dimension.h;
+    flags = p_widgets->properties.dock;
+    height = p_widgets->rect.h;
 
-    if (p_widgets->p_data->has_children()) {
-      height = ekg::layout::height(p_widgets); 
+    if (
+        p_widgets->properties.is_docknizable
+        &&
+        p_widgets->properties.children.empty()
+      ) {
+      height = ekg::layout::estimate_height(p_widgets); 
     }
 
     total_height += (
       height
       *
-      (ekg_equals_float(total_height, 0.0f) || ekg_bitwise_contains(flags, ekg::dock::next))
+      (
+        ekg::fequalsf(total_height, 0.0f)
+        ||
+        ekg::has(flags, ekg::dock::next)
+      )
       +
-      ekg::layout::offset
+      current_global_theme.layout_offset
     );
   }
 
   total_height += (
-    ekg::layout::offset // top
+    current_global_theme.layout_offset // top
     +
-    ekg::layout::offset // top
+    current_global_theme.layout_offset // top
     +
-    ekg::layout::offset // bottom
+    current_global_theme.layout_offset // bottom
     +
-    ekg::layout::offset // bottom
+    current_global_theme.layout_offset // bottom
   );
+
   return total_height;
 }

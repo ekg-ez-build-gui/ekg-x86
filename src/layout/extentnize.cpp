@@ -1,5 +1,5 @@
 #include "ekg/layout/extentnize.hpp"
-#include "ekg/io/design.hpp"
+#include "ekg/ekg.hpp"
 
 ekg::layout::extent_t ekg::layout::extent_t::v_widget {};
 ekg::layout::extent_t ekg::layout::extent_t::h_widget {};
@@ -78,13 +78,11 @@ void ekg::layout::extentnize_rect_descriptor(
           break;
         }
 
-        should_skip_next += static_cast<bool>(
-          ekg::has(rect_descriptor.flags, ekg::dock::bind)
-        );
+        should_skip_next += ekg::has(rect_descriptor.flags, ekg::dock::bind);
 
         if (should_skip_next > 0) {
           should_skip_next = (should_skip_next + 1) * (should_skip_next < 2);
-          flag_ok_count += static_cast<bool>(ekg::has(rect_descriptor.flags, flag_ok));
+          flag_ok_count += ekg::has(rect_descriptor.flags, flag_ok));
           continue;
         }
 
@@ -138,7 +136,7 @@ void ekg::layout::extentnize_widget(
 
       ekg::layout::extent_t::h_widget.begin_index = static_cast<float>(it);
       ekg::ui::abstract_widget *p_widgets {};
-      ekg::theme_t &current_theme {ekg::theme()};
+      ekg::theme_t &current_global_theme {ekg::p_core->service_theme.get_current_theme()};
 
       int32_t size {static_cast<int32_t>(p_widget->properties.children.size())};
       int32_t latest_index {size - (!p_widget->properties.children.empty())};
@@ -172,7 +170,7 @@ void ekg::layout::extentnize_widget(
             is_scrollbar
           ) {
 
-          extent -= (current_theme.layout_offset) * (extent > 0.0f);
+          extent -= (current_global_theme.layout_offset) * (extent > 0.0f);
 
           is_last_index_but = (
             is_ok && is_last_index
@@ -244,7 +242,7 @@ void ekg::layout::extentnize_widget(
           continue;
         }
 
-        extent += p_widgets->rect.w + current_theme.layout_offset;
+        extent += p_widgets->rect.w + current_global_theme.layout_offset;
       }
 
       in_out_count = flag_ok_count + (flag_ok_count == 0);

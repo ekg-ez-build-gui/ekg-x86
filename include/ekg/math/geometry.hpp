@@ -41,6 +41,14 @@ namespace ekg {
     }
 
     // TODO: add non-useless vector 2 properties operators
+  
+    template<typename t>
+    operator ekg::vec2_t<t>() {
+      return ekg::vec2_t<t>{
+        static_cast<t>(this->x),
+        static_cast<t>(this->y)
+      };
+    }
   };
 
   template<typename t>
@@ -62,6 +70,15 @@ namespace ekg {
     }
 
     // TODO: add non-useless vector 3 properties operators
+
+    template<typename t>
+    operator ekg::vec3_t<t>() {
+      return ekg::vec3_t<t>{
+        static_cast<t>(this->x),
+        static_cast<t>(this->y),
+        static_cast<t>(this->z)
+      };
+    }
   };
 
   template<typename t>
@@ -85,6 +102,16 @@ namespace ekg {
     }
 
     // TODO: add non-useless vector 4 properties operators
+
+    template<typename t>
+    operator ekg::vec4_t<t>() {
+      return ekg::vec4_t<t>{
+        static_cast<t>(this->x),
+        static_cast<t>(this->y),
+        static_cast<t>(this->z),
+        static_cast<t>(this->w)
+      };
+    }
 
     template<typename s>
     ekg::vec4_t<t> operator / (s div_by) {
@@ -129,6 +156,26 @@ namespace ekg {
     }
 
     // TODO: add non-useless rect (aka vector 4 properties) operators
+
+    template<typename t>
+    operator ekg::rect_t<t>() {
+      return ekg::rect_t<t>{
+        static_cast<t>(this->x),
+        static_cast<t>(this->y),
+        static_cast<t>(this->w),
+        static_cast<t>(this->h)
+      };
+    }
+    
+    template<typename t>
+    operator ekg::vec4_t<t>() {
+      return ekg::vec4_t<t>{
+        static_cast<t>(this->x),
+        static_cast<t>(this->y),
+        static_cast<t>(this->w),
+        static_cast<t>(this->h)
+      };
+    }
   };
 
   struct rect_descriptor_t {

@@ -277,8 +277,8 @@ void ekg::runtime::update() {
 }
 
 void ekg::runtime::render() {
-  if (ekg::redraw) {
-    ekg::redraw = false;
+  if (ekg::viewport.redraw) {
+    ekg::viewport.redraw = false;
 
     /**
      * The allocator starts here, the GPU data instance

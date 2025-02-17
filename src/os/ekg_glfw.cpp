@@ -2,8 +2,13 @@
 #include "ekg/ui/display.hpp"
 #include "ekg/ekg.hpp"
 
-ekg::os::glfw::glfw(GLFWwindow *p_glfw_win) {
+ekg::glfw::glfw(
+  GLFWwindow *p_glfw_win,
+  ekg::flags_t modes
+) {
   this->p_glfw_win = p_glfw_win;
+  this->modes = modes;
+  this->update_display_size();
 
   int32_t w {}, h {};
 
@@ -17,42 +22,45 @@ ekg::os::glfw::glfw(GLFWwindow *p_glfw_win) {
   glfwSetWindowSize(this->p_glfw_win, w++, h++);
 }
 
-void ekg::os::glfw::init() {
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::arrow)]      = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::ibeam)]      = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::wait)]       = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::crosshair)]  = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::wait_arrow)] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_nwse)]  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_nesw)]  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_we)]    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_ns)]    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_all)]   = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::no)]         = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::hand)]       = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+void ekg::glfw::init() {
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::arrow)]      = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::ibeam)]      = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::wait)]       = glfwCreateStandardCursor(GLFW_CURSOR_NORMAL);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::crosshair)]  = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::wait_arrow)] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_nwse)]  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_nesw)]  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_we)]    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_ns)]    = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_all)]   = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::no)]         = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::hand)]       = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
 }
 
-void ekg::os::glfw::quit() {
+void ekg::glfw::quit() {
 
 }
 
-void ekg::os::glfw::update_monitor_resolution() {
+void ekg::glfw::update_display_size() {
   const GLFWvidmode *p_glfw_vidmode {glfwGetVideoMode(glfwGetPrimaryMonitor())};
 
-  this->monitor_resolution[0] = p_glfw_vidmode->width;
-  this->monitor_resolution[1] = p_glfw_vidmode->height;
+  this->display_size.x = p_glfw_vidmode->width;
+  this->display_size.y = p_glfw_vidmode->height;
 
-  this->update_cursor(ekg::system_cursor::arrow);
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->update_cursor(ekg::system_cursor_type::arrow);
+  this->system_cursor = ekg::system_cursor_type::arrow;
 
   glfwGetWindowSize(this->p_glfw_win, &ekg::ui::width, &ekg::ui::height);
 }
 
-void ekg::os::glfw::update_cursor(ekg::system_cursor system_cursor) {
-  glfwSetCursor(this->p_glfw_win, this->loaded_system_cursor_list[static_cast<uint64_t>(system_cursor)]);
+void ekg::glfw::update_cursor() {
+  glfwSetCursor(
+    this->p_glfw_win,
+    this->loaded_system_cursor_list[static_cast<uint64_t>(system_cursor)]
+  );
 }
 
-void ekg::os::glfw::get_key_name(io_key &key, std::string &name) {
+void ekg::glfw::get_key_name(ekg::io::input_key_t &key, std::string &name) {
   switch (key.key) {
     case GLFW_KEY_LEFT_CONTROL:
       name = "lctrl";
@@ -273,7 +281,7 @@ void ekg::os::glfw::get_key_name(io_key &key, std::string &name) {
   }
 }
 
-void ekg::os::glfw::get_special_key(io_key &key, ekg::special_key &special_key) {
+void ekg::glfw::get_special_key(ekg::io::input_key_t &key, ekg::special_key &special_key) {
   switch (key.key) {
     case GLFW_KEY_LEFT_CONTROL:
       special_key = ekg::special_key::left_ctrl;
@@ -302,24 +310,24 @@ void ekg::os::glfw::get_special_key(io_key &key, ekg::special_key &special_key) 
   }
 }
 
-const char *ekg::os::glfw::get_clipboard_text() {
+const char *ekg::glfw::get_clipboard_text() {
   return glfwGetClipboardString(this->p_glfw_win);
 }
 
-void ekg::os::glfw::set_clipboard_text(const char *p_text) {
+void ekg::glfw::set_clipboard_text(const char *p_text) {
   glfwSetClipboardString(this->p_glfw_win, p_text);
 
 }
 
-bool ekg::os::glfw::has_clipboard_text() {
+bool ekg::glfw::has_clipboard_text() {
   return glfwGetClipboardString(this->p_glfw_win) != NULL;
 }
 
-uint64_t ekg::os::glfw::get_ticks() {
+uint64_t ekg::glfw::get_ticks() {
   return static_cast<uint64_t>(glfwGetTime() * 1000);
 }
 
-void ekg::os::glfw_window_size_callback(int32_t w, int32_t h) {
+void ekg::glfw_window_size_callback(int32_t w, int32_t h) {
   ekg::ui::width = w;
   ekg::ui::height = h;
         
@@ -327,7 +335,7 @@ void ekg::os::glfw_window_size_callback(int32_t w, int32_t h) {
   ekg::p_core->update_size_changed();
 }
 
-void ekg::os::glfw_scroll_callback(double dx, double dy) {
+void ekg::glfw_scroll_callback(double dx, double dy) {
   ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::mouse_wheel;
   serialized.mouse_wheel_x = static_cast<int32_t>(dx);
@@ -336,12 +344,12 @@ void ekg::os::glfw_scroll_callback(double dx, double dy) {
   serialized.mouse_wheel_precise_y = dy;
 
   ekg::poll_io_event = true;
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
-void ekg::os::glfw_char_callback(uint32_t codepoint) {
+void ekg::glfw_char_callback(uint32_t codepoint) {
   ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::text_input;
 
@@ -351,12 +359,12 @@ void ekg::os::glfw_char_callback(uint32_t codepoint) {
   serialized.text_input = (c);
 
   ekg::poll_io_event = true;
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
-void ekg::os::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, int32_t mods) {
+void ekg::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, int32_t mods) {
   ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   std::string a {};
 
@@ -383,12 +391,12 @@ void ekg::os::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, i
     break;
   }
 
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
-void ekg::os::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mods) {
+void ekg::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mods) {
   ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
 
   /**
@@ -420,19 +428,19 @@ void ekg::os::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t
     break;
   }
 
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }
 
-void ekg::os::glfw_cursor_pos_callback(double x, double y) {
+void ekg::glfw_cursor_pos_callback(double x, double y) {
   ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
   serialized.event_type = ekg::platform_event_type::mouse_motion;
   serialized.mouse_motion_x = static_cast<float>(x);
   serialized.mouse_motion_y = static_cast<float>(y);
 
   ekg::poll_io_event = true;
-  ekg::cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
   ekg::poll_io_event = false;
 }

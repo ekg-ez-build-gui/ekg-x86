@@ -35,7 +35,7 @@ ekg::sdl::sdl(
 ) {
   this->p_sdl_win = p_sdl_win;
   this->modes = modes;
-  this->update_monitor_resolution();
+  this->update_display_size();
 
   int32_t w {}, h {};
 
@@ -101,7 +101,7 @@ void ekg::sdl::update_cursor() {
   );
 }
 
-void ekg::sdl::update_monitor_resolution() {
+void ekg::sdl::update_display_size() {
   SDL_DisplayMode sdl_display_mode {};
   SDL_GetDisplayMode(0, 0, &sdl_display_mode);
 

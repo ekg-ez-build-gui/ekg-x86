@@ -4,8 +4,6 @@
 #include "ekg/ui/frame/ui_frame_widget.hpp"
 #include "ekg/layout/extentnize.hpp"
 
-float ekg::layout::offset {2.0f};
-
 void ekg::layout::mask::preset(
   ekg::vec3_t<float> offset,
   ekg::flags_t axis,
@@ -264,8 +262,6 @@ void ekg::layout::docknize_widget(
     ||
     p_widget_parent->states.is_scrolling.y
   ) {
-    ekg::theme_t &current_global_theme {ekg::current_theme()};
-
     initial_offset *= static_cast<float>(!current_global_theme.symmetric_layout);
     container_rect.w -= initial_offset * static_cast<float>(p_widget_parent->states.is_scrolling.x);
     container_rect.h -= initial_offset * static_cast<float>(p_widget_parent->states.is_scrolling.y);
@@ -277,7 +273,7 @@ void ekg::layout::docknize_widget(
     );
   }
 
-  float container_size_offset {(initial_offset + ekg::layout::offset) * 2.0f};
+  float container_size_offset {(initial_offset + current_global_theme.layout_offset) * 2.0f};
   container_rect.w -= container_size_offset;
   container_rect.h -= container_size_offset;
 
@@ -290,8 +286,8 @@ void ekg::layout::docknize_widget(
 
   ekg::rect_t<float> prev_widget_layout {};
   ekg::rect_t<float> parent_offset {
-    ekg::layout::offset + initial_offset,
-    ekg::layout::offset + initial_offset,
+    current_global_theme.layout_offset + initial_offset,
+    current_global_theme.layout_offset + initial_offset,
     0.0f,
     0.0f
   };
@@ -361,7 +357,7 @@ void ekg::layout::docknize_widget(
         ekg::layout::transform_dimension_from_extent(
           container_rect.w,
           dimensional_extent,
-          ekg::layout::offset,
+          current_global_theme.layout_offset,
           count
         ),
         p_widgets->min_size.x
@@ -375,7 +371,7 @@ void ekg::layout::docknize_widget(
     switch (flags & ekg::dock::bottom) {
     case ekg::dock::bottom:
       if (ekg::fequalsf(corner_bottom_right.y, 0.0f)) {
-        corner_bottom_right.y += highest_bottom + ekg::layout::offset;
+        corner_bottom_right.y += highest_bottom + current_global_theme.layout_offset;
         corner_bottom_left.y = corner_bottom_right.y;
       }
 
@@ -383,7 +379,7 @@ void ekg::layout::docknize_widget(
         corner_bottom_left.x = parent_offset.x;
         corner_bottom_right.x = 0.0f;
 
-        corner_bottom_left.y += highest_bottom + ekg::layout::offset;
+        corner_bottom_left.y += highest_bottom + current_global_theme.layout_offset;
         corner_bottom_right.y = corner_bottom_left.y;
         highest_bottom = 0.0f;
       }
@@ -396,20 +392,20 @@ void ekg::layout::docknize_widget(
               corner_top_right.y,
               corner_bottom_right.y,
               container_rect.h,
-              ekg::layout::offset
+              current_global_theme.layout_offset
             ),
-            corner_top_right.y + ekg::layout::offset + highest_bottom
+            corner_top_right.y + current_global_theme.layout_offset + highest_bottom
           )
         );
 
-        corner_bottom_left.x += p_widgets->rect.w + ekg::layout::offset;
+        corner_bottom_left.x += p_widgets->rect.w + current_global_theme.layout_offset;
       }
 
       if (is_next && is_right) {
         corner_bottom_left.x = parent_offset.x;
         corner_bottom_right.x = 0.0f;
 
-        corner_bottom_right.y += highest_bottom + ekg::layout::offset;
+        corner_bottom_right.y += highest_bottom + current_global_theme.layout_offset;
         corner_bottom_left.y = corner_bottom_right.y;
         highest_bottom = 0.0f;
       }
@@ -421,7 +417,7 @@ void ekg::layout::docknize_widget(
             corner_bottom_left.x,
             corner_bottom_right.x,
             container_rect.w,
-            ekg::layout::offset
+            current_global_theme.layout_offset
           )
         );
 
@@ -431,13 +427,13 @@ void ekg::layout::docknize_widget(
               corner_top_right.y,
               corner_bottom_right.y,
               container_rect.h,
-              ekg::layout::offset
+              current_global_theme.layout_offset
             ),
-            corner_top_right.y + ekg::layout::offset + highest_bottom
+            corner_top_right.y + current_global_theme.layout_offset + highest_bottom
           )
         );
 
-        corner_bottom_right.x += ekg::layout::offset;
+        corner_bottom_right.x += current_global_theme.layout_offset;
       }
 
       highest_bottom = ekg::min_clamp(highest_bottom, p_widgets->rect.h);
@@ -446,7 +442,7 @@ void ekg::layout::docknize_widget(
       if (is_next && is_left) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
-        corner_top_left.y += highest_top + ekg::layout::offset;
+        corner_top_left.y += highest_top + current_global_theme.layout_offset;
         corner_top_right.y = corner_top_left.y;
         highest_top = 0.0f;
       }
@@ -455,13 +451,13 @@ void ekg::layout::docknize_widget(
         p_widgets->rect.x = corner_top_left.x;
         p_widgets->rect.y = corner_top_left.y;
   
-        corner_top_left.x += p_widgets->rect.w + ekg::layout::offset;
+        corner_top_left.x += p_widgets->rect.w + current_global_theme.layout_offset;
       }
 
       if (is_next && is_right) {
         corner_top_left.x = parent_offset.x;
         corner_top_right.x = 0.0f;
-        corner_top_right.y += highest_top + ekg::layout::offset;
+        corner_top_right.y += highest_top + current_global_theme.layout_offset;
         corner_top_left.y = corner_top_right.y;
         highest_top = 0.0f;
       }
@@ -473,11 +469,11 @@ void ekg::layout::docknize_widget(
             corner_top_left.x,
             corner_top_right.x,
             container_rect.w,
-            ekg::layout::offset
+            current_global_theme.layout_offset
           )
         );
 
-        corner_top_right.x += ekg::layout::offset;
+        corner_top_right.x += current_global_theme.layout_offset;
         p_widgets->rect.y = corner_top_right.y;
       }
 
@@ -507,7 +503,7 @@ void ekg::layout::docknize_widget(
       fill_align.was_pixel_perfect_calculated = true;
       
       corner_top_right.x = fill_align.align;
-      corner_bottom_right.x = fill_align.align + ekg::layout::offset;
+      corner_bottom_right.x = fill_align.align + current_global_theme.layout_offset;
     } else if (
       is_fill
       &&

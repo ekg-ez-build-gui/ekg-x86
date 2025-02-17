@@ -48,7 +48,7 @@ namespace ekg {
   public:
     void init() override;
     void quit() override;
-    void update_monitor_resolution() override;
+    void update_display_size() override;
     void update_cursor(ekg::system_cursor_type system_cursor) override;
     void get_key_name(ekg::io::input_key_t &key, std::string &name) override;
     void get_special_key(ekg::io::input_key_t &key, ekg::special_key_type &special_key) override;

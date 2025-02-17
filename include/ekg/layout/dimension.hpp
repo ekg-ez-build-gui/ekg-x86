@@ -6,8 +6,8 @@ namespace ekg {
    * Estimate height from a container children list.
    * Note: Recursive.
    **/
-  float estimate_height(
-    ekg::ui::abstract_widget *p_parent_widget
+  float estimate_docknizable_height(
+    ekg::ui::abstract *p_parent_widget
   );
 }
 

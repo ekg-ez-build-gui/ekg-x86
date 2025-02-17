@@ -1,18 +1,21 @@
 #include "ekg/ekg.hpp"
 #include "ekg/layout/scale.hpp"
 
-float ekg::layout::scale_factor {1.0f};
-
 void ekg::layout::scale_calculate() {
-  ekg::vec2 monitor_resolution {ekg::ui::scale};
-  ekg::vec2 input_resolution {static_cast<float>(ekg::ui::width), static_cast<float>(ekg::ui::height)};
+  ekg::vec2_t<float> display_size {ekg::viewport.scale.x, ekg::viewport.scale.y};
+  ekg::vec2_t<float> viewport {ekg::viewport.w, ekg::viewport.h};
 
-  if (ekg::ui::auto_scale) {
-    ekg::p_core->p_os_platform->update_monitor_resolution();
-    monitor_resolution.x = static_cast<float>(ekg::p_core->p_os_platform->monitor_resolution[0]);
-    monitor_resolution.y = static_cast<float>(ekg::p_core->p_os_platform->monitor_resolution[1]);
-    ekg::ui::scale = {1920.0f, 1080.0f};
-    input_resolution = monitor_resolution;
+  if (ekg::viewport.auto_scale) {
+    ekg::p_core->p_os_platform->update_display_size();
+
+    display_size = static_cast<ekg::vec2_t<float>>(
+      ekg::p_core->p_os_platform->display_size
+    );
+
+    ekg::viewport.scale.x = 1920.0f;
+    ekg::viewport.scale.y = 1080.0f;
+
+    viewport = display_size;
   }
 
   /**
@@ -32,28 +35,34 @@ void ekg::layout::scale_calculate() {
    **/
 
   float base_scale {
-    ekg::ui::scale.x * ekg::ui::scale.y
+    ekg::viewport.scale.x * ekg::viewport.scale.y
   };
 
-  float monitor_scale {
-    monitor_resolution.x * monitor_resolution.y
+  float display_scale {
+    display_size.x * display_size.y
   };
 
-  float monitor_factor {
-    monitor_scale / base_scale
+  float display_factor {
+    display_scale / base_scale
   };
 
-  float monitor_scale_percent {
-    monitor_factor * 100.0f
+  float display_scale_percent {
+    display_factor * 100.0f
   };
   
   float factor {
-    ((input_resolution.x * input_resolution.y) / base_scale) * 100.0f
+    (
+      (viewport.x * viewport.y)
+      /
+      base_scale
+    ) * 100.0f
   };
 
   factor = (
-    roundf(factor / ekg::ui::scale_interval) / (monitor_scale_percent / ekg::ui::scale_interval)
+    roundf(factor / ekg::viewport.scale_interval)
+    /
+    (display_scale_percent / ekg::viewport.scale_interval)
   );
 
-  ekg::layout::scale_factor = ekg_clamp(factor, 0.5f, 2.0f);
+  ekg::viewport.scale.z = ekg::clamp(factor, 0.5f, 2.0f);
 }

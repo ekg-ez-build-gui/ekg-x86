@@ -29,7 +29,6 @@
 #include <vector>
 
 #include "ekg/gpu/api.hpp"
-#include "ekg/util/geometry.hpp"
 
 namespace ekg::gpu {
   class allocator {

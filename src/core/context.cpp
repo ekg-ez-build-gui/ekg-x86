@@ -1,4 +1,5 @@
 #include "ekg/context.hpp"
 
 FT_Library ekg::freetype_library {};
-bool ekg::redraw {};
+ekg::viewport_t ekg::viewport {};
+ekg::current_t ekg::current {};
