@@ -193,7 +193,7 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
         ekg::viewport.h = sdl_event.window.data2;
 
         ekg::p_core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
-        ekg::p_core->update_size_changed();
+        ekg::io::dispatch(ekg::io::runtime_task_operation::scale_update);
 
         break;
     }

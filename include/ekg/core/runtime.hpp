@@ -35,6 +35,14 @@
 #include <memory>
 
 namespace ekg {
+  struct runtime_property_t {
+  public:
+    std::string font_path {};
+    std::string font_path_emoji {};
+    ekg::gpu::api *p_gpu_api {};
+    ekg::os::platform *p_os_platform {};
+  };
+
   class runtime {
   private:
     /**
@@ -45,8 +53,10 @@ namespace ekg {
 
     std::vector<ekg::ui::abstract*> context_widget_list {};
     std::vector<ekg::ui::abstract*> high_frequency_widget_list {};
-    ekg::ui::abstract *p_abs_activity_widget {};
+    std::vector<ekg::ui::abstract*> reload_widget_list {};
+    std::vector<ekg::ui::abstract*> layout_docknize_list {};
 
+    ekg::ui::abstract *p_abs_activity_widget {};
     ekg::io::target_collector_t swap_target_collector {};
   public:
     ekg::service::handler service_handler {};
@@ -56,9 +66,9 @@ namespace ekg {
     ekg::gpu::allocator gpu_allocator {};
     ekg::gpu::api *p_gpu_api {};
 
-    ekg::draw::font_renderer draw_font_renderer_small {};
-    ekg::draw::font_renderer draw_font_renderer_normal {};
-    ekg::draw::font_renderer draw_font_renderer_big {};
+    ekg::draw::font_renderer draw_fr_small {};
+    ekg::draw::font_renderer draw_fr_normal {};
+    ekg::draw::font_renderer draw_fr_big {};
 
     ekg::layout::mask layout_mask {};
   public:
@@ -73,14 +83,6 @@ namespace ekg {
     void update();
     void render();
     void poll_events();
-  };
-
-  struct runtime_property_t {
-  public:
-    std::string font_path {};
-    std::string font_path_emoji {};
-    ekg::gpu::api *p_gpu_api {};
-    ekg::os::platform *p_os_platform {};
   };
 }
 

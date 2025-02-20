@@ -15,7 +15,12 @@ namespace ekg {
     float h {};
 
     bool auto_scale {};
-    ekg::vec4_t<float> scale {};
+    ekg::rect_t<float> scale {};
+
+    float font_scale {18.0f};
+    float factor_scale {};
+    ekg::vec_2<uint32_t> font_offset {4, 6};
+
     bool redraw {};
   } viewport;
 
@@ -28,6 +33,10 @@ namespace ekg {
     ekg::id_t unique_id {};
     ekg::type type {};
   } current;
+
+  constexpr uint32_t minimum_small_font_height {4};
+  constexpr uint32_t minimum_font_height {8};
+  constexpr uint32_t minimum_big_font_height {12};
 }
 
 #endif

@@ -1,4 +1,5 @@
 #include "ekg/core/runtime.hpp"
+#include "ekg/layout/scale.hpp"
 
 void ekg::runtime::init() {
   this->service_handler.init();
@@ -80,23 +81,135 @@ void ekg::runtime::init() {
     this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
   };
 
+  this->service_handler.allocate() = new ekg::task_t {
+    .info = {
+      .tag = "reload",
+      .p_properties = nullptr,
+      .p_data = nullptr
+    },
+    .function = [this](ekg::info_t &info) {
+      for (ekg::ui::abstract *&p_widgets : this->reload_widget_list) {
+        if (!p_widgets->states.was_reloaded) {
+          continue;
+        }
+
+        p_widgets->on_reload();
+        p_widgets->states.was_reloaded = false;
+      }
+
+      this->reload_widget_list.clear();
+    }
+  };
+
+  this->service_handler.allocate() = new ekg::task_t {
+    .info = {
+      .tag = "layout-docknize",
+      .p_properties = nullptr,
+      .p_data = nullptr
+    },
+    .function = [this](ekg::info_t &info) {
+      for (ekg::ui::abstract *&p_widgets : this->layout_docknize_list) {
+        if (!p_widgets->states.was_layout_docknized) {
+          continue;
+        }
+
+        ekg::layout::docknize_widget(p_widgets);
+        p_widgets->states.was_layout_docknized = false;
+      }
+
+      this->layout_docknize_list.clear();
+    }
+  };
+
+  this->service_handler.allocate() = new ekg::task_t {
+    .info = {
+      .tag = "scale-update",
+      .p_properties = nullptr,
+      .p_data = nullptr
+    },
+    .function = [this](ekg::info_t &info) {
+      ekg::layout::scale_update();
+
+      ekg::viewport.font_scale = ekg::clamp(
+        ekg::viewport.font_scale,
+        static_cast<float>(ekg::minimum_font_height),
+        static_cast<float>(UINT8_MAX)
+      );
+
+      uint32_t font_size {
+        ekg::clamp(
+          static_cast<uint32_t>(
+            ekg::viewport.font_scale
+            *
+            ekg::viewport.factor_scale
+          ),
+          0,
+          UINT8_MAX
+        )
+      };
+
+      if (this->draw_fr_normal.font_size != font_size) {
+        this->draw_fr_small.set_size(
+          ekg::clamp_min(
+            font_size - ekg::viewport.font_offset.x,
+            ekg::minimum_small_font_height
+          )
+        );
+
+        this->draw_fr_normal.set_size(
+          ekg::clamp_min(
+            font_size,
+            ekg::minimum_font_height
+          )
+        );
+
+
+        this->draw_fr_big.set_size(
+          ekg::clamp_min(
+            font_size + ekg::viewport.font_offset.y,
+            ekg::minimum_big_font_height
+          )
+        );
+      }
+
+      for (ekg::ui::abstract *&p_widgets : this->context_widget_list) {
+        if (p_widgets == nullptr || !p_widgets->properties.is_docknizable) {
+          continue;
+        }
+
+        this->reload_widget_list.push_back(p_widgets);
+        p_widgets->states.was_reloaded = true;
+
+        this->layout_docknize_list.push_back(p_widgets);
+        p_widgets->states.was_layout_docknized = true;
+      }
+
+      ekg::io::dispatch(
+        ekg::io::runtime_task_operation::reload
+      );
+
+      ekg::io::dispatch(
+        ekg::io::runtime_task_operation::layout_docknize
+      );
+    }
+  }
+
   this->gpu_allocator.init();
   this->service_theme.init();
   this->service_input.init();
 
   ekg::log() << "Doing font-rendering tweaks, and pre-setting viewport scale...";
-  this->f_renderer_small.sampler_texture.gl_protected_active_index = true;
-  this->f_renderer_small.set_size(16);
-  this->f_renderer_small.bind_allocator(&this->gpu_allocator);
+  this->draw_fr_small.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_small.set_size(16);
+  this->draw_fr_small.bind_allocator(&this->gpu_allocator);
 
-  this->f_renderer_normal.sampler_texture.gl_protected_active_index = true;
-  this->f_renderer_normal.set_size(18);
-  this->f_renderer_normal.bind_allocator(&this->gpu_allocator);
+  this->draw_fr_normal.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_normal.set_size(18);
+  this->draw_fr_normal.bind_allocator(&this->gpu_allocator);
 
-  this->f_renderer_big.sampler_texture.gl_protected_active_index = true;
-  this->f_renderer_big.set_size(24);
-  this->f_renderer_big.bind_allocator(&this->gpu_allocator);
-  this->update_size_changed();
+  this->draw_fr_big.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_big.set_size(24);
+  this->draw_fr_big.bind_allocator(&this->gpu_allocator);
 }
 
 void ekg::runtime::quit() {

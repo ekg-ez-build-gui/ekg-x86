@@ -328,76 +328,71 @@ uint64_t ekg::glfw::get_ticks() {
 }
 
 void ekg::glfw_window_size_callback(int32_t w, int32_t h) {
-  ekg::ui::width = w;
-  ekg::ui::height = h;
-        
-  ekg::p_core->p_gpu_api->update_viewport(ekg::ui::width, ekg::ui::height);
-  ekg::p_core->update_size_changed();
+  if (
+      ekg::has(
+        this->modes,
+        ekg::internal_behavior::no_auto_set_viewport_when_resize
+      )
+    ) {
+    return;
+  }
+
+  ekg::viewport.w = static_cast<float>(w);
+  ekg::viewport.h = static_cast<float>(h);
+
+  ekg::p_core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
+  ekg::io::dispatch(ekg::io::runtime_task_operation::scale_update);
 }
 
 void ekg::glfw_scroll_callback(double dx, double dy) {
-  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
-  serialized.event_type = ekg::platform_event_type::mouse_wheel;
-  serialized.mouse_wheel_x = static_cast<int32_t>(dx);
-  serialized.mouse_wheel_y = static_cast<int32_t>(dy);
-  serialized.mouse_wheel_precise_x = dx;
-  serialized.mouse_wheel_precise_y = dy;
+  this->serialized_input_event.event_type = ekg::platform_event_type::mouse_wheel;
+  this->serialized_input_event.mouse_wheel_x = static_cast<int32_t>(dx);
+  this->serialized_input_event.mouse_wheel_y = static_cast<int32_t>(dy);
+  this->serialized_input_event.mouse_wheel_precise_x = dx;
+  this->serialized_input_event.mouse_wheel_precise_y = dy;
 
-  ekg::poll_io_event = true;
   this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
-  ekg::poll_io_event = false;
 }
 
 void ekg::glfw_char_callback(uint32_t codepoint) {
-  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
-  serialized.event_type = ekg::platform_event_type::text_input;
+  this->serialized_input_event.event_type = ekg::platform_event_type::text_input;
 
   // idk it seems pretty much a workaround, predictable crash if codepoint
   // is larger than 127 (overflow)
   const char c [1] {static_cast<char>(codepoint)};
-  serialized.text_input = (c);
+  this->serialized_input_event.text_input = (c);
 
-  ekg::poll_io_event = true;
   this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
-  ekg::poll_io_event = false;
 }
 
 void ekg::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, int32_t mods) {
-  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
-  std::string a {};
-
   switch (action) {
   case GLFW_PRESS:
-    serialized.event_type = ekg::platform_event_type::key_down;
-    serialized.key.key = key;
-    serialized.key.scancode = scancode;
-    ekg::poll_io_event = true;
+    this->serialized_input_event.event_type = ekg::platform_event_type::key_down;
+    this->serialized_input_event.key.key = key;
+    this->serialized_input_event.key.scancode = scancode;
     break;
   
   case GLFW_REPEAT:
-    serialized.event_type = ekg::platform_event_type::key_down;
-    serialized.key.key = key;
-    serialized.key.scancode = scancode;
-    ekg::poll_io_event = true;
+    this->serialized_input_event.event_type = ekg::platform_event_type::key_down;
+    this->serialized_input_event.key.key = key;
+    this->serialized_input_event.key.scancode = scancode;
     break;
 
   case GLFW_RELEASE:
-    serialized.event_type = ekg::platform_event_type::key_up;
-    serialized.key.key = key;
-    serialized.key.scancode = scancode;
-    ekg::poll_io_event = true;
+    this->serialized_input_event.event_type = ekg::platform_event_type::key_up;
+    this->serialized_input_event.key.key = key;
+    this->serialized_input_event.key.scancode = scancode;
     break;
   }
 
   this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
-  ekg::poll_io_event = false;
 }
 
 void ekg::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mods) {
-  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
 
   /**
    * The mouse button number on GLFW is different from SDL2,
@@ -415,32 +410,25 @@ void ekg::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mod
 
   switch (action) {
   case GLFW_PRESS:
-    serialized.event_type = ekg::platform_event_type::mouse_button_down;
-    serialized.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
-    ekg::poll_io_event = true;
-
+    this->serialized_input_event.event_type = ekg::platform_event_type::mouse_button_down;
+    this->serialized_input_event.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
     break;
 
   case GLFW_RELEASE:
-    serialized.event_type = ekg::platform_event_type::mouse_button_up;
-    serialized.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
-    ekg::poll_io_event = true;
+    this->serialized_input_event.event_type = ekg::platform_event_type::mouse_button_up;
+    this->serialized_input_event.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
     break;
   }
 
   this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
-  ekg::poll_io_event = false;
 }
 
 void ekg::glfw_cursor_pos_callback(double x, double y) {
-  ekg::os::io_event_serial &serialized {ekg::p_core->io_event_serial};
-  serialized.event_type = ekg::platform_event_type::mouse_motion;
-  serialized.mouse_motion_x = static_cast<float>(x);
-  serialized.mouse_motion_y = static_cast<float>(y);
+  this->serialized_input_event.event_type = ekg::platform_event_type::mouse_motion;
+  this->serialized_input_event.mouse_motion_x = static_cast<float>(x);
+  this->serialized_input_event.mouse_motion_y = static_cast<float>(y);
 
-  ekg::poll_io_event = true;
   this->system_cursor = ekg::system_cursor_type::arrow;
   ekg::p_core->process_event();
-  ekg::poll_io_event = false;
 }

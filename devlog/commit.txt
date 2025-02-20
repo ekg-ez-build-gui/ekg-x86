@@ -241,3 +241,10 @@
 -- Added properties overload operator for casting widget and descriptor.
 -- Refactored and optimized input-service with addressed input bind without useless hash queries.
 -- New individual-theme-scheme system for service theme.
+-- Refactored font-renderer and moved part of implementations to `io/` package.
+-- Refactored layout docknization, extentinzation, and scale. Separated into individuals headers.
+-- Rendering Hardware-Interface (RHI): OpenGL module refactored.
+-- OS Platform-Interface (OPI): SDL2, GLFW modules refactored.
+-- Added floating point features and algebra linear features.
+-- Properties can be cast to reference and ptr, both with different reasons and complete utility.
+-- Added new reload, layout docknization, and scale update runtime operation tasks. 

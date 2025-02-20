@@ -12,12 +12,10 @@
 		{
     		"clangd":
     		{
-      			"initializationOptions":
-      			{
-      				"clangd.compile-commands-dir": "cd $folder && ./cmake-build",
-      			},
-      	
-				"enabled": true,
+      		"initializationOptions":
+      		{
+      			"clangd.compile-commands-dir": "cd $folder && ./cmake-build",
+      		},
 			},
 		},
 	},

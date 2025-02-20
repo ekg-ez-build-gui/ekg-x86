@@ -52,17 +52,17 @@ void ekg::init(
 
   ekg::log() << "Pre-Initializing EKG";
 
-  p_ekg_runtime->fr_small.init();
-  p_ekg_runtime->fr_small.set_font(p_ekg_runtime_property->font_path);
-  p_ekg_runtime->fr_small.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+  p_ekg_runtime->draw_fr_small.init();
+  p_ekg_runtime->draw_fr_small.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->draw_fr_small.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
 
-  p_ekg_runtime->fr_normal.init();
-  p_ekg_runtime->fr_normal.set_font(p_ekg_runtime_property->font_path);
-  p_ekg_runtime->fr_normal.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+  p_ekg_runtime->draw_fr_normal.init();
+  p_ekg_runtime->draw_fr_normal.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->draw_fr_normal.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
 
-  p_ekg_runtime->fr_big.init();
-  p_ekg_runtime->fr_big.set_font(p_ekg_runtime_property->font_path);
-  p_ekg_runtime->fr_big.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
+  p_ekg_runtime->draw_fr_big.init();
+  p_ekg_runtime->draw_fr_big.set_font(p_ekg_runtime_property->font_path);
+  p_ekg_runtime->draw_fr_big.set_font_emoji(p_ekg_runtime_property->font_path_emoji);
 
   ekg::log() << "Initializing EKG";
 
