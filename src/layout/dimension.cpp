@@ -28,7 +28,7 @@ float ekg::layout::estimate_height(
       continue;
     }
 
-    p_widgets = static_cast<ekg::ui::abstract*>(p_properties);
+    p_widgets = static_cast<ekg::ui::abstract*>(p_properties->p_widget);
     p_widgets->on_reload();
 
     flags = p_widgets->properties.dock;

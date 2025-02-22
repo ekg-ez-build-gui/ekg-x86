@@ -23,12 +23,13 @@
  */
 
 #include "ekg/io/task.hpp"
+#include "ekg/ekg.hpp"
 
 void ekg::io::dispatch(
   ekg::io::operation op
 ) {
   switch (op) {
-  case ekg::operation::high_frequency:
+  case ekg::io::operation::high_frequency:
     break;
   default:
     ekg::p_core->service_handler.dispatch_pre_allocated_task(

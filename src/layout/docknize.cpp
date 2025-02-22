@@ -42,7 +42,7 @@ void ekg::layout::mask::docknize() {
   bool is_right {};
   bool is_top {};
   bool is_bottom {};
-  bool is_not_bind {};
+  bool is_not_concat {};
   bool is_bind_dimension_not_zero {};
 
   /**
@@ -102,7 +102,7 @@ void ekg::layout::mask::docknize() {
       is_right = ekg::has(rect_descriptor.flags, ekg::dock::right);
       is_bottom = ekg::has(rect_descriptor.flags, ekg::dock::bottom);
       is_top = ekg::has(rect_descriptor.flags, ekg::dock::top);
-      is_not_bind = !ekg::has(rect_descriptor.flags, ekg::dock::bind);
+      is_not_concat = !ekg::has(rect_descriptor.flags, ekg::dock::concat);
       is_bind_dimension_not_zero = (dimension_bind > 0.0f);
 
       rect_width = rect_descriptor.p_rect->w;
@@ -137,7 +137,7 @@ void ekg::layout::mask::docknize() {
         dimension_bind += (
           ((this->offset.x * is_bind_dimension_not_zero) + ((rect_descriptor.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
           *
-          is_not_bind
+          is_not_concat
         );
 
         left_corner.w += dimension_bind;
@@ -149,7 +149,7 @@ void ekg::layout::mask::docknize() {
         dimension_bind += (
           ((this->offset.x * is_bind_dimension_not_zero) + ((rect_descriptor.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
           *
-          is_not_bind
+          is_not_concat
         );
 
         right_corner.w += dimension_bind;
@@ -161,7 +161,7 @@ void ekg::layout::mask::docknize() {
         dimension_bind += (
           ((this->offset.x * is_bind_dimension_not_zero) + ((rect_descriptor.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
           *
-          is_not_bind
+          is_not_concat
         );
 
         center_left_corner.w += dimension_bind;
@@ -173,7 +173,7 @@ void ekg::layout::mask::docknize() {
         dimension_bind += (
           ((this->offset.x * is_bind_dimension_not_zero) + ((rect_descriptor.p_rect->w + this->offset.x) * !is_bind_dimension_not_zero))
           *
-          is_not_bind
+          is_not_concat
         );
 
         center_right_corner.w += dimension_bind;
@@ -193,9 +193,9 @@ void ekg::layout::mask::docknize() {
         );
       }
 
-      if (!is_not_bind && rect_descriptor.p_rect->w > dimension_bind) {
+      if (!is_not_concat && rect_descriptor.p_rect->w > dimension_bind) {
         dimension_bind = rect_descriptor.p_rect->w;
-      } else if (is_not_bind) {
+      } else if (is_not_concat) {
         dimension_bind = 0.0f;
       }
 

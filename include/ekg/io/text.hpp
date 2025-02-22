@@ -35,19 +35,27 @@ namespace ekg {
    * the UTF-32 unique char into a sequence of UTF-8
    * chars.
    */
-  std::string utf_char32_to_string(char32_t char32);
+  std::string utf_char32_to_string(
+    char32_t char32
+  );
 
   /**
    * Returns a string subtracted by stride begin `offset`
    * and end index `size`. If string is empty, return
    * empty.
    */
-  std::string utf_substr(std::string_view string, uint64_t offset, uint64_t size);
+  std::string utf_substr(
+    std::string_view string,
+    uint64_t offset,
+    uint64_t size
+  );
 
   /**
    * Returns the `string` length considering UTF chars.
    */
-  uint64_t utf_length(std::string_view string);
+  uint64_t utf_length(
+    std::string_view string
+  );
 
   /**
    * Returns index size that represent an UTF-8 char.
@@ -65,43 +73,45 @@ namespace ekg {
   /**
    * Returns a UTF-32 char32 based on UTF-8 sequence.
    */
-  char32_t utf_string_to_char32(std::string_view string);
+  char32_t utf_string_to_char32(
+    std::string_view string
+  );
 
   /**
    * Fast splitter specialized in `\n` or `\r\n` (non OS unix-based).
    * UTF to sinalize the string unicode-like suggested by EKG. 
    */
-  void utf_decode(std::string_view string, std::vector<std::string> &utf_decoded);
+  void utf_decode(
+    std::string_view string,
+    std::vector<std::string> &utf_decoded
+  );
 
   /**
    * Returns a customised float64 precision as a string.
    **/
-  std::string string_float64_precision(double number, int32_t precision);
+  std::string string_float64_precision(
+    double number,
+    int32_t precision
+  );
 
   /**
    * Returns a customised float precision as a string.
    **/
-  std::string string_float_precision(float number, int32_t precision);
-
-  /**
-   * Return the index of last attribute-token and insert bits.
-   */
-  uint8_t check_attribute_flags(std::string_view text, ekg::flags &flags);
+  std::string string_float_precision(
+    float number,
+    int32_t precision
+  );
 
   /**
    * Return true if `string` contains `find_char`,
    * then it must allocate and insert elements to
    * `p_string_split_list` ptr.
    */
-  bool split(std::vector<std::string> *p_string_split_list, const std::string &string, char find_char);
-}
-
-namespace ekg::io {
-  enum font_face_type {
-    text,
-    emojis,
-    kanjis
-  };
+  bool split(
+    std::vector<std::string> &string_split_list,
+    const std::string &string,
+    char find_char
+  );
 }
 
 #endif

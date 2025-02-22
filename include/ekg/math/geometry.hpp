@@ -1,6 +1,7 @@
 #ifndef EKG_MATH_GEOMETRY_HPP
 #define EKG_MATH_GEOMETRY_HPP
 
+#include "ekg/io/memory.hpp"
 #include <cstdint>
 
 namespace ekg {
@@ -16,7 +17,7 @@ namespace ekg {
     next   = 2 << 9,
     fill   = 2 << 10,
     resize = 2 << 11,
-    bind   = 2 << 12
+    concat = 2 << 12
   };
 
   enum axis {
@@ -35,18 +36,18 @@ namespace ekg {
   public:
     inline vec2_t() = default;
 
-    inline vec2_t(t _x, _y) {
+    inline vec2_t(t _x, t _y) {
       this->x = _x;
       this->y = _y;
     }
 
     // TODO: add non-useless vector 2 properties operators
   
-    template<typename t>
-    operator ekg::vec2_t<t>() {
-      return ekg::vec2_t<t>{
-        static_cast<t>(this->x),
-        static_cast<t>(this->y)
+    template<typename s>
+    operator ekg::vec2_t<s>() {
+      return ekg::vec2_t<s>{
+        static_cast<s>(this->x),
+        static_cast<s>(this->y)
       };
     }
   };
@@ -71,12 +72,12 @@ namespace ekg {
 
     // TODO: add non-useless vector 3 properties operators
 
-    template<typename t>
-    operator ekg::vec3_t<t>() {
-      return ekg::vec3_t<t>{
-        static_cast<t>(this->x),
-        static_cast<t>(this->y),
-        static_cast<t>(this->z)
+    template<typename s>
+    operator ekg::vec3_t<s>() {
+      return ekg::vec3_t<s>{
+        static_cast<s>(this->x),
+        static_cast<s>(this->y),
+        static_cast<s>(this->z)
       };
     }
   };
@@ -103,13 +104,13 @@ namespace ekg {
 
     // TODO: add non-useless vector 4 properties operators
 
-    template<typename t>
-    operator ekg::vec4_t<t>() {
-      return ekg::vec4_t<t>{
-        static_cast<t>(this->x),
-        static_cast<t>(this->y),
-        static_cast<t>(this->z),
-        static_cast<t>(this->w)
+    template<typename s>
+    operator ekg::vec4_t<s>() {
+      return ekg::vec4_t<s>{
+        static_cast<s>(this->x),
+        static_cast<s>(this->y),
+        static_cast<s>(this->z),
+        static_cast<s>(this->w)
       };
     }
 
@@ -157,23 +158,23 @@ namespace ekg {
 
     // TODO: add non-useless rect (aka vector 4 properties) operators
 
-    template<typename t>
-    operator ekg::rect_t<t>() {
-      return ekg::rect_t<t>{
-        static_cast<t>(this->x),
-        static_cast<t>(this->y),
-        static_cast<t>(this->w),
-        static_cast<t>(this->h)
+    template<typename s>
+    operator ekg::rect_t<s>() {
+      return ekg::rect_t<s>{
+        static_cast<s>(this->x),
+        static_cast<s>(this->y),
+        static_cast<s>(this->w),
+        static_cast<s>(this->h)
       };
     }
     
-    template<typename t>
-    operator ekg::vec4_t<t>() {
-      return ekg::vec4_t<t>{
-        static_cast<t>(this->x),
-        static_cast<t>(this->y),
-        static_cast<t>(this->w),
-        static_cast<t>(this->h)
+    template<typename s>
+    operator ekg::vec4_t<s>() {
+      return ekg::vec4_t<s>{
+        static_cast<s>(this->x),
+        static_cast<s>(this->y),
+        static_cast<s>(this->w),
+        static_cast<s>(this->h)
       };
     }
   };

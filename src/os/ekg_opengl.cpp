@@ -2,7 +2,7 @@
 #include "ekg/gpu/opengl_pipeline_template.hpp"
 #include "ekg/ekg.hpp"
 #include "ekg/gpu/api.hpp"
-#include "ekg/util/image.hpp"
+#include "ekg/io/gpu.hpp"
 
 #include <cstdio>
 #include <unordered_map>
@@ -19,9 +19,9 @@ ekg::opengl::opengl(std::string_view set_glsl_version) {
   std::regex es_re {"es"};
 
   if (std::regex_search(glsl_version, es_re)) {
-    this->opengl_version = ekg::os::opengl_version::es;
+    this->gpu_api = ekg::api::opengles;
   } else {
-    this->opengl_version = ekg::os::opengl_version::core_profile;
+    this->gpu_api = ekg::api::opengl;
   }
 
   std::regex number_re {"\\d+"};  
@@ -59,14 +59,14 @@ void ekg::opengl::init() {
   std::string vsh_src {};
   ekg::gpu::get_standard_vertex_shader(
     no_view_glsl_version,
-    this->opengl_version,
+    this->gpu_api,
     vsh_src
   );
 
   std::string fsh_src {};
   ekg::gpu::get_standard_fragment_shader(
     no_view_glsl_version,
-    this->opengl_version,
+    this->gpu_api,
     fsh_src
   );
 
@@ -335,7 +335,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
 
   float highest_square {};
   float square {};
-  FT_Vector highest_glyph_size {};
+  ekg::vec2_t<int32_t> highest_glyph_size {};
 
   for (size_t it {}; it < ekg::io::supported_faces_size; it++) {
     ekg::io::font_face_t *&p_font_face {
@@ -350,7 +350,8 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
     
     if (square > highest_square) {
       highest_square = square;
-      highest_glyph_size = p_font_face_emoji->highest_glyph_size;
+      highest_glyph_size.x = p_font_face_emoji->highest_glyph_size.x;
+      highest_glyph_size.y = p_font_face_emoji->highest_glyph_size.y;
     } 
   }
 
@@ -358,14 +359,14 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
     GL_RED
   };
 
-  bool is_current_opengl_version_gl_es {
-    this->opengl_version == ekg::opengl_version::es
+  bool is_current_gpu_api_gl_es {
+    this->gpu_api == ekg::gpu_api::es
   };
 
   std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
   unsigned char *p_current_image_buffer {};
 
-  if (is_current_opengl_version_gl_es) {
+  if (is_current_gpu_api_gl_es) {
     sub_image_format = GL_RGBA;
 
     r8_to_r8g8b8a8_swizzled_image.resize(
@@ -437,7 +438,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
     p_current_image_buffer = ft_glyph_slot->bitmap.buffer;
 
     if (
-        is_current_opengl_version_gl_es
+        is_current_gpu_api_gl_es
         &&
         !ekg::has(flags, FT_LOAD_COLOR)
       ) {
@@ -449,15 +450,11 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
       char_size.x = char_data.w;
       char_size.y = char_data.h;
 
-      ekg::format_convert_result result {
-        ekg::image_src_r8_convert_to_r8g8b8a8(
-          char_size,
-          p_src_copy,
-          r8_to_r8g8b8a8_swizzled_image
-        )
-      };
-
-      if (result == ekg::format_convert_result::failed) {
+      if (
+          ekg::has(
+            ekg::image_src_r8_convert_to_r8g8b8a8(highest_glyph_size, )
+          )
+        ) {
         ekg::log() << "Warning: could not convert character '" << char32 << "' from r8 to r8g8b8a8 on OpenGL ES3";
       } else {
         p_current_image_buffer = r8_to_r8g8b8a8_swizzled_image.data();

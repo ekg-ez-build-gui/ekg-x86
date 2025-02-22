@@ -154,7 +154,7 @@ void ekg::layout::extentnize_widget(
           continue;
         }
 
-        p_widgets = static_cast<ekg::ui::abstract*>(p_properties);
+        p_widgets = static_cast<ekg::ui::abstract*>(p_properties->p_widget);
 
         is_scrollbar = p_properties->type == ekg::type::scrollbar;
         is_last_index = it == latest_index;

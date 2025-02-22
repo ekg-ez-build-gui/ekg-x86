@@ -20,6 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+function(
+  exclude_sources_by_regex
+  src_files
+  regex
+)
+  foreach(PATH ${${src_files}})
+    if(${PATH} MATCHES ${regex})
+      message(STATUS "Removed: '${PATH}'")
+      list(REMOVE_ITEM ${src_files} ${PATH})
+    else()
+      message(STATUS "Keep: '${PATH}'")
+    endif()
+  endforeach()
+endfunction()
+
 cmake_minimum_required(VERSION 3.10)
 set(EKG_VERSION 2.0.0)
 
@@ -63,9 +78,9 @@ endif()
 
 add_compile_options(
   ${COMPILE_OPTIMIZATION_NUMBER}
-  -Wall
-  -Wextra
-  -g
+  #-Wall
+  #-Wextra
+  #-g
 )
 
 message(STATUS "Found compiler ID: ${CMAKE_CXX_COMPILER_ID}")
@@ -99,7 +114,13 @@ endif()
 message(STATUS "Building EKG user interface library version ${EKG_VERSION}")
 message(STATUS "Generating EKG ${PLATFORM} native library")
 
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
+file(
+  GLOB_RECURSE
+  SOURCE_FILES
+  "src/*.cpp"
+)
+
+exclude_sources_by_regex(SOURCE_FILES "ui_")
 add_library(ekg STATIC ${SOURCE_FILES})
 
 set_target_properties(

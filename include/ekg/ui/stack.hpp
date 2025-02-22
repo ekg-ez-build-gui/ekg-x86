@@ -34,7 +34,7 @@ namespace ekg {
   struct stack_t {
   public:
     std::string_view tag {};
-    std::vector<ekg::ui::abstract> children {};
+    std::vector<ekg::ui::abstract*> children {};
     uint64_t counter {};
   };
 }

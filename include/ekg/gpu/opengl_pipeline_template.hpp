@@ -6,13 +6,13 @@
 namespace ekg::gpu {
   void get_standard_vertex_shader(
     std::string glsl_version,
-    ekg::os::opengl_version opengl_version,
+    ekg::gpu_api gpu_api,
     std::string &output_kernel_source
   );
 
   void get_standard_fragment_shader(
     std::string glsl_version,
-    ekg::os::opengl_version opengl_version,
+    ekg::gpu_api gpu_api,
     std::string &output_kernel_source
   );
 }

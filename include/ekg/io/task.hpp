@@ -2,6 +2,8 @@
 #define EKG_IO_TASK_HPP
 
 #include "ekg/ui/properties.hpp"
+#include <functional>
+#include <string_view>
 
 namespace ekg {
   struct info_t {
@@ -31,7 +33,7 @@ namespace ekg {
   };
 }
 
-struct ekg::io {
+namespace ekg::io {
   enum operation {
     swap,
     reload,

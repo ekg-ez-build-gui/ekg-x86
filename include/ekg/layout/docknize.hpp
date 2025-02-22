@@ -3,7 +3,7 @@
 
 #include "ekg/ui/abstract.hpp"
 #include "ekg/math/geometry.hpp"
-#include "ekg/io/layout.hpp"
+#include "ekg/math/floating_point.hpp"
 
 namespace ekg::layout {
   /**

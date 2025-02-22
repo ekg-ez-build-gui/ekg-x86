@@ -29,8 +29,8 @@
 #include <unordered_map>
 #include <array>
 
-#include "ekg/util/io.hpp"
-#include "ekg/util/geometry.hpp"
+#include "ekg/io/log.hpp"
+#include "ekg/math/geometry.hpp"
 #include "ekg/os/platform.hpp"
 
 namespace ekg::service {
@@ -50,8 +50,8 @@ namespace ekg::service {
     bool finger_swipe_event {};
     bool is_special_keys_released {};
 
-    ekg::timing double_interact {};
-    ekg::timing last_time_wheel_was_fired {};
+    ekg::timing_t double_interact {};
+    ekg::timing_t last_time_wheel_was_fired {};
   public:
     ekg::input_t input {};
   protected:

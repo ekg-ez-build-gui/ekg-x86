@@ -9,8 +9,8 @@
 
 namespace ekg {
   ekg::flags_t add_child_to_parent(
-    ekg::properties_t *p_parent_properties,
-    ekg::properties_t *p_child_properties
+    ekg::properties_t *p_parent,
+    ekg::properties_t *p_child
   );
 
   ekg::properties_t *find(
@@ -20,7 +20,7 @@ namespace ekg {
 
   ekg::flags_t destroy(
     ekg::stack_t *p_stack,
-    ekg::properties_t *p_destroy_widget_properties
+    ekg::properties_t *p_parent
   );
 
   ekg::flags_t find_and_destroy(

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "ekg/draw/draw.hpp"
+#include "ekg/draw/shape.hpp"
 #include "ekg/ekg.hpp"
 
 void ekg::draw::rect(

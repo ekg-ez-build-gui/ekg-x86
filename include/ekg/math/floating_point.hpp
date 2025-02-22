@@ -2,6 +2,7 @@
 #define EKG_MATH_FLOATING_POINT_HPP
 
 #include <cfloat>
+#include <cmath>
 
 namespace ekg {
   constexpr float pi {3.141592653589793238462643383279502884f};

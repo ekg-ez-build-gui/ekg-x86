@@ -3,6 +3,8 @@
 
 #include "ekg/math/geometry.hpp"
 #include "ekg/io/memory.hpp"
+#include "ekg/ui/abstract.hpp"
+#include <string>
 
 namespace ekg {
   struct button_theme_t {

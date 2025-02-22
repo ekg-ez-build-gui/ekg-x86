@@ -56,8 +56,10 @@ namespace ekg {
   class value {
   protected:
     t cache {};
-    t *p_address {};
+    t *p_address {nullptr};
   public:
+    value() = default;
+
     value(t *p_address) {
       this->p_address = p_address;
     }
@@ -83,7 +85,7 @@ namespace ekg {
          **/
         *this->p_address
         :
-        this->cache;
+        this->cache
       );
     }
 
@@ -93,7 +95,7 @@ namespace ekg {
   };
 }
 
-enum ekg::io {
+namespace ekg::io {
   constexpr uint64_t invalid_unique_id {static_cast<uint64_t>(0)};
 
   template<typename t>

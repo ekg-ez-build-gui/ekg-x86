@@ -48,8 +48,8 @@ namespace ekg::draw {
     float x
   ) {
     return static_cast<int32_t>(
-      axis + c32 + char_data_x * 100
-    )
+      axis + char32 + x * 100
+    );
   }
 
   class font_renderer {
@@ -58,7 +58,7 @@ namespace ekg::draw {
     uint64_t last_sampler_generate_list_size {};
 
     std::unordered_map<char32_t, ekg::io::glyph_char_t> mapped_glyph_char_data {};
-    std::array<ekg::draw::font_face_t, ekg::io::supported_faces_size> faces {};
+    std::array<ekg::io::font_face_t, ekg::io::supported_faces_size> faces {};
 
     ekg::sampler_t atlas_texture_sampler {};
     ekg::rect_t<int32_t> atlas_rect {};
@@ -123,7 +123,7 @@ namespace ekg::draw {
     /**
      * Generate GPU data to draw text on screen.
      */
-    void blit(std::string_view text, float x, float y, const ekg::vec4 &color);
+    void blit(std::string_view text, float x, float y, const ekg::vec4_t<float> &color);
 
     /**
      * Init the internal-system of font-rendering.

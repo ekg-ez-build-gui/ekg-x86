@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 
-#include "ekg/draw/font_renderer.hpp"
+#include "ekg/io/typography.hpp"
+#include "ekg/core/context.hpp"
+#include "ekg/io/log.hpp"
 
 ekg::flags_t ekg::io::refresh_font_face(
   ekg::io::font_face_t *p_font_face
@@ -39,17 +41,17 @@ ekg::flags_t ekg::io::refresh_font_face(
 
     p_font_face->was_loaded = FT_New_Face(
       ekg::freetype_library,
-      p_font_face->font_path.data(),
+      p_font_face->path.data(),
       0,
       &p_font_face->ft_face
     );
 
     if (p_font_face->was_loaded) {
-      ekg::log() << "Could not load font " << p_font_face->font_path;
+      ekg::log() << "Could not load font " << p_font_face->path;
       return ekg::result::failed;
     }
 
-    ekg::log() << "Font '" << p_font_face->font_path << "' loaded!"; 
+    ekg::log() << "Font '" << p_font_face->path << "' loaded!"; 
 
     p_font_face->was_loaded = true;
     p_font_face->was_face_changed = false;

@@ -31,7 +31,7 @@
 namespace ekg::os {
   class platform {
   public:
-    ekg::rect<int32_t> display_size {};
+    ekg::rect_t<int32_t> display_size {};
     ekg::system_cursor_type system_cursor {};
     ekg::io::serialized_input_event_t serialized_input_event {};
   public:

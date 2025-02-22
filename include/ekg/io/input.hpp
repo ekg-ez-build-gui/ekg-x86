@@ -1,7 +1,8 @@
 #ifndef EKG_IO_INPUT_HPP
 #define EKG_IO_INPUT_HPP
 
-#include 
+#include "ekg/io/log.hpp"
+#include "ekg/math/geometry.hpp"
 
 #include <cstdint>
 #include <string_view>
@@ -39,6 +40,7 @@ namespace ekg {
 
   struct input_t {
   public:
+    float scroll_speed {0.8f};
     ekg::timing_t timing_last_interact {};
     ekg::vec4_t<float> interact {};
     bool was_pressed {};
@@ -78,7 +80,7 @@ namespace ekg::io {
 
   struct serialized_input_event_t {
   public:
-    ekg::io::platform_event_type type {};
+    ekg::io::input_event_type type {};
     std::string_view text_input {};
     uint8_t mouse_button {};
 
@@ -91,7 +93,7 @@ namespace ekg::io {
     float mouse_wheel_precise_x {};
     float mouse_wheel_precise_y {};
 
-    ekg::io::input_key key {};
+    ekg::io::input_key_t key {};
 
     float finger_x {};
     float finger_y {};

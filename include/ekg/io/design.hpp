@@ -1,6 +1,8 @@
 #ifndef EKG_IO_DESIGN_HPP
 #define EKG_IO_DESIGN_HPP
 
+#include <map>
+
 #include "ekg/ui/button/button.hpp"
 #include "ekg/ui/checkbox/checkbox.hpp"
 #include "ekg/ui/combobox/combobox.hpp"

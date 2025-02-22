@@ -2,11 +2,13 @@
 #define EKG_IO_GPU_HPP
 
 #include "ekg/io/memory.hpp"
+#include "ekg/math/geometry.hpp"
 
 namespace ekg {
-  enum class api {
+  enum class gpu_api {
     vulkan,
     opengl,
+    opengles,
     webgpu
   };
   
@@ -47,6 +49,12 @@ namespace ekg {
   ekg::flags_t gpu_fill_sampler(
     ekg::sampler_fill_info_t *p_sampler_fill_info,
     ekg::sampler_t *p_sampler
+  );
+
+  ekg::flags_t image_src_r8_convert_to_r8g8b8a8(
+    ekg::vec2_t<int32_t> size,
+    const unsigned char *p_src,
+    std::vector<unsigned char> &dst
   );
 }
 

@@ -1,4 +1,4 @@
-#include "ekg/context.hpp"
+#include "ekg/core/context.hpp"
 
 FT_Library ekg::freetype_library {};
 ekg::viewport_t ekg::viewport {};

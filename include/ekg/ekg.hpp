@@ -27,7 +27,8 @@
 
 #pragma STDC FENV_ACCESS ON
 
-#include "ekg/runtime.hpp"
+#include "ekg/core/context.hpp"
+#include "ekg/core/runtime.hpp"
 
 namespace ekg {
   constexpr std::string_view version_id {"2.0.0"};

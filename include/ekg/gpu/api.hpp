@@ -41,6 +41,7 @@ namespace ekg::gpu {
     std::string_view rendering_shader_fragment_source {};
     float projection_matrix[16] {};
   public:
+    ekg::gpu_api gpu_api {};
     ekg::rect_t<float> viewport {};
   public:
     void set_rendering_shader_fragment_source(std::string_view source);

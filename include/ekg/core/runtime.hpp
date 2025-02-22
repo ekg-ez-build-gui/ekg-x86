@@ -31,6 +31,8 @@
 #include "ekg/service/input.hpp"
 #include "ekg/gpu/allocator.hpp"
 #include "ekg/layout/docknize.hpp"
+#include "ekg/draw/font_renderer.hpp"
+#include "ekg/io/algorithm.hpp"
 
 #include <memory>
 
