@@ -31,14 +31,15 @@ function(
   foreach(PATH ${${src_files}})
     if(${PATH} MATCHES ${regex})
       message(STATUS "Removed: '${PATH}'")
-      list(REMOVE_ITEM ${${src_files}} ${PATH})
+      list(REMOVE_ITEM ${src_files} ${PATH})
     else()
       message(STATUS "Keep: '${PATH}'")
     endif()
   endforeach()
 
   return(
-    PROPAGATE ${src_files}
+    PROPAGATE
+    ${src_files}
   )
 endfunction()
 

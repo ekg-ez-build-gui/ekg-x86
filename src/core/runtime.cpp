@@ -131,14 +131,14 @@ void ekg::runtime::init() {
     .function = [this](ekg::info_t &info) {
       ekg::layout::scale_calculate();
 
-      ekg::viewport.font_scale = ekg::clamp(
+      ekg::viewport.font_scale = ekg::clamp<float>(
         ekg::viewport.font_scale,
         static_cast<float>(ekg::minimum_font_height),
         static_cast<float>(UINT8_MAX)
       );
 
       uint32_t font_size {
-        ekg::clamp(
+        ekg::clamp<uint32_t>(
           static_cast<uint32_t>(
             ekg::viewport.font_scale
             *
