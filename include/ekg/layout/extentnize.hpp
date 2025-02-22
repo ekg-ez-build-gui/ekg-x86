@@ -60,6 +60,7 @@ namespace ekg::layout {
    **/
   void extentnize_rect_descriptor(
     std::vector<ekg::rect_descriptor_t> &rect_descriptor_list,
+    ekg::vec3_t<float> offset,
     ekg::flags_t flag_ok,
     ekg::flags_t flag_stop,
     ekg::flags_t flag_axis,

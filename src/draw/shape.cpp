@@ -44,7 +44,7 @@ void ekg::draw::rect(
     return;
   }
 
-  ekg::gpu::data_t &data {ekg::p_core->gpu_allocator.bind_current_data()};
+  ekg::io::gpu_data_t &data {ekg::p_core->gpu_allocator.bind_current_data()};
 
   data.buffer_content[0] = x;
   data.buffer_content[1] = y;

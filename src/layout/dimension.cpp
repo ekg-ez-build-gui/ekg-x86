@@ -1,7 +1,7 @@
 #include "ekg/layout/dimension.hpp"
 #include "ekg/ekg.hpp"
 
-float ekg::layout::estimate_height(
+float ekg::layout::estimate_docknizable_height(
   ekg::ui::abstract *p_parent_widget
 ) {
   if (
@@ -19,7 +19,7 @@ float ekg::layout::estimate_height(
   float total_height {};
   float height {};
 
-  for (ekg::properites_t *&p_properties : p_widget_parent->properties.children) {
+  for (ekg::properties_t *&p_properties : p_parent_widget->properties.children) {
     if (
         p_properties == nullptr
         ||

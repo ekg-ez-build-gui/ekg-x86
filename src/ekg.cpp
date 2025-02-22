@@ -24,7 +24,6 @@
 
 #include "ekg/ekg.hpp"
 #include "ekg/os/platform.hpp"
-#include "ekg/util/geometry.hpp"
 
 ekg::runtime *ekg::p_core {};
 
@@ -81,7 +80,7 @@ void ekg::quit() {
 void ekg::update() {
   ekg::p_core->update();
   ekg::p_core->p_os_platform->update_cursor();
-  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::platform_event_type::none;
+  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::none;
 }
 
 void ekg::render() {

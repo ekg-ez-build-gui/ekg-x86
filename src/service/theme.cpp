@@ -23,7 +23,7 @@
  */
 
 #include "ekg/service/theme.hpp"
-#include "ekg/util/io.hpp"
+#include "ekg/io/log.hpp"
 
 std::map<std::string_view, ekg::theme_t> &ekg::service::theme::get_theme_map() {
   return this->theme_map;
@@ -40,7 +40,7 @@ ekg::flags_t ekg::service::theme::set_current_theme(std::string_view name) {
 
   if (!this->theme_map.count(name)) {
     ekg::log() << "Could not to find theme named '" << name << "'!";
-    return ekg::resukt::could_not_find;
+    return ekg::result::could_not_find;
   }
 
   this->current_theme = this->theme_map[name];

@@ -20,21 +20,6 @@ namespace ekg {
       )
     );
   }
-
-  template<typename t>
-  constexpr float min_clamp(t a, t b) {
-    return a < b ? b : a;
-  }
-
-  template<typename t>
-  constexpr float max_clamp(t a, t b) {
-    return a > b ? b : a;
-  }
-
-  template<typename t>
-  constexpr float clamp(t a, t b, t c) {
-    return ekg::min_clamp(ekg::max_clamp(a, c), b);
-  }
 }
 
 #endif

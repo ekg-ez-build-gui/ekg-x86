@@ -28,7 +28,7 @@
 #include <ostream>
 
 #include "ekg/io/text.hpp"
-#include "ekg/math/floating_point.hpp"
+#include "ekg/math/geometry.hpp"
 #include "ekg/io/log.hpp"
 
 uint64_t ekg::utf_check_sequence(

@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2022-2024 Rina Wilk / vokegpu@gmail.com
+# Copyright (c) 2022-2025 Rina Wilk / vokegpu@gmail.com
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+cmake_minimum_required(VERSION 3.25)
+set(EKG_VERSION 2.0.0)
+
 function(
   exclude_sources_by_regex
   src_files
@@ -28,15 +31,16 @@ function(
   foreach(PATH ${${src_files}})
     if(${PATH} MATCHES ${regex})
       message(STATUS "Removed: '${PATH}'")
-      list(REMOVE_ITEM ${src_files} ${PATH})
+      list(REMOVE_ITEM ${${src_files}} ${PATH})
     else()
       message(STATUS "Keep: '${PATH}'")
     endif()
   endforeach()
-endfunction()
 
-cmake_minimum_required(VERSION 3.10)
-set(EKG_VERSION 2.0.0)
+  return(
+    PROPAGATE ${src_files}
+  )
+endfunction()
 
 project(
   ekg
@@ -120,7 +124,7 @@ file(
   "src/*.cpp"
 )
 
-exclude_sources_by_regex(SOURCE_FILES "ui_")
+exclude_sources_by_regex(SOURCE_FILES "/ui_|/util/")
 add_library(ekg STATIC ${SOURCE_FILES})
 
 set_target_properties(

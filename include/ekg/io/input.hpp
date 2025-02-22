@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string_view>
+#include <vector>
 
 namespace ekg {
   enum class system_cursor_type {

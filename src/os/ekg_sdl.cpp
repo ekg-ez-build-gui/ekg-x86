@@ -62,20 +62,20 @@ const char *ekg::sdl::get_clipboard_text() {
 }
 
 void ekg::sdl::init() {
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::arrow)]      = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::ibeam)]      = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::wait)]       = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::crosshair)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::wait_arrow)] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAITARROW);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_nwse)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_nesw)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_we)]    = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_ns)]    = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::size_all)]   = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::no)]         = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
-  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor::hand)]       = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::arrow)]      = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::ibeam)]      = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::wait)]       = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::crosshair)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::wait_arrow)] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAITARROW);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_nwse)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_nesw)]  = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_we)]    = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_ns)]    = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::size_all)]   = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::no)]         = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO);
+  this->loaded_system_cursor_list[static_cast<uint64_t>(ekg::system_cursor_type::hand)]       = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 
-  this->system_cursor = ekg::system_cursor::arrow;
+  this->system_cursor = ekg::system_cursor_type::arrow;
   this->update_cursor();
 
   SDL_GetWindowSize(this->p_sdl_win, &ekg::viewport.w, &ekg::viewport.h);
@@ -180,7 +180,7 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
   case SDL_WINDOWEVENT:
     if (
         ekg::has(
-          this->modes,
+          ekg::p_core->p_os_platform->modes,
           ekg::internal_behavior::no_auto_set_viewport_when_resize
         )
       ) {
@@ -199,68 +199,68 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
     }
     break;
   case SDL_KEYDOWN:
-    this->serialized_input_event.event_type = ekg::input_event_type::key_down;
-    this->serialized_input_event.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::key_down;
+    ekg::p_core->p_os_platform->serialized_input_event.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
     must_poll_events = true;
     break;
   case SDL_KEYUP:
-    this->serialized_input_event.event_type = ekg::input_event_type::key_up;
-    this->serialized_input_event.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::key_up;
+    ekg::p_core->p_os_platform->serialized_input_event.key.key = static_cast<int32_t>(sdl_event.key.keysym.sym);
     must_poll_events = true;
     break;
   case SDL_TEXTINPUT:
-    this->serialized_input_event.event_type = ekg::input_event_type::text_input;
-    this->serialized_input_event.text_input = sdl_event.text.text;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::text_input;
+    ekg::p_core->p_os_platform->serialized_input_event.text_input = sdl_event.text.text;
     must_poll_events = true;
     break;
   case SDL_MOUSEBUTTONUP:
-    this->serialized_input_event.event_type = ekg::input_event_type::mouse_button_up;
-    this->serialized_input_event.mouse_button = sdl_event.button.button;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_button_up;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_button = sdl_event.button.button;
     must_poll_events = true;
     break;
   case SDL_MOUSEBUTTONDOWN:
-    this->serialized_input_event.event_type = ekg::input_event_type::mouse_button_down;
-    this->serialized_input_event.mouse_button = sdl_event.button.button;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_button_down;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_button = sdl_event.button.button;
     must_poll_events = true;
     break;
   case SDL_MOUSEWHEEL:
-    this->serialized_input_event.event_type = ekg::input_event_type::mouse_wheel;
-    this->serialized_input_event.mouse_wheel_x = sdl_event.wheel.x;
-    this->serialized_input_event.mouse_wheel_y = sdl_event.wheel.y;
-    this->serialized_input_event.mouse_wheel_precise_x = sdl_event.wheel.preciseX;
-    this->serialized_input_event.mouse_wheel_precise_y = sdl_event.wheel.preciseY;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_wheel;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_x = sdl_event.wheel.x;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_y = sdl_event.wheel.y;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_precise_x = sdl_event.wheel.preciseX;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_precise_y = sdl_event.wheel.preciseY;
     must_poll_events = true;
     break;
   case SDL_MOUSEMOTION:
-    this->serialized_input_event.event_type = ekg::input_event_type::mouse_motion;
-    this->serialized_input_event.mouse_motion_x = sdl_event.motion.x;
-    this->serialized_input_event.mouse_motion_y = sdl_event.motion.y;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_motion;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_motion_x = sdl_event.motion.x;
+    ekg::p_core->p_os_platform->serialized_input_event.mouse_motion_y = sdl_event.motion.y;
     must_poll_events = true;
     break;
   case SDL_FINGERUP:
-    this->serialized_input_event.event_type = ekg::input_event_type::finger_up;
-    this->serialized_input_event.finger_x = sdl_event.tfinger.x;
-    this->serialized_input_event.finger_y = sdl_event.tfinger.y;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::finger_up;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_x = sdl_event.tfinger.x;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_y = sdl_event.tfinger.y;
     must_poll_events = true;
     break;
   case SDL_FINGERDOWN:
-    this->serialized_input_event.event_type = ekg::input_event_type::finger_down;
-    this->serialized_input_event.finger_x = sdl_event.tfinger.x;
-    this->serialized_input_event.finger_y = sdl_event.tfinger.y;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::finger_down;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_x = sdl_event.tfinger.x;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_y = sdl_event.tfinger.y;
     must_poll_events = true;
     break;
   case SDL_FINGERMOTION:
-    this->serialized_input_event.event_type = ekg::input_event_type::finger_motion;
-    this->serialized_input_event.finger_x = sdl_event.tfinger.x;
-    this->serialized_input_event.finger_y = sdl_event.tfinger.y;
-    this->serialized_input_event.finger_dx = sdl_event.tfinger.dx;
-    this->serialized_input_event.finger_dy = sdl_event.tfinger.dy;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::finger_motion;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_x = sdl_event.tfinger.x;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_y = sdl_event.tfinger.y;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_dx = sdl_event.tfinger.dx;
+    ekg::p_core->p_os_platform->serialized_input_event.finger_dy = sdl_event.tfinger.dy;
     must_poll_events = true;
     break;
   }
 
   if (must_poll_events) {
-    this->system_cursor = ekg::system_cursor::arrow;
+    ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
     ekg::p_core->poll_events();
     must_poll_events = false;
   }

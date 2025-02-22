@@ -1,5 +1,6 @@
 #include "ekg/core/runtime.hpp"
 #include "ekg/layout/scale.hpp"
+#include "ekg/core/context.hpp"
 
 void ekg::runtime::init() {
   this->service_handler.init();
@@ -20,7 +21,7 @@ void ekg::runtime::init() {
    **/
 
   this->swap_target_collector.unique_id = ekg::io::invalid_unique_id;
-  this->handler.allocate() = new ekg::task_t {
+  this->service_handler.allocate() = new ekg::task_t {
     .info = ekg::info_t {
       .tag = "swap",
       .p_properties = nullptr,
@@ -51,7 +52,7 @@ void ekg::runtime::init() {
         this->swap_target_collector.storage.clear();
 
         result = ekg::io::push_back_widget_tree_recursively(
-          &target_collector,
+          &this->swap_target_collector,
           static_cast<ekg::ui::abstract*>(p_widget->properties.p_abs_parent->p_widget)
         );
 
@@ -60,7 +61,7 @@ void ekg::runtime::init() {
         }
 
         if (this->swap_target_collector.was_target_found) {
-          top_level_widget_list = storage; // idk i be brain dead
+          top_level_widget_list = this->swap_target_collector.storage; // idk i be brain dead
         } else {
           this->context_widget_list.insert(
             this->context_widget_list.end(),
@@ -69,16 +70,16 @@ void ekg::runtime::init() {
           );
         }
       }
+
+      this->context_widget_list.insert(
+        this->context_widget_list.end(),
+        top_level_widget_list.begin(),
+        top_level_widget_list.end()
+      );
+
+      this->swap_target_collector.storage.clear();
+      this->swap_target_collector.unique_id = ekg::io::invalid_unique_id;
     }
-
-    this->context_widget_list.insert(
-      this->context_widget_list.end(),
-      top_level_widget_list.begin(),
-      top_level_widget_list.end()
-    );
-
-    this->swap_target_collector.storage.clear();
-    this->swap_target_collector.unique_id = ekg::io::invalid_unique_id;
   };
 
   this->service_handler.allocate() = new ekg::task_t {
@@ -128,7 +129,7 @@ void ekg::runtime::init() {
       .p_data = nullptr
     },
     .function = [this](ekg::info_t &info) {
-      ekg::layout::scale_update();
+      ekg::layout::scale_calculate();
 
       ekg::viewport.font_scale = ekg::clamp(
         ekg::viewport.font_scale,
@@ -150,14 +151,14 @@ void ekg::runtime::init() {
 
       if (this->draw_fr_normal.font_size != font_size) {
         this->draw_fr_small.set_size(
-          ekg::clamp_min(
+          ekg::min_clamp(
             font_size - ekg::viewport.font_offset.x,
             ekg::minimum_small_font_height
           )
         );
 
         this->draw_fr_normal.set_size(
-          ekg::clamp_min(
+          ekg::min_clamp(
             font_size,
             ekg::minimum_font_height
           )
@@ -165,7 +166,7 @@ void ekg::runtime::init() {
 
 
         this->draw_fr_big.set_size(
-          ekg::clamp_min(
+          ekg::min_clamp(
             font_size + ekg::viewport.font_offset.y,
             ekg::minimum_big_font_height
           )

@@ -42,7 +42,7 @@ namespace ekg {
 
   std::map<std::string_view, ekg::theme_t> &themes();
   ekg::theme_t &theme(std::string_view name = "");
-  ekg::theme_t &theme(ekg::theme_t theme);
+  void theme(ekg::theme_t theme);
   ekg::theme_t &set_current_theme(std::string_view name);
 }
 

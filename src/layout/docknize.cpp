@@ -1,7 +1,5 @@
 #include "ekg/layout/docknize.hpp"
-#include "ekg/ui/display.hpp"
 #include "ekg/ekg.hpp"
-#include "ekg/ui/frame/ui_frame_widget.hpp"
 #include "ekg/layout/extentnize.hpp"
 
 void ekg::layout::mask::preset(
@@ -30,6 +28,8 @@ void ekg::layout::mask::insert(
 }
 
 void ekg::layout::mask::docknize() {
+  ekg::layout::fill_align_t fill_align {};
+
   int32_t count {};
   float dimensional_extent {};
   float rect_height {};
@@ -112,11 +112,13 @@ void ekg::layout::mask::docknize() {
         count = 0;
         ekg::layout::extentnize_rect_descriptor(
           this->rect_descriptor_list,
-          dimensional_extent,
+          this->offset,
           ekg::dock::fill,
           ekg::dock::none,
-          count,
-          ekg::axis::horizontal
+          ekg::axis::horizontal,
+          fill_align,
+          dimensional_extent,
+          count
         );
 
         rect_width = ekg::min_clamp(
@@ -252,7 +254,7 @@ void ekg::layout::docknize_widget(
     }
   }
 
-  ekg::rect_t<float> container_rect {p_widget_parent->dimension};
+  ekg::rect_t<float> container_rect {p_widget_parent->rect};
   ekg::theme_t &current_global_theme {ekg::theme()};
 
   float initial_offset {static_cast<float>(theme.scrollbar.pixel_thickness)};

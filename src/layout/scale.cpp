@@ -8,9 +8,8 @@ void ekg::layout::scale_calculate() {
   if (ekg::viewport.auto_scale) {
     ekg::p_core->p_os_platform->update_display_size();
 
-    display_size = static_cast<ekg::vec2_t<float>>(
-      ekg::p_core->p_os_platform->display_size
-    );
+    display_size.x = ekg::p_core->p_os_platform->display_size.w;
+    display_size.y = ekg::p_core->p_os_platform->display_size.h;
 
     ekg::viewport.scale.w = 1920.0f;
     ekg::viewport.scale.h = 1080.0f;

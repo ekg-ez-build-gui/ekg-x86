@@ -195,6 +195,21 @@ namespace ekg {
     return ekg::vec4_t<t>(r, g, b, a) / 255;
   }
 
+  template<typename t>
+  constexpr t min_clamp(t a, t b) {
+    return a < b ? b : a;
+  }
+
+  template<typename t>
+  constexpr t max_clamp(t a, t b) {
+    return a > b ? b : a;
+  }
+
+  template<typename t>
+  constexpr t clamp(t a, t b, t c) {
+    return ekg::min_clamp(ekg::max_clamp(a, c), b);
+  }
+
   void ortho(
     float *p_mat4x4,
     float left,

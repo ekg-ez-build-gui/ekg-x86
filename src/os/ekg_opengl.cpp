@@ -19,9 +19,9 @@ ekg::opengl::opengl(std::string_view set_glsl_version) {
   std::regex es_re {"es"};
 
   if (std::regex_search(glsl_version, es_re)) {
-    this->gpu_api = ekg::api::opengles;
+    this->gpu_api = ekg::gpu_api::opengles;
   } else {
-    this->gpu_api = ekg::api::opengl;
+    this->gpu_api = ekg::gpu_api::opengl;
   }
 
   std::regex number_re {"\\d+"};  
@@ -227,7 +227,7 @@ void ekg::opengl::re_alloc_geometry_resources(
 }
 
 ekg::flags_t ekg::opengl::allocate_sampler(
-  ekg::gpu::sampler_allocate_info *p_sampler_allocate_info,
+  ekg::sampler_allocate_info_t *p_sampler_allocate_info,
   ekg::sampler_t *p_sampler
 ) {
   if (p_sampler == nullptr) {
@@ -289,7 +289,7 @@ ekg::flags_t ekg::opengl::allocate_sampler(
 }
 
 ekg::flags_t ekg::opengl::fill_sampler(
-  ekg::gpu::sampler_fill_info *p_sampler_fill_info,
+  ekg::sampler_fill_info_t *p_sampler_fill_info,
   ekg::sampler_t *p_sampler
 ) {
   if (p_sampler == nullptr || !p_sampler->gl_id) {
@@ -335,8 +335,8 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
 
   float highest_square {};
   float square {};
-  ekg::vec2_t<int32_t> highest_glyph_size {};
 
+  ekg::vec2_t<int32_t> highest_glyph_size {};
   for (size_t it {}; it < ekg::io::supported_faces_size; it++) {
     ekg::io::font_face_t *&p_font_face {
       faces[it]
@@ -360,7 +360,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   };
 
   bool is_current_gpu_api_gl_es {
-    this->gpu_api == ekg::gpu_api::es
+    this->gpu_api == ekg::gpu_api::opengles
   };
 
   std::vector<unsigned char> r8_to_r8g8b8a8_swizzled_image {};
@@ -405,12 +405,11 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
 
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
-  FT_Vector char_size {};
 
   ekg::flags_t flags {};
   float offset {};
 
-  for (char32_t &char32 : p_loaded_sampler_generate_list) {
+  for (char32_t &char32 : char_to_gen_sampler_list) {
     switch (char32 < 256 || !p_font_face_emoji->font_face_loaded) {
       case true: {
         ft_face = p_font_face_text->ft_face;
@@ -432,8 +431,8 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
       continue;
     }
 
-    ekg::io::glyph_char_t &char_data {mapped_glyph_char_data[char32]};
-    char_data.x = offset / static_cast<float>(atlas_width);
+    ekg::io::glyph_char_t &char_data {mapped_gpu_data_char_glyph[char32]};
+    char_data.x = offset / static_cast<float>(atlas_rect.w);
 
     p_current_image_buffer = ft_glyph_slot->bitmap.buffer;
 
@@ -447,12 +446,17 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
         ft_glyph_slot->bitmap.buffer
       };
 
-      char_size.x = char_data.w;
-      char_size.y = char_data.h;
+      highest_glyph_size.x = char_data.w;
+      highest_glyph_size.y = char_data.h;
 
       if (
           ekg::has(
-            ekg::image_src_r8_convert_to_r8g8b8a8(highest_glyph_size, )
+            ekg::image_src_r8_convert_to_r8g8b8a8(
+              highest_glyph_size,
+              p_src_copy,
+              r8_to_r8g8b8a8_swizzled_image
+            ),
+            ekg::result::failed
           )
         ) {
         ekg::log() << "Warning: could not convert character '" << char32 << "' from r8 to r8g8b8a8 on OpenGL ES3";
@@ -482,7 +486,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   glBindTexture(GL_TEXTURE_2D, 0);
 
   non_swizzlable_range = (
-    non_swizzlable_range / static_cast<float>(atlas_width)
+    non_swizzlable_range / static_cast<float>(atlas_rect.w)
   );
 
   return ekg::result::success;
@@ -506,7 +510,7 @@ ekg::flags_t ekg::opengl::bind_sampler(ekg::sampler_t *p_sampler) {
 }
 
 void ekg::opengl::draw(
-  ekg::gpu::data_t *p_gpu_data,
+  ekg::io::gpu_data_t *p_gpu_data,
   uint64_t loaded_gpu_data_size
 ) {
   glDisable(GL_DEPTH_TEST);
@@ -538,7 +542,7 @@ void ekg::opengl::draw(
   bool sampler_going_on {};
 
   for (uint64_t it {}; it < loaded_gpu_data_size-1; it++) {
-    ekg::gpu::data_t &data {p_gpu_data[it]};
+    ekg::io::gpu_data_t &data {p_gpu_data[it]};
     sampler_going_on = data.sampler_index > -1;
 
     if (
@@ -602,8 +606,4 @@ void ekg::opengl::draw(
   glBindTexture(GL_TEXTURE_2D, 0);
 
   glUseProgram(0);
-}
-
-ekg::opengl *ekg::os::get_opengl() {
-  return static_cast<ekg::opengl*>(ekg::p_core->p_gpu_api);
 }

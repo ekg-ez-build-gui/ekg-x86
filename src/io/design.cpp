@@ -13,8 +13,8 @@ ekg::theme_t &ekg::theme(std::string_view name) {
   return ekg::themes()[name];
 }
 
-ekg::theme_t &ekg::theme(ekg::theme_t theme) {
-  return ekg::p_core->service_theme.add(theme.name, theme);
+void ekg::theme(ekg::theme_t theme) {
+  return ekg::p_core->service_theme.add(theme);
 }
 
 ekg::flags_t ekg::set_current_theme(std::string_view name) {

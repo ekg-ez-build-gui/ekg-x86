@@ -8,6 +8,7 @@ ekg::layout::extent_t ekg::layout::extent_t::h_rect_descriptor {};
 
 void ekg::layout::extentnize_rect_descriptor(
   std::vector<ekg::rect_descriptor_t> &rect_descriptor_list,
+  ekg::vec3_t<float> offset,
   ekg::flags_t flag_ok,
   ekg::flags_t flag_stop,
   ekg::flags_t flag_axis,
@@ -40,7 +41,7 @@ void ekg::layout::extentnize_rect_descriptor(
       bool is_last_index {};
       bool is_ok_flag {};
  
-      extent += this->offset.x;
+      extent += offset.x;
 
       for (it = it; it < size; it++) {
         ekg::rect_descriptor_t &rect_descriptor {rect_descriptor_list.at(it)};
@@ -55,7 +56,7 @@ void ekg::layout::extentnize_rect_descriptor(
             ||
             is_last_index
           ) {
-          extent -= this->offset.x;
+          extent -= offset.x;
           flag_ok_count += (
             (is_ok_flag = (!ekg::has(rect_descriptor.flags, flag_stop) && (ekg::has(rect_descriptor.flags, flag_ok)) && is_last_index))
           );
@@ -67,7 +68,7 @@ void ekg::layout::extentnize_rect_descriptor(
            * :blush:
            **/
           extent += ( 
-            (rect_descriptor.p_rect->w + this->offset.x)
+            (rect_descriptor.p_rect->w + offset.x)
             *
             (is_last_index && (!ekg::has(rect_descriptor.flags, flag_ok) && should_skip_next == 0))
           );
@@ -91,7 +92,7 @@ void ekg::layout::extentnize_rect_descriptor(
           continue;
         }
 
-        extent += rect_descriptor.p_rect->w + this->offset.x;
+        extent += rect_descriptor.p_rect->w + offset.x;
       }
 
       in_out_count = flag_ok_count + (flag_ok_count == 0);
@@ -135,7 +136,7 @@ void ekg::layout::extentnize_widget(
       }
 
       ekg::layout::extent_t::h_widget.begin_index = static_cast<float>(it);
-      ekg::ui::abstract_widget *p_widgets {};
+      ekg::ui::abstract *p_widgets {};
       ekg::theme_t &current_global_theme {ekg::p_core->service_theme.get_current_theme()};
 
       int32_t size {static_cast<int32_t>(p_widget->properties.children.size())};

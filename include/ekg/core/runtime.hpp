@@ -65,6 +65,8 @@ namespace ekg {
     ekg::service::theme service_theme {};
     ekg::service::input service_input {};
 
+    ekg::os::platform *p_os_platform {};
+
     ekg::gpu::allocator gpu_allocator {};
     ekg::gpu::api *p_gpu_api {};
 

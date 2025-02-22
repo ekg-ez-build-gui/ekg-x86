@@ -23,7 +23,7 @@
  */
 
 #include "ekg/service/handler.hpp"
-#include "ekg/util/io.hpp"
+#include "ekg/io/log.hpp"
 
 void ekg::service::handler::init() {
   ekg::log() << "Initialising handler-service task system-based";

@@ -15,8 +15,6 @@ namespace ekg {
     GLFWcursor *loaded_system_cursor_list[12] {};
     GLFWwindow *p_glfw_win {};
   public:
-    ekg::flags_t modes {};
-  public:
     explicit glfw(
       GLFWwindow *p_glfw_win,
       ekg::flags_t modes = static_cast<ekg::flags_t>(0)

@@ -108,84 +108,84 @@ void ekg::service::input::init() {
 
   ekg::log() << "Registering default user-input bindings";
 
-  this->register_input_bind("frame-drag-activity", "mouse-1");
-  this->register_input_bind("frame-drag-activity", "finger-click");
-  this->register_input_bind("frame-resize-activity", "mouse-1");
-  this->register_input_bind("frame-resize-activity", "finger-click");
+  this->insert_input_bind("frame-drag-activity", "mouse-1");
+  this->insert_input_bind("frame-drag-activity", "finger-click");
+  this->insert_input_bind("frame-resize-activity", "mouse-1");
+  this->insert_input_bind("frame-resize-activity", "finger-click");
 
-  this->register_input_bind("button-activity", "mouse-1");
-  this->register_input_bind("button-activity", "finger-click");
+  this->insert_input_bind("button-activity", "mouse-1");
+  this->insert_input_bind("button-activity", "finger-click");
 
-  this->register_input_bind("checkbox-activity", "mouse-1");
-  this->register_input_bind("checkbox-activity", "finger-click");
+  this->insert_input_bind("checkbox-activity", "mouse-1");
+  this->insert_input_bind("checkbox-activity", "finger-click");
 
-  this->register_input_bind("popup-activity", "mouse-1");
-  this->register_input_bind("popup-activity", "finger-click");
+  this->insert_input_bind("popup-activity", "mouse-1");
+  this->insert_input_bind("popup-activity", "finger-click");
 
-  this->register_input_bind("textbox-activity", "mouse-1");
-  this->register_input_bind("textbox-activity", "finger-click");
-  this->register_input_bind("textbox-action-activity", "return");
-  this->register_input_bind("textbox-action-activity", "keypad enter");
+  this->insert_input_bind("textbox-activity", "mouse-1");
+  this->insert_input_bind("textbox-activity", "finger-click");
+  this->insert_input_bind("textbox-action-activity", "return");
+  this->insert_input_bind("textbox-action-activity", "keypad enter");
 
-  this->register_input_bind("textbox-action-select-all", "lctrl+a");
-  this->register_input_bind("textbox-action-select-all", "rctrl+a");
+  this->insert_input_bind("textbox-action-select-all", "lctrl+a");
+  this->insert_input_bind("textbox-action-select-all", "rctrl+a");
 
-  this->register_input_bind("textbox-action-select-all-inline", "mouse-1");
-  this->register_input_bind("textbox-action-select", "lshift");
-  this->register_input_bind("textbox-action-select", "rshift");
+  this->insert_input_bind("textbox-action-select-all-inline", "mouse-1");
+  this->insert_input_bind("textbox-action-select", "lshift");
+  this->insert_input_bind("textbox-action-select", "rshift");
 
-  this->register_input_bind("textbox-action-select-word", "mouse-1-double");
-  this->register_input_bind("textbox-action-select-word", "finger-hold");
+  this->insert_input_bind("textbox-action-select-word", "mouse-1-double");
+  this->insert_input_bind("textbox-action-select-word", "finger-hold");
 
-  this->register_input_bind("textbox-action-delete-left", "abs-backspace");
-  this->register_input_bind("textbox-action-delete-right", "abs-delete");
-  this->register_input_bind("textbox-action-break-line", "return");
-  this->register_input_bind("textbox-action-break-line", "keypad enter");
-  this->register_input_bind("textbox-action-break-line", "lshift+return");
-  this->register_input_bind("textbox-action-break-line", "rshift+return");
-  this->register_input_bind("textbox-action-tab", "tab");
-  this->register_input_bind("textbox-action-modifier", "lctrl");
-  this->register_input_bind("textbox-action-modifier", "rctrl");
+  this->insert_input_bind("textbox-action-delete-left", "abs-backspace");
+  this->insert_input_bind("textbox-action-delete-right", "abs-delete");
+  this->insert_input_bind("textbox-action-break-line", "return");
+  this->insert_input_bind("textbox-action-break-line", "keypad enter");
+  this->insert_input_bind("textbox-action-break-line", "lshift+return");
+  this->insert_input_bind("textbox-action-break-line", "rshift+return");
+  this->insert_input_bind("textbox-action-tab", "tab");
+  this->insert_input_bind("textbox-action-modifier", "lctrl");
+  this->insert_input_bind("textbox-action-modifier", "rctrl");
 
-  this->register_input_bind("textbox-action-up", "abs-up");
-  this->register_input_bind("textbox-action-down", "abs-down");
-  this->register_input_bind("textbox-action-right", "abs-right");
-  this->register_input_bind("textbox-action-left", "abs-left");
+  this->insert_input_bind("textbox-action-up", "abs-up");
+  this->insert_input_bind("textbox-action-down", "abs-down");
+  this->insert_input_bind("textbox-action-right", "abs-right");
+  this->insert_input_bind("textbox-action-left", "abs-left");
 
-  this->register_input_bind("clipboard-copy", "lctrl+c");
-  this->register_input_bind("clipboard-copy", "rctrl+c");
-  this->register_input_bind("clipboard-copy", "copy");
-  this->register_input_bind("clipboard-paste", "lctrl+v");
-  this->register_input_bind("clipboard-paste", "rctrl+v");
-  this->register_input_bind("clipboard-paste", "paste");
-  this->register_input_bind("clipboard-cut", "lctrl+x");
-  this->register_input_bind("clipboard-cut", "rctrl+x");
-  this->register_input_bind("clipboard-cut", "cut");
+  this->insert_input_bind("clipboard-copy", "lctrl+c");
+  this->insert_input_bind("clipboard-copy", "rctrl+c");
+  this->insert_input_bind("clipboard-copy", "copy");
+  this->insert_input_bind("clipboard-paste", "lctrl+v");
+  this->insert_input_bind("clipboard-paste", "rctrl+v");
+  this->insert_input_bind("clipboard-paste", "paste");
+  this->insert_input_bind("clipboard-cut", "lctrl+x");
+  this->insert_input_bind("clipboard-cut", "rctrl+x");
+  this->insert_input_bind("clipboard-cut", "cut");
 
-  this->register_input_bind("listbox-activity-open", "mouse-1-double");
-  this->register_input_bind("listbox-activity-open", "finger-hold");
+  this->insert_input_bind("listbox-activity-open", "mouse-1-double");
+  this->insert_input_bind("listbox-activity-open", "finger-hold");
 
-  this->register_input_bind("listbox-activity-select", "mouse-1");
-  this->register_input_bind("listbox-activity-select", "finger-click");
-  this->register_input_bind("listbox-activity-select-many", "lctrl+mouse-1");
-  this->register_input_bind("listbox-activity-select-many", "rctrl+mouse-1");
+  this->insert_input_bind("listbox-activity-select", "mouse-1");
+  this->insert_input_bind("listbox-activity-select", "finger-click");
+  this->insert_input_bind("listbox-activity-select-many", "lctrl+mouse-1");
+  this->insert_input_bind("listbox-activity-select-many", "rctrl+mouse-1");
 
-  this->register_input_bind("slider-drag-activity", "mouse-1");
-  this->register_input_bind("slider-drag-activity", "finger-click");
-  this->register_input_bind("slider-bar-increase", "mouse-wheel-up");
-  this->register_input_bind("slider-bar-decrease", "mouse-wheel-down");
-  this->register_input_bind("slider-bar-modifier", "lctrl");
-  this->register_input_bind("slider-bar-modifier", "rctrl");
+  this->insert_input_bind("slider-drag-activity", "mouse-1");
+  this->insert_input_bind("slider-drag-activity", "finger-click");
+  this->insert_input_bind("slider-bar-increase", "mouse-wheel-up");
+  this->insert_input_bind("slider-bar-decrease", "mouse-wheel-down");
+  this->insert_input_bind("slider-bar-modifier", "lctrl");
+  this->insert_input_bind("slider-bar-modifier", "rctrl");
 
-  this->register_input_bind("scrollbar-drag", "mouse-1");
-  this->register_input_bind("scrollbar-drag", "finger-click");
-  this->register_input_bind("scrollbar-scroll", "mouse-wheel");
-  this->register_input_bind("scrollbar-scroll", "finger-swipe");
+  this->insert_input_bind("scrollbar-drag", "mouse-1");
+  this->insert_input_bind("scrollbar-drag", "finger-click");
+  this->insert_input_bind("scrollbar-scroll", "mouse-wheel");
+  this->insert_input_bind("scrollbar-scroll", "finger-swipe");
 
-  this->register_input_bind("scrollbar-scroll", "lshift+mouse-wheel");
-  this->register_input_bind("scrollbar-scroll", "rshift+mouse-wheel");
-  this->register_input_bind("scrollbar-horizontal-scroll", "lshift+mouse-wheel");
-  this->register_input_bind("scrollbar-horizontal-scroll", "rshift+mouse-wheel");
+  this->insert_input_bind("scrollbar-scroll", "lshift+mouse-wheel");
+  this->insert_input_bind("scrollbar-scroll", "rshift+mouse-wheel");
+  this->insert_input_bind("scrollbar-horizontal-scroll", "lshift+mouse-wheel");
+  this->insert_input_bind("scrollbar-horizontal-scroll", "rshift+mouse-wheel");
 }
 
 void ekg::service::input::quit() {
