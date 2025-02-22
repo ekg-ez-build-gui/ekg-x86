@@ -281,31 +281,31 @@ void ekg::glfw::get_key_name(ekg::io::input_key_t &key, std::string &name) {
   }
 }
 
-void ekg::glfw::get_special_key(ekg::io::input_key_t &key, ekg::special_key &special_key) {
+void ekg::glfw::get_special_key(ekg::io::input_key_t &key, ekg::special_key_type &special_key) {
   switch (key.key) {
     case GLFW_KEY_LEFT_CONTROL:
-      special_key = ekg::special_key::left_ctrl;
+      special_key = ekg::special_key_type::left_ctrl;
       break;
     case GLFW_KEY_RIGHT_CONTROL:
-      special_key = ekg::special_key::right_ctrl;
+      special_key = ekg::special_key_type::right_ctrl;
       break;
     case GLFW_KEY_LEFT_SHIFT:
-      special_key = ekg::special_key::left_shift;
+      special_key = ekg::special_key_type::left_shift;
       break;
     case GLFW_KEY_RIGHT_SHIFT:
-      special_key = ekg::special_key::right_shift;
+      special_key = ekg::special_key_type::right_shift;
       break;
     case GLFW_KEY_LEFT_ALT:
-      special_key = ekg::special_key::left_alt;
+      special_key = ekg::special_key_type::left_alt;
       break;
     case GLFW_KEY_RIGHT_ALT:
-      special_key = ekg::special_key::right_alt;
+      special_key = ekg::special_key_type::right_alt;
       break;
     case GLFW_KEY_TAB:
-      special_key = ekg::special_key::tab;
+      special_key = ekg::special_key_type::tab;
       break;
     default:
-      special_key = ekg::special_key::unknown;
+      special_key = ekg::special_key_type::unknown;
       break;
   }
 }

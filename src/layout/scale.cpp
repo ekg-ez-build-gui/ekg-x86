@@ -2,7 +2,7 @@
 #include "ekg/layout/scale.hpp"
 
 void ekg::layout::scale_calculate() {
-  ekg::vec2_t<float> display_size {ekg::viewport.scale.x, ekg::viewport.scale.y};
+  ekg::vec2_t<float> display_size {ekg::viewport.scale.w, ekg::viewport.scale.h};
   ekg::vec2_t<float> viewport {ekg::viewport.w, ekg::viewport.h};
 
   if (ekg::viewport.auto_scale) {
@@ -12,8 +12,8 @@ void ekg::layout::scale_calculate() {
       ekg::p_core->p_os_platform->display_size
     );
 
-    ekg::viewport.scale.x = 1920.0f;
-    ekg::viewport.scale.y = 1080.0f;
+    ekg::viewport.scale.w = 1920.0f;
+    ekg::viewport.scale.h = 1080.0f;
 
     viewport = display_size;
   }
@@ -35,7 +35,7 @@ void ekg::layout::scale_calculate() {
    **/
 
   float base_scale {
-    ekg::viewport.scale.x * ekg::viewport.scale.y
+    ekg::viewport.scale.w * ekg::viewport.scale.h
   };
 
   float display_scale {
@@ -64,5 +64,5 @@ void ekg::layout::scale_calculate() {
     (display_scale_percent / ekg::viewport.scale_interval)
   );
 
-  ekg::viewport.scale.z = ekg::clamp(factor, 0.5f, 2.0f);
+  ekg::viewport.factor_scale = ekg::clamp(factor, 0.5f, 2.0f);
 }

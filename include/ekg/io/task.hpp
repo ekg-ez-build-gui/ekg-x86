@@ -32,15 +32,16 @@ namespace ekg {
 }
 
 struct ekg::io {
-  enum runtime_task_operation {
+  enum operation {
     swap,
     reload,
     layout_docknize,
-    scale_update
+    scale_update,
+    high_frequency
   };
 
   void dispatch(
-    ekg::io::runtime_task_operation op
+    ekg::io::operation op
   );
 }
 

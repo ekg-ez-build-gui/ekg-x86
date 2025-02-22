@@ -25,6 +25,8 @@
 #include "ekg/gpu/allocator.hpp"
 #include "ekg/ekg.hpp"
 
+// TODO: add capacity mapped-gbuffer
+
 bool ekg::gpu::allocator::high_priority {};
 bool ekg::gpu::allocator::is_out_of_scissor {};
 float ekg::gpu::allocator::concave {-2.0f};

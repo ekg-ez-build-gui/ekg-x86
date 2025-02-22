@@ -6,11 +6,11 @@ void ekg::runtime::init() {
 
   /**
    * Allocate order is important here, all pre-allocated tasks MUST follow
-   * the `ekg::io::runtime_task_operation` order.
+   * the `ekg::io::operation` order.
    * 
    * Example:
    * ```c++
-   * enum runtime_task_operation {
+   * enum operation {
    *   swap, // first
    *   // etc
    *   // etc
@@ -19,7 +19,7 @@ void ekg::runtime::init() {
    * ```
    **/
 
-  this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
+  this->swap_target_collector.unique_id = ekg::io::invalid_unique_id;
   this->handler.allocate() = new ekg::task_t {
     .info = ekg::info_t {
       .tag = "swap",
@@ -27,7 +27,7 @@ void ekg::runtime::init() {
       .p_data = nullptr
     },
     .function = [this](ekg::info_t &info) {
-      if (this->swap_target_collector->unique_id == ekg::io::invalid_unique_id) {
+      if (this->swap_target_collector.unique_id == ekg::io::invalid_unique_id) {
         return;
       }
 
@@ -78,7 +78,7 @@ void ekg::runtime::init() {
     );
 
     this->swap_target_collector.storage.clear();
-    this->swap_target_collector->unique_id = ekg::io::invalid_unique_id;
+    this->swap_target_collector.unique_id = ekg::io::invalid_unique_id;
   };
 
   this->service_handler.allocate() = new ekg::task_t {
@@ -185,11 +185,11 @@ void ekg::runtime::init() {
       }
 
       ekg::io::dispatch(
-        ekg::io::runtime_task_operation::reload
+        ekg::io::operation::reload
       );
 
       ekg::io::dispatch(
-        ekg::io::runtime_task_operation::layout_docknize
+        ekg::io::operation::layout_docknize
       );
     }
   }
@@ -359,8 +359,8 @@ void ekg::runtime::poll_events() {
     this->target_collector.target_unique_id = ekg::current.unique_id;
     ekg::current.last = ekg::current.unique_id;
 
-    ekg::io::dispatch(ekg::io::runtime_task_operation::swap);
-    ekg::io::dispatch(ekg::io::runtime_task_operation::redraw);
+    ekg::io::dispatch(ekg::io::operation::swap);
+    ekg::io::dispatch(ekg::io::operation::redraw);
   }
 }
 
@@ -460,4 +460,54 @@ ekg::ui::abstract *ekg::runtime::emplace_back_new_widget_safety(
 
 ekg::id_t ekg::runtime::generate_unique_id() {
   return ++this->global_id;
+}
+
+void ekg::runtime::dispatch_widget_op(
+  ekg::ui::abstract *p_widget,
+  ekg::io::operation op
+) {
+  if (p_widget == nullptr) {
+    return;
+  }
+
+  bool is_cancelled {};
+  switch (op) {
+  case ekg::io::operation::swap:
+    this->target_collector.unique_id = p_widget->properties.unique_id;
+    break;
+  case ekg::io::operation::reload:
+    if (
+      !(is_cancelled = p_widget->states.was_reloaded)
+    ) {
+      this->reload_widget_list.push_back(p_widget);
+      p_widget->states.was_reloaded = true;
+    }
+    break;
+  case ekg::io::operation::layout_docknize:
+    if (
+      !(is_cancelled = p_widget->states.was_layout_docknized)
+    ) {
+      this->layout_docknize_list.push_back(p_widget);
+      p_widget->states.was_layout_docknized = true;
+    }
+    break;
+  case ekg::io::operation::high_frequency:
+    if (
+      !p_widget->states.is_high_frequency
+    ) {
+      this->high_frequency_widget_list.push_back(p_widget);
+      p_widget->states.is_high_frequency = true;
+    }
+
+    is_cancelled = true;
+    break;
+  }
+
+  if (is_cancelled) {
+    return;
+  }
+
+  this->service_handler.dispatch_pre_allocated_task(
+    static_cast<uint64_t>(op)
+  );
 }

@@ -77,6 +77,11 @@ namespace ekg {
     );
 
     ekg::id_t generate_unique_id();
+
+    void dispatch_widget_op(
+      ekg::ui::abstract *p_widget,
+      ekg::io::operation op
+    );
   public:
     void init();
     void quit();

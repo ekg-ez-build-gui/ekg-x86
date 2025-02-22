@@ -25,9 +25,15 @@
 #include "ekg/io/task.hpp"
 
 void ekg::io::dispatch(
-  ekg::io::runtime_task_operation op
+  ekg::io::operation op
 ) {
-  ekg::p_core->service_handler.dispatch_pre_allocated_task(
-    static_cast<uint64_t>(op)
-  );
+  switch (op) {
+  case ekg::operation::high_frequency:
+    break;
+  default:
+    ekg::p_core->service_handler.dispatch_pre_allocated_task(
+      static_cast<uint64_t>(op)
+    );
+    break;
+  }
 }

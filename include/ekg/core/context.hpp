@@ -16,6 +16,7 @@ namespace ekg {
 
     bool auto_scale {};
     ekg::rect_t<float> scale {};
+    float scale_interval {25.0f};
 
     float font_scale {18.0f};
     float factor_scale {};
