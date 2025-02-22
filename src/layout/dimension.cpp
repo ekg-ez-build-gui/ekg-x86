@@ -39,7 +39,7 @@ float ekg::layout::estimate_docknizable_height(
         &&
         p_widgets->properties.children.empty()
       ) {
-      height = ekg::layout::estimate_height(p_widgets); 
+      height = ekg::layout::estimate_docknizable_height(p_widgets); 
     }
 
     total_height += (

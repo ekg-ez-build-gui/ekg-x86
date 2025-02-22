@@ -46,14 +46,8 @@ void ekg::glfw::update_display_size() {
   this->display_size.x = p_glfw_vidmode->width;
   this->display_size.y = p_glfw_vidmode->height;
 
-  this->update_cursor(ekg::system_cursor_type::arrow);
   this->system_cursor = ekg::system_cursor_type::arrow;
-
-  glfwGetWindowSize(
-    this->p_glfw_win,
-    &ekg::viewport.w,
-    &ekg::viewport.h
-  );
+  this->update_cursor();
 }
 
 void ekg::glfw::update_cursor() {
@@ -344,22 +338,22 @@ void ekg::glfw_window_size_callback(int32_t w, int32_t h) {
   ekg::viewport.h = static_cast<float>(h);
 
   ekg::p_core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
-  ekg::io::dispatch(ekg::io::runtime_task_operation::scale_update);
+  ekg::io::dispatch(ekg::io::operation::scale_update);
 }
 
 void ekg::glfw_scroll_callback(double dx, double dy) {
-  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::mouse_wheel;
+  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_wheel;
   ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_x = static_cast<int32_t>(dx);
   ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_y = static_cast<int32_t>(dy);
   ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_precise_x = dx;
   ekg::p_core->p_os_platform->serialized_input_event.mouse_wheel_precise_y = dy;
 
   ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
-  ekg::p_core->process_event();
+  ekg::p_core->poll_events();
 }
 
 void ekg::glfw_char_callback(uint32_t codepoint) {
-  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::text_input;
+  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::text_input;
 
   // idk it seems pretty much a workaround, predictable crash if codepoint
   // is larger than 127 (overflow)
@@ -367,32 +361,32 @@ void ekg::glfw_char_callback(uint32_t codepoint) {
   ekg::p_core->p_os_platform->serialized_input_event.text_input = (c);
 
   ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
-  ekg::p_core->process_event();
+  ekg::p_core->poll_events();
 }
 
 void ekg::glfw_key_callback(int32_t key, int32_t scancode, int32_t action, int32_t mods) {
   switch (action) {
   case GLFW_PRESS:
-    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::key_down;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::key_down;
     ekg::p_core->p_os_platform->serialized_input_event.key.key = key;
     ekg::p_core->p_os_platform->serialized_input_event.key.scancode = scancode;
     break;
   
   case GLFW_REPEAT:
-    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::key_down;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::key_down;
     ekg::p_core->p_os_platform->serialized_input_event.key.key = key;
     ekg::p_core->p_os_platform->serialized_input_event.key.scancode = scancode;
     break;
 
   case GLFW_RELEASE:
-    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::key_up;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::key_up;
     ekg::p_core->p_os_platform->serialized_input_event.key.key = key;
     ekg::p_core->p_os_platform->serialized_input_event.key.scancode = scancode;
     break;
   }
 
   ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
-  ekg::p_core->process_event();
+  ekg::p_core->poll_events();
 }
 
 void ekg::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mods) {
@@ -413,25 +407,25 @@ void ekg::glfw_mouse_button_callback(int32_t button, int32_t action, int32_t mod
 
   switch (action) {
   case GLFW_PRESS:
-    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::mouse_button_down;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_button_down;
     ekg::p_core->p_os_platform->serialized_input_event.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
     break;
 
   case GLFW_RELEASE:
-    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::mouse_button_up;
+    ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_button_up;
     ekg::p_core->p_os_platform->serialized_input_event.mouse_button = (1 + (button == 1) + button - (1 * (button == 2)));
     break;
   }
 
   ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
-  ekg::p_core->process_event();
+  ekg::p_core->poll_events();
 }
 
 void ekg::glfw_cursor_pos_callback(double x, double y) {
-  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::platform_event_type::mouse_motion;
+  ekg::p_core->p_os_platform->serialized_input_event.type = ekg::io::input_event_type::mouse_motion;
   ekg::p_core->p_os_platform->serialized_input_event.mouse_motion_x = static_cast<float>(x);
   ekg::p_core->p_os_platform->serialized_input_event.mouse_motion_y = static_cast<float>(y);
 
   ekg::p_core->p_os_platform->system_cursor = ekg::system_cursor_type::arrow;
-  ekg::p_core->process_event();
+  ekg::p_core->poll_events();
 }

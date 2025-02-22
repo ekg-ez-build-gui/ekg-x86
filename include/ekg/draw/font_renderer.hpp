@@ -62,6 +62,7 @@ namespace ekg::draw {
 
     ekg::sampler_t atlas_texture_sampler {};
     ekg::rect_t<int32_t> atlas_rect {};
+    float offset_text_height {};
 
     uint32_t font_size {};
     float text_height {};

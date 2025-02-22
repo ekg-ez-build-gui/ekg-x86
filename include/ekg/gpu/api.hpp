@@ -43,7 +43,6 @@ namespace ekg::gpu {
   public:
     ekg::gpu_api gpu_api {};
     ekg::rect_t<float> viewport {};
-    ekg::flags_t modes {};
   public:
     void set_rendering_shader_fragment_source(std::string_view source);
   public:

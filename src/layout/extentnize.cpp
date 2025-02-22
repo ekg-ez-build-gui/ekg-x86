@@ -79,11 +79,11 @@ void ekg::layout::extentnize_rect_descriptor(
           break;
         }
 
-        should_skip_next += ekg::has(rect_descriptor.flags, ekg::dock::bind);
+        should_skip_next += ekg::has(rect_descriptor.flags, ekg::dock::concat);
 
         if (should_skip_next > 0) {
           should_skip_next = (should_skip_next + 1) * (should_skip_next < 2);
-          flag_ok_count += ekg::has(rect_descriptor.flags, flag_ok));
+          flag_ok_count += ekg::has(rect_descriptor.flags, flag_ok);
           continue;
         }
 

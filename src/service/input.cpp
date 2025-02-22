@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
-#include "ekg/service/input.hpp"
 #include <string>
+
+#include "ekg/service/input.hpp"
 #include <algorithm>
+#include "ekg/core/context.hpp"
 #include "ekg/ekg.hpp"
 
 ekg::input_t &ekg::input() {
@@ -189,7 +191,7 @@ void ekg::service::input::init() {
 }
 
 void ekg::service::input::quit() {
-  ekg::log() << "Quitting input-service"
+  ekg::log() << "Quitting input-service";
 }
 
 void ekg::service::input::on_event() {
@@ -203,14 +205,14 @@ void ekg::service::input::on_event() {
     ekg::p_core->p_os_platform->serialized_input_event
   };
 
-  switch (serialized_input_event.event_type) {
-    case ekg::platform_event_type::text_input: {
+  switch (serialized_input_event.type) {
+    case ekg::io::input_event_type::text_input: {
       this->input.was_pressed = true;
       this->input.was_typed = true;
       break;
     }
 
-    case ekg::platform_event_type::key_down: {
+    case ekg::io::input_event_type::key_down: {
       this->input.was_pressed = true;
 
       std::string key_name {};
@@ -251,7 +253,7 @@ void ekg::service::input::on_event() {
       break;
     }
 
-    case ekg::platform_event_type::key_up: {
+    case ekg::io::input_event_type::key_up: {
       this->input.was_released = true;
       std::string key_name {};
       std::string string_builder {};
@@ -293,7 +295,7 @@ void ekg::service::input::on_event() {
       break;
     }
 
-    case ekg::platform_event_type::mouse_button_down: {
+    case ekg::io::input_event_type::mouse_button_down: {
       std::string string_builder {};
       std::string key_name {"mouse"};
 
@@ -308,7 +310,7 @@ void ekg::service::input::on_event() {
       this->set_input_state(string_builder, true);
       this->input_released_list.push_back(string_builder);
 
-      bool double_click_factor {ekg::reach(this->double_interact, 500)};
+      bool double_click_factor {ekg::reach(&this->double_interact, 500)};
       if (!double_click_factor) {
         string_builder += "-double";
         this->set_input_state(string_builder, true);
@@ -318,13 +320,13 @@ void ekg::service::input::on_event() {
       }
 
       if (double_click_factor) {
-        ekg::reset(this->double_interact);
+        ekg::reset(&this->double_interact);
       }
 
       break;
     }
 
-    case ekg::platform_event_type::mouse_button_up: {
+    case ekg::io::input_event_type::mouse_button_up: {
       std::string string_builder {};
       std::string key_name {"mouse-up"};
 
@@ -343,14 +345,14 @@ void ekg::service::input::on_event() {
       break;
     }
 
-    case ekg::platform_event_type::mouse_motion: {
+    case ekg::io::input_event_type::mouse_motion: {
       this->input.has_motion = true;
       this->input.interact.x = static_cast<float>(serialized_input_event.mouse_motion_x);
       this->input.interact.y = static_cast<float>(serialized_input_event.mouse_motion_y);
       break;
     }
 
-    case ekg::platform_event_type::mouse_wheel: {
+    case ekg::io::input_event_type::mouse_wheel: {
       std::string string_builder {};
       this->complete_with_units(string_builder, "mouse-wheel");
       this->set_input_state(string_builder, true);
@@ -371,41 +373,41 @@ void ekg::service::input::on_event() {
        **/
 
       wheel_precise_interval = static_cast<float>(
-        1000 - ekg_clamp(ekg::interval(this->last_time_wheel_was_fired), 0, 1000)
+        1000 - ekg::clamp<int64_t>(ekg::interval(&this->last_time_wheel_was_fired), 0, 1000)
       );
 
       wheel_precise_interval = (wheel_precise_interval / 1000.0f);
       wheel_precise_interval = wheel_precise_interval + (static_cast<float>(wheel_precise_interval > 0.99) * 0.5f);
-      wheel_precise_interval = ekg_min(wheel_precise_interval, 0.2f);
+      wheel_precise_interval = ekg::min_clamp<float>(wheel_precise_interval, 0.2f);
 
       this->input.interact.z = serialized_input_event.mouse_wheel_precise_x * wheel_precise_interval;
       this->input.interact.w = serialized_input_event.mouse_wheel_precise_y * wheel_precise_interval;
       
-      ekg::reset(this->last_time_wheel_was_fired);
+      ekg::reset(&this->last_time_wheel_was_fired);
       break;
     }
 
-    case ekg::platform_event_type::finger_down: {
+    case ekg::io::input_event_type::finger_down: {
       this->input.was_pressed = true;
-      ekg::reset(this->timing_last_interact);
-      bool reach_double_interact {ekg::reach(this->double_interact, 500)};
+      ekg::reset(&this->input.timing_last_interact);
+      bool reach_double_interact {ekg::reach(&this->double_interact, 500)};
 
-      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::viewport.w);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::viewport.h);
 
       this->set_input_state("finger-click", true);
       this->set_input_state("finger-click-double", !reach_double_interact);
 
       if (reach_double_interact) {
-        ekg::reset(this->double_interact);
+        ekg::reset(&this->double_interact);
       }
 
       break;
     }
 
-    case ekg::platform_event_type::finger_up: {
+    case ekg::io::input_event_type::finger_up: {
       this->input.was_released = true;
-      this->set_input_state("finger-hold", (this->finger_hold_event = ekg::reach(this->timing_last_interact, 750)));
+      this->set_input_state("finger-hold", (this->finger_hold_event = ekg::reach(&this->input.timing_last_interact, 750)));
       this->set_input_state("finger-click", false);
       this->set_input_state("finger-click-double", false);
 
@@ -416,21 +418,21 @@ void ekg::service::input::on_event() {
       this->set_input_state("finger-swipe-up", false);
       this->set_input_state("finger-swipe-down", false);
 
-      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::viewport.w);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::viewport.h);
 
       this->input.interact.z = 0.0f;
       this->input.interact.w = 0.0f;
       break;
     }
 
-    case ekg::platform_event_type::finger_motion: {
+    case ekg::io::input_event_type::finger_motion: {
       this->input.has_motion = true;
-      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::ui::width);
-      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::ui::height);
+      this->input.interact.x = serialized_input_event.finger_x * static_cast<float>(ekg::viewport.w);
+      this->input.interact.y = serialized_input_event.finger_y * static_cast<float>(ekg::viewport.h);
 
-      this->input.interact.z = (serialized_input_event.finger_dx * (static_cast<float>(ekg::ui::width) / 9.0f));
-      this->input.interact.w = (serialized_input_event.finger_dy * static_cast<float>(ekg::ui::height) / 9.0f);
+      this->input.interact.z = (serialized_input_event.finger_dx * (static_cast<float>(ekg::viewport.w) / 9.0f));
+      this->input.interact.w = (serialized_input_event.finger_dy * static_cast<float>(ekg::viewport.h) / 9.0f);
 
       float swipe_factor = 0.01f;
 
@@ -444,7 +446,7 @@ void ekg::service::input::on_event() {
       this->set_input_state("finger-swipe-down", this->input.interact.w < -swipe_factor);
 
       this->finger_swipe_event = true;
-      ekg::reset(this->timing_last_interact);
+      ekg::reset(&this->input.timing_last_interact);
       break;
     }
   }
@@ -460,9 +462,9 @@ void ekg::service::input::on_event() {
 
 void ekg::service::input::on_update() {
   (
-    ekg::reach(this->input.ui_timing, 1000)
+    ekg::reach(&this->input.ui_timing, 1000)
     &&
-    ekg::reset(this->input.ui_timing)
+    ekg::reset(&this->input.ui_timing)
   );
 
   if (this->input.was_wheel) {
@@ -538,7 +540,7 @@ void ekg::service::input::erase_input_bind(
   std::string_view tag,
   std::string_view input
 ) {
-  std::vector<ekg::io::input_bind_t> &bind_list {this->input_bindings_map[input.data()]};
+  std::vector<bool*> &bind_list {this->input_bindings_map[input.data()]};
   ekg::io::input_bind_t &input_bind {this->input_bind_map[tag.data()]};
 
   bool *p_address {&input_bind.state};
@@ -572,7 +574,7 @@ void ekg::service::input::erase_input_bind(
 
   for (size_t it {}; it < input_bind.registry.size(); it++) {
     std::string &input {input_bind.registry.at(it)};
-    std::vector<ekg::io::input_bind_t> &bind_list {
+    std::vector<bool*> &bind_list {
       this->input_bindings_map[input]
     };
 
@@ -617,8 +619,9 @@ void ekg::service::input::complete_with_units(
   string_builder += key_name;
 }
 
-void ekg::service::input::fire(
-  std::string_view key
+void ekg::service::input::set_input_bind_state(
+  std::string_view key,
+  bool state
 ) {
   ekg::io::input_bind_t &input_bind {
     this->input_bind_map[key.data()]
@@ -628,7 +631,7 @@ void ekg::service::input::fire(
     return;
   }
 
-  *input_bind.p_address = true; 
+  *input_bind.p_address = state; 
   this->just_fired_input_bind.emplace_back(input_bind.p_address);
 }
 

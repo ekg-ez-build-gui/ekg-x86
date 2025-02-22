@@ -42,7 +42,10 @@ namespace ekg {
   struct input_t {
   public:
     float scroll_speed {0.8f};
+    ekg::timing_t ui_timeout_timing {};
+    ekg::timing_t ui_scrolling_timing {};
     ekg::timing_t timing_last_interact {};
+    ekg::timing_t ui_timing {};
     ekg::vec4_t<float> interact {};
     bool was_pressed {};
     bool was_released {};
@@ -51,7 +54,7 @@ namespace ekg {
     bool was_typed {};
   };
 
-  bool fire();
+  bool fire(std::string_view tag);
   bool input(std::string_view input);
   void bind(std::string_view tag, std::string_view input);
   void bind(std::string_view tag, std::vector<std::string_view> inputs);
@@ -101,15 +104,13 @@ namespace ekg::io {
 
     float finger_dx {};
     float finger_dy {};
-
-    ekg::timing_t ui_timeout_timing {};
-    ekg::timing_t ui_scrolling_timing {};
   };
 
   struct input_bind_t {
   public:
     std::vector<std::string> registry {};
     bool state {};
+    bool *p_address {};
   };
 }
 

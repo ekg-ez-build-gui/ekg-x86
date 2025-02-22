@@ -61,6 +61,7 @@ namespace ekg {
     ekg::properties_t *p_parent {};
     std::vector<ekg::properties_t*> children {};
 
+    bool is_enabled {};
     bool is_alive {};
     bool is_visible {};
     bool is_parentable {};

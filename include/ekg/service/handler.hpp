@@ -46,7 +46,7 @@ namespace ekg::service {
 
     void init();
     void quit();
-    void do_update();
+    void on_update();
   };
 }
 

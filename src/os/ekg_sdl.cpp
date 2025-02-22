@@ -31,7 +31,7 @@
 
 ekg::sdl::sdl(
   SDL_Window *p_sdl_win,
-  ekg::flags modes
+  ekg::flags_t modes
 ) {
   this->p_sdl_win = p_sdl_win;
   this->modes = modes;
@@ -78,7 +78,11 @@ void ekg::sdl::init() {
   this->system_cursor = ekg::system_cursor_type::arrow;
   this->update_cursor();
 
-  SDL_GetWindowSize(this->p_sdl_win, &ekg::viewport.w, &ekg::viewport.h);
+  ekg::vec2_t<int32_t> window_size {};
+  SDL_GetWindowSize(this->p_sdl_win, &window_size.x, &window_size.y);
+
+  ekg::viewport.w = static_cast<float>(window_size.x);
+  ekg::viewport.h = static_cast<float>(window_size.y);
 
   SDL_version sdl_version {};
   SDL_GetVersion(&sdl_version);
@@ -193,7 +197,7 @@ void ekg::sdl_poll_event(SDL_Event &sdl_event) {
         ekg::viewport.h = sdl_event.window.data2;
 
         ekg::p_core->p_gpu_api->update_viewport(ekg::viewport.w, ekg::viewport.h);
-        ekg::io::dispatch(ekg::io::runtime_task_operation::scale_update);
+        ekg::io::dispatch(ekg::io::operation::scale_update);
 
         break;
     }

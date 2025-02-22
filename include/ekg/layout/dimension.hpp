@@ -3,7 +3,7 @@
 
 #include "ekg/ui/abstract.hpp"
 
-namespace ekg {
+namespace ekg::layout {
   /**
    * Estimate height from a container children list.
    * Note: Recursive.

@@ -44,7 +44,7 @@ namespace ekg::service {
     std::vector<std::string> special_keys_unit_pressed {};
     std::vector<std::string> double_click_mouse_buttons_pressed {};
     std::vector<std::string> input_released_list {};
-    std::vector<std::string> just_fired_input_bind {};
+    std::vector<bool*> just_fired_input_bind {};
 
     bool finger_hold_event {};
     bool finger_swipe_event {};
@@ -91,7 +91,8 @@ namespace ekg::service {
     );
 
     void set_input_bind_state(
-      std::string_view tag
+      std::string_view tag,
+      bool state
     );
 
     bool get_input_bind_state(

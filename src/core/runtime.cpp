@@ -164,7 +164,6 @@ void ekg::runtime::init() {
           )
         );
 
-
         this->draw_fr_big.set_size(
           ekg::min_clamp(
             font_size + ekg::viewport.font_offset.y,
@@ -193,22 +192,23 @@ void ekg::runtime::init() {
         ekg::io::operation::layout_docknize
       );
     }
-  }
+  };
 
   this->gpu_allocator.init();
   this->service_theme.init();
   this->service_input.init();
 
   ekg::log() << "Doing font-rendering tweaks, and pre-setting viewport scale...";
-  this->draw_fr_small.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_small.atlas_texture_sampler.gl_protected_active_index = true;
+
   this->draw_fr_small.set_size(16);
   this->draw_fr_small.bind_allocator(&this->gpu_allocator);
 
-  this->draw_fr_normal.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_normal.atlas_texture_sampler.gl_protected_active_index = true;
   this->draw_fr_normal.set_size(18);
   this->draw_fr_normal.bind_allocator(&this->gpu_allocator);
 
-  this->draw_fr_big.sampler_texture.gl_protected_active_index = true;
+  this->draw_fr_big.atlas_texture_sampler.gl_protected_active_index = true;
   this->draw_fr_big.set_size(24);
   this->draw_fr_big.bind_allocator(&this->gpu_allocator);
 }
@@ -227,7 +227,7 @@ void ekg::runtime::poll_events() {
     this->service_input.input
   };
 
-  bool is_on_scrolling_timeout {!ekg::reach(input.ui_scroll_timing, 250)};
+  bool is_on_scrolling_timeout {!ekg::reach(&input.ui_scrolling_timing, 250)};
   ekg::current.unique_id *= !(input.was_pressed || input.was_released || input.has_motion);
 
   if (
@@ -238,8 +238,12 @@ void ekg::runtime::poll_events() {
     this->p_abs_activity_widget->on_pre_event();
     this->p_abs_activity_widget->on_event();
 
-    if (this->p_abs_activity_widget->flag.scrolling) {
-      ekg::reset(input.ui_scroll_timing);
+    if (
+        this->p_abs_activity_widget->states.is_scrolling.x
+        ||
+        this->p_abs_activity_widget->states.is_scrolling.y
+      ) {
+      ekg::reset(&input.ui_scrolling_timing);
     }
 
     this->p_abs_activity_widget->on_post_event();
@@ -258,7 +262,7 @@ void ekg::runtime::poll_events() {
   ekg::ui::abstract *p_widget_focused {};
 
   for (ekg::ui::abstract *&p_widgets: this->context_widget_list) {
-    if (p_widgets == nullptr || p_widgets->properties.was_destroy) {
+    if (p_widgets == nullptr || !p_widgets->properties.is_alive) {
       continue;
     }
 
@@ -269,18 +273,18 @@ void ekg::runtime::poll_events() {
      **/
     hovered = (
       !(
-        input.event_type == ekg::input_event_type::key_down
+        this->p_os_platform->serialized_input_event.type == ekg::io::input_event_type::key_down
         ||
-        input.event_type == ekg::input_event_type::key_up
+        this->p_os_platform->serialized_input_event.type == ekg::io::input_event_type::key_up
         ||
-        input.event_type == ekg::input_event_type::text_input
+        this->p_os_platform->serialized_input_event.type == ekg::io::input_event_type::text_input
       )
       &&
       p_widgets->states.is_hover
       &&
       p_widgets->properties.is_visible
       &&
-      ekg::has(p_widgets->properties.flags, ekg::mode::enabled)
+      p_widgets->properties.is_enabled
     );
 
     if (hovered) {
@@ -324,7 +328,7 @@ void ekg::runtime::poll_events() {
 
   if (p_widget_focused) {
     p_widget_focused->states.is_absolute && (this->p_abs_activity_widget = p_widget_focused);
-    ekg::current.type = p_widget_focused->p_data->get_type();
+    ekg::current.type = p_widget_focused->properties.type;
 
     p_widget_focused->on_pre_event();
     p_widget_focused->on_event();
@@ -357,11 +361,11 @@ void ekg::runtime::poll_events() {
         input.was_pressed || input.was_released
       )
   ) {
-    this->target_collector.target_unique_id = ekg::current.unique_id;
+    this->swap_target_collector.unique_id = ekg::current.unique_id;
     ekg::current.last = ekg::current.unique_id;
 
     ekg::io::dispatch(ekg::io::operation::swap);
-    ekg::io::dispatch(ekg::io::operation::redraw);
+    ekg::viewport.redraw = true;
   }
 }
 
@@ -401,7 +405,7 @@ void ekg::runtime::render() {
     this->gpu_allocator.invoke();
 
     for (ekg::ui::abstract *&p_widgets : this->context_widget_list) {
-      if (p_widgets != nullptr && p_widgets->properties.is_visible) {
+      if (p_widgets != nullptr && p_widgets->properties.is_alive && p_widgets->properties.is_visible) {
         /**
          * Each time this statement is called, one GPU data is
          * allocated/filled.
@@ -409,13 +413,13 @@ void ekg::runtime::render() {
          * The order of rendering depends on which are functions are invoked first.
          * 
          * E.g:
-         *  gpu-data-group-1 (on_draw_refresh())
+         *  gpu-data-group-1 (on_draw())
          *  gpu-data-group-2
          *  gpu-data-group-3
          * 
          * `gpu-data-group-3` is always hovering all the previous GPU data groups.
          **/
-        p_widgets->on_draw_refresh();
+        p_widgets->on_draw();
       }
     }
 
@@ -474,7 +478,7 @@ void ekg::runtime::dispatch_widget_op(
   bool is_cancelled {};
   switch (op) {
   case ekg::io::operation::swap:
-    this->target_collector.unique_id = p_widget->properties.unique_id;
+    this->swap_target_collector.unique_id = p_widget->properties.unique_id;
     break;
   case ekg::io::operation::reload:
     if (

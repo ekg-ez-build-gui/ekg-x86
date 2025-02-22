@@ -301,7 +301,6 @@ void ekg::draw::font_renderer::reload() {
 
   FT_GlyphSlot ft_glyph_slot {};
   FT_Face ft_face {};
-  ekg::flags flags {};
 
   ekg::io::font_face_t *p_font_face_picked {};
 
@@ -340,15 +339,15 @@ void ekg::draw::font_renderer::reload() {
     char_data.wsize = static_cast<float>(static_cast<int32_t>(ft_glyph_slot->advance.x >> 6));
 
     this->atlas_rect.w += static_cast<int32_t>(char_data.w);
-    this->atlas_rect.h = ekg::min_clamp(this->atlas_rect.h, static_cast<int32_t>(char_data.h));
+    this->atlas_rect.h = ekg::min_clamp<int32_t>(this->atlas_rect.h, static_cast<int32_t>(char_data.h));
 
     p_font_face_picked->highest_glyph_size.x = ekg::min_clamp(
-      p_font_face_picked->highest_glyph_size.x,
+      static_cast<int32_t>(p_font_face_picked->highest_glyph_size.x),
       static_cast<int32_t>(char_data.w)
     );
 
     p_font_face_picked->highest_glyph_size.y = ekg::min_clamp(
-      p_font_face_picked->highest_glyph_size.y,
+      static_cast<int32_t>(p_font_face_picked->highest_glyph_size.y),
       static_cast<int32_t>(char_data.h)
     );
   }
@@ -423,6 +422,7 @@ void ekg::draw::font_renderer::blit(
 
   FT_Face ft_face {};
   FT_Vector ft_vector_previous_char {};
+  char32_t ft_uint_previous {};
 
   ekg::io::font_face_t &text_font_face {this->faces[ekg::io::font_face_type::text]};
   ekg::io::font_face_t &emojis_font_face {this->faces[ekg::io::font_face_type::emojis]};
@@ -445,7 +445,7 @@ void ekg::draw::font_renderer::blit(
       ekg::io::glyph_char_t &char_data {this->mapped_glyph_char_data[char32]};
 
       it += static_cast<uint64_t>(r_n_break_text);
-      data.factor += ekg_generate_factor_hash(y, char32, char_data.x);
+      data.factor += ekg::draw::generate_factor_hash(y, char32, char_data.x);
 
       y += this->text_height;
       x = 0.0f;
@@ -531,7 +531,7 @@ void ekg::draw::font_renderer::blit(
     x += char_data.wsize;
     ft_uint_previous = char32;
 
-    data.factor += ekg_generate_factor_hash(x, char32, char_data.x);
+    data.factor += ekg::draw::generate_factor_hash(x, char32, char_data.x);
   }
 
   this->flush();
@@ -547,7 +547,7 @@ void ekg::draw::font_renderer::flush() {
     this->reload();
     this->last_sampler_generate_list_size = size;
 
-    ekg::redraw = true;
+    ekg::viewport.redraw = true;
   }
 }
 

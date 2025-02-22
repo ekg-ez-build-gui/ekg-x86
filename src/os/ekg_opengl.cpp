@@ -410,7 +410,7 @@ ekg::flags_t ekg::opengl::gen_font_atlas_and_map_glyph(
   float offset {};
 
   for (char32_t &char32 : char_to_gen_sampler_list) {
-    switch (char32 < 256 || !p_font_face_emoji->font_face_loaded) {
+    switch (char32 < 256 || !p_font_face_emoji->was_loaded) {
       case true: {
         ft_face = p_font_face_text->ft_face;
         ft_glyph_slot = p_font_face_text->ft_face->glyph;

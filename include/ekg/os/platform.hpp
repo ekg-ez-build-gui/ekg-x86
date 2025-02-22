@@ -34,6 +34,7 @@ namespace ekg::os {
     ekg::rect_t<int32_t> display_size {};
     ekg::system_cursor_type system_cursor {};
     ekg::io::serialized_input_event_t serialized_input_event {};
+    ekg::flags_t modes {};
   public:
     virtual void init() {}
     virtual void quit() {}

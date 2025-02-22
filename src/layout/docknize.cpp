@@ -248,7 +248,9 @@ void ekg::layout::docknize_widget(
 
     if (p_widget_parent->properties.p_abs_parent) {
       ekg::layout::docknize_widget(
-        static_cast<ekg::ui::abstract*>(p_widget_parent->properties.p_abs_parent)
+        static_cast<ekg::ui::abstract*>(
+          p_widget_parent->properties.p_abs_parent->p_widget
+        )
       );
       return;
     }
@@ -257,7 +259,7 @@ void ekg::layout::docknize_widget(
   ekg::rect_t<float> container_rect {p_widget_parent->rect};
   ekg::theme_t &current_global_theme {ekg::theme()};
 
-  float initial_offset {static_cast<float>(theme.scrollbar.pixel_thickness)};
+  float initial_offset {static_cast<float>(current_global_theme.scrollbar.pixel_thickness)};
 
   if (
     p_widget_parent->states.is_scrolling.x
@@ -286,7 +288,6 @@ void ekg::layout::docknize_widget(
   int32_t it {};
   int32_t count {};
 
-  ekg::rect_t<float> prev_widget_layout {};
   ekg::rect_t<float> parent_offset {
     current_global_theme.layout_offset + initial_offset,
     current_global_theme.layout_offset + initial_offset,
@@ -322,7 +323,7 @@ void ekg::layout::docknize_widget(
       continue;
     }
 
-    p_widgets = static_cast<ekg::ui::abstract>(p_properties);
+    p_widgets = static_cast<ekg::ui::abstract*>(p_properties->p_widget);
     flags = p_properties->dock;
 
     // @TODO Prevent useless scrolling reload.
@@ -529,7 +530,6 @@ void ekg::layout::docknize_widget(
     }
 
     ekg::layout::extent_t::h_widget = h_extent_backup;
-    prev_widget_layout = layout;
     it++;
   }
 
