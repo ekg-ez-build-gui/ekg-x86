@@ -248,3 +248,4 @@
 -- Added floating point features and algebra linear features.
 -- Properties can be cast to reference and ptr, both with different reasons and complete utility.
 -- Added new reload, layout docknization, and scale update runtime operation tasks. 
+-- Properties has a visible absolute rect to user-programmer.

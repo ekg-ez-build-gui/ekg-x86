@@ -177,6 +177,36 @@ namespace ekg {
         static_cast<s>(this->h)
       };
     }
+
+    template<typename s>
+    ekg::rect_t<t> operator + (ekg::rect_t<s> rect) {
+      return ekg::rect_t<t>(
+        this->x + static_cast<t>(rect.x),
+        this->y + static_cast<t>(rect.y),
+        this->w + static_cast<t>(rect.w),
+        this->h + static_cast<t>(rect.h)
+      );
+    }
+
+    template<typename s>
+    ekg::rect_t<t> operator + (ekg::vec4_t<s> vec) {
+      return ekg::rect_t<t>(
+        this->x + static_cast<t>(vec.x),
+        this->y + static_cast<t>(vec.y),
+        this->w + static_cast<t>(vec.z),
+        this->h + static_cast<t>(vec.w)
+      );
+    }
+
+    template<typename s>
+    ekg::rect_t<t> operator + (s expect_number) {
+      return ekg::rect_t<t>(
+        this->x + static_cast<t>(expect_number),
+        this->y + static_cast<t>(expect_number),
+        this->w + static_cast<t>(expect_number),
+        this->h + static_cast<t>(expect_number)
+      );
+    }
   };
 
   struct rect_descriptor_t {

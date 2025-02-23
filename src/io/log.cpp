@@ -1,5 +1,9 @@
 #include "ekg/io/log.hpp"
 
+std::ostringstream ekg::log::buffer {};
+bool ekg::log::buffered {};
+bool ekg::log::tracked {};
+
 int64_t ekg::timing_t::second {};
 int64_t ekg::timing_t::ticks {};
 

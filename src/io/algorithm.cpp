@@ -24,6 +24,14 @@ ekg::flags_t ekg::add_child_to_parent(
   p_child->p_abs_parent = p_parent->p_abs_parent;
   p_parent->children.push_back(p_child);
 
+  if (p_parent->is_docknizable) {
+    ekg::ui::abstract *p_widget {
+      static_cast<ekg::ui::abstract*>(p_child->p_widget)
+    };
+
+    p_widget->p_parent_rect = &p_parent->rect;
+  }
+
   return ekg::result::success;
 }
 
@@ -47,14 +55,14 @@ ekg::properties_t *ekg::find(
 
 ekg::flags_t ekg::destroy(
   ekg::stack_t *p_stack,
-  ekg::properties_t *p_parent
+  ekg::properties_t *p_properties
 ) {
   if (p_stack == nullptr) {
     ekg::log() << "Failed to destroy widget, `null` p_stack";
     return ekg::result::failed;
   }
 
-  if (p_parent == nullptr) {
+  if (p_properties == nullptr) {
     ekg::log() << "Failed to destroy widget, `null` p_properties";
     return ekg::result::failed;
   }
@@ -63,26 +71,35 @@ ekg::flags_t ekg::destroy(
     p_stack->counter++
   };
 
-  p_parent->is_alive = false;
+  p_properties->is_alive = false;
 
-  for (ekg::properties_t *&p_properties : p_parent->children) {
-    ekg::destroy(p_stack, p_properties);
+  if (p_properties->p_parent->is_docknizable) {
+    ekg::ui::abstract *p_widget {
+      static_cast<ekg::ui::abstract*>(p_properties->p_widget)
+    };
+
+    p_widget->p_parent_rect = &p_widget->_blank_parent_rect;
+    p_widget->p_scroll_vec = &p_widget->_blank_scroll_vec;
+  }
+
+  for (ekg::properties_t *&p_child : p_properties->children) {
+    ekg::destroy(p_stack, p_child);
   }
 
   if (counter == 0) {
     p_stack->counter = 0;
 
-    if (p_parent->p_parent != nullptr) {
+    if (p_properties->p_parent != nullptr) {
       std::vector<ekg::properties_t*> &parent_of_parent_children {
-        p_parent->p_parent->children
+        p_properties->p_parent->children
       };
 
       parent_of_parent_children.erase(
         std::remove_if(
           parent_of_parent_children.begin(),
           parent_of_parent_children.end(),
-          [p_parent](ekg::properties_t *&p_properties) {
-            return p_properties->unique_id == p_parent->unique_id;
+          [p_properties](ekg::properties_t *&p_parent) {
+            return p_parent->unique_id == p_properties->unique_id;
           }
         )
       );

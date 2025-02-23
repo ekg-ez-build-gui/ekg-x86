@@ -26,6 +26,7 @@
 #define EKG_UI_PROPERTIES_HPP
 
 #include "ekg/io/memory.hpp"
+#include "ekg/math/geometry.hpp"
 
 #include <string>
 #include <vector>
@@ -52,6 +53,7 @@ namespace ekg {
     ekg::flags_t dock {};
     ekg::type type {};
     ekg::id_t unique_id {};
+    ekg::rect_t<float> rect {};
 
     void *p_descriptor {};
     void *p_widget {};

@@ -4,9 +4,10 @@
 #include <ekg/ekg.hpp>
 #include <ekg/os/ekg_sdl.hpp>
 
-extern struct application {
+extern struct application_t {
   SDL_Window *p_sdl_win {};
   bool vsync {true};
+  bool is_running {};
 } app;
 
 namespace laboratory {
@@ -24,7 +25,7 @@ namespace laboratory {
   public:
     void on_resize();
     void invoke();
-    void draw(const ekg::rect &rect, const ekg::vec4 &color);
+    void draw(const ekg::rect_t<float> &rect, const ekg::vec4_t<float> &color);
     void revoke();
   };
 }
