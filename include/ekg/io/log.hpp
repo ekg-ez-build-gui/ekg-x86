@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 
+#define EKG_LOG_DEBUG
+
 namespace ekg {
   class log {
   public:
@@ -41,6 +43,11 @@ namespace ekg {
         std::terminate();
       }
     }
+  public:
+    template<typename t>
+    explicit log(t content) {
+      std::cout << content << std::endl;
+    }
 
     explicit log() {
       ekg::log::buffered = true;
@@ -49,11 +56,9 @@ namespace ekg {
 
     ~log() {
       ekg::log::buffer << '\n';
-      //#define EKG_LOG_DEBUG
       #ifdef EKG_LOG_DEBUG
       ekg::log::buffered = true;
       ekg::log::flush();
-      ekg_log("");
       #endif
     }
 

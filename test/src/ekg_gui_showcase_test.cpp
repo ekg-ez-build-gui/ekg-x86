@@ -6,6 +6,9 @@
 application_t app {};
 
 int32_t main(int32_t, char**) {
+  ekg::log("blalblla");
+  ekg::log(2);
+
   SDL_Init(SDL_INIT_VIDEO);
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
